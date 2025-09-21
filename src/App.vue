@@ -1,47 +1,93 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script>
+export default {
+  name: 'App'
 }
+</script>
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+<style>
+#app {
+  font-family: Arial, sans-serif;
+  /* text-align: center; */
+  /* padding: 20px; */
 }
 </style>
+
+<!--
+<template>
+  <!--<div id="app" class="mainClass">
+    <div>
+      <InfoPanel label="Категория" value="Любители" />
+      <InfoPanel label="Этап" value="1/4" />
+
+      <h3>Оцените следующих участников</h3>
+      
+      <PerformanceRatingGroups
+        :initial-performances="performances"
+        :available-categories="categories"
+        @rating-change="handleRatingChange"
+        @performance-added="handlePerformanceAdded"
+      />
+    </div>
+  </div>
+  
+</template>
+-->
+<!-- <script>
+
+import InfoPanel from './components/InfoPanel.vue'
+import PerformanceRatingGroups from './components/PerformanceRatingGroups.vue'
+
+export default {
+  name: 'App',
+  components: {
+    InfoPanel,
+    PerformanceRatingGroups
+  },
+  data() {
+    return {
+      performances: [
+        {
+          id: 'perf-1',
+          number: 39,
+          date: '15.12.2023',
+          isCollapsed: false,
+          categories: [
+            { id: 'cat-1', label: 'Музыкальность', value: 8 },
+            { id: 'cat-2', label: 'Техника', value: 9 },
+            { id: 'cat-3', label: 'Артистизм', value: 7 },
+            { id: 'cat-4', label: 'Внешний вид', value: 8 }
+          ]
+        }
+      ],
+      categories: [
+        'Музыкальность', 'Техника', 'Артистизм', 'Внешний вид',
+        'Сложность программы', 'Художественный образ'
+      ]
+    }
+  },
+  methods: {
+    handleRatingChange(rating) {
+      console.log('Оценка изменена:', rating);
+    },
+    handlePerformanceAdded(performance) {
+      console.log('Добавлено выступление:', performance);
+    }
+  }
+}
+</script> -->
+
+<!-- <style scoped>
+.mainClass {
+  padding-left: 4px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  padding-right: 4px !important;
+}
+
+</style> -->
