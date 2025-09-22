@@ -1,26 +1,26 @@
 <template>
     <ControlPanel @back="handleBack"/>
     <div class="card-list">
-        <div v-for="(activityCard, index) in activities" :key="index" class="card-item">
-        <ActivityCard :activityCard="activityCard"/>
+        <div v-for="(roundCard, index) in rounds" :key="index" class="card-item">
+        <RoundCard :roundCard="roundCard"/>
         </div>
     </div>
 </template>
 
 <script>
-import ActivityCard from './ActivityCard.vue';
+import RoundCard from './RoundCard.vue';
 import ControlPanel from '../common/ControlPanel.vue';
-import { activityApi } from '@/services/activityApi.js';
+import { roundApi } from '@/services/roundApi.js';
 import { useRoute, useRouter } from 'vue-router'
 
 export default {
-  name: 'Activities',
+  name: 'Rounds',
   components: {
-    ActivityCard,
+    RoundCard,
     ControlPanel
   },
   props: {
-    activities: {
+    rounds: {
       type: Array,
       default: () => []
     },
@@ -41,16 +41,16 @@ export default {
     const route = useRoute();
     const params = route.params;
 
-    await this.fetchActivities(parseInt(params.occasionId))
+    await this.fetchRounds(parseInt(params.milestoneId))
   },
 
     methods: {
-        async fetchActivities(occasionId) {
+        async fetchRounds(roundId) {
             this.loading = true
             this.error = null
             try {
-                const response = await activityApi.getActivities(occasionId);
-                this.activities = response.content;
+                const response = await roundApi.getRounds(roundId);
+                this.rounds = response.content;
                 // this.users = response.data
             } catch (err) {
                 // this.error = 'Failed to fetch users: ' + err.message
@@ -63,7 +63,7 @@ export default {
 
     data() {
         return {
-            activities: []
+            rounds: []
         }
     },
 }

@@ -2,11 +2,13 @@ import { api } from './api.js';
 
 export const activityApi = {
 
-  async getActivities() {
+  //Получить активности по occasionId
+  async getActivities(id) {
     try {
-      return await api.get('/v1/activity');
+      const occasionId = Number(id);
+      return await api.get('/v1/activity/occasion/' + occasionId);
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      console.error('Failed to fetch activities:', error);
       throw error;
     }
   },

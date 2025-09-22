@@ -6,7 +6,7 @@ export const occasionApi = {
     try {
       return await api.get('/v1/occasion');
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      console.error('Failed to fetch occasions:', error);
       throw error;
     }
   },

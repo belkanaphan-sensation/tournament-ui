@@ -41,6 +41,7 @@ setup(props) {
       const store = createOccasionCardStore(componentId)
       
       let card = props.occasionCard;
+      store.setId(card.id);
       store.setName(card.name);
       store.setDescription(card.description);
       store.setStatus(card.status);
@@ -49,24 +50,29 @@ setup(props) {
       store.setCompletedCount(card.completedCount)
 
       const router = useRouter();
-      const isPressing = ref(false);
 
-      const navigateToActivities = () => {
-        // const id = props.storeId || props.store.id
-        
-        // Переход на страницу Activities с параметром ID
+      const createNavigationHandler = (customStore = store) => {
+        return () => {
+          // const id = props.storeId || props.store.id
+          
+          // Переход на страницу Activities с параметром ID
 
-        setTimeout(() => {
-          router.push({
-          name: 'Activities', // или path: '/activities'
-          // params: { id: id }
-        })}, 100);
-        
-        
-        // Альтернативные варианты:
-        // router.push(`/activities/${id}`)
-        // router.push({ path: `/activities/${id}` })
+          setTimeout(() => {
+            router.push({
+              name: 'Activities',
+              params: { 
+                occasionId: store.id 
+              }
+          })}, 100);
+          
+          
+          // Альтернативные варианты:
+          // router.push(`/activities/${id}`)
+          // router.push({ path: `/activities/${id}` })
+        }
       }
+
+      const navigateToActivities = createNavigationHandler();
 
       return {
           store,

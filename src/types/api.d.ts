@@ -125,13 +125,51 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Получить веху по ID */
+        /** Получить этап по ID */
         get: operations["getById_6"];
-        /** Обновить веху по ID */
+        /** Обновить этап по ID */
         put: operations["update_6"];
         post?: never;
-        /** Удалить веху по ID */
+        /** Удалить этап по ID */
         delete: operations["delete_6"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/milestone-criteria-assignment/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить назначение по ID */
+        get: operations["getById_7"];
+        /** Обновить назначение по ID */
+        put: operations["update_7"];
+        post?: never;
+        /** Удалить назначение по ID */
+        delete: operations["delete_7"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/criteria/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить критерий по ID */
+        get: operations["getById_8"];
+        /** Обновить критерий по ID */
+        put: operations["update_8"];
+        post?: never;
+        /** Удалить критерий по ID */
+        delete: operations["delete_8"];
         options?: never;
         head?: never;
         patch?: never;
@@ -145,12 +183,12 @@ export interface paths {
             cookie?: never;
         };
         /** Получить активность по ID */
-        get: operations["getById_7"];
+        get: operations["getById_9"];
         /** Обновить активность по ID */
-        put: operations["update_7"];
+        put: operations["update_9"];
         post?: never;
         /** Удалить активность по ID */
-        delete: operations["delete_7"];
+        delete: operations["delete_9"];
         options?: never;
         head?: never;
         patch?: never;
@@ -305,11 +343,47 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Получить все вехи с пагинацией */
+        /** Получить все этапы с пагинацией */
         get: operations["getAll_6"];
         put?: never;
-        /** Создать новую веху */
+        /** Создать новую этап */
         post: operations["create_6"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/milestone-criteria-assignment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить все назначения */
+        get: operations["getAll_7"];
+        put?: never;
+        /** Создать новое назначение */
+        post: operations["create_7"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/criteria": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить все критерии с пагинацией */
+        get: operations["getAll_8"];
+        put?: never;
+        /** Создать новый критерий */
+        post: operations["create_8"];
         delete?: never;
         options?: never;
         head?: never;
@@ -358,10 +432,10 @@ export interface paths {
             cookie?: never;
         };
         /** Получить все активности с пагинацией */
-        get: operations["getAll_7"];
+        get: operations["getAll_9"];
         put?: never;
         /** Создать новую активность */
-        post: operations["create_7"];
+        post: operations["create_9"];
         delete?: never;
         options?: never;
         head?: never;
@@ -470,6 +544,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/round/milestone/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить раунды по ID этапа */
+        get: operations["getByMilestoneId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/occasion/{id}/statistics": {
         parameters: {
             query?: never;
@@ -487,6 +578,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/milestone/activity/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить этапы по ID активности */
+        get: operations["getByOccasionId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/milestone-criteria-assignment/milestone/{milestoneId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить назначения этапа */
+        get: operations["getByMilestoneId_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/milestone-criteria-assignment/milestone/{milestoneId}/criteria/{criteriaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить назначение по ID этапа и критерия */
+        get: operations["getByMilestoneIdAndCriteriaId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/milestone-criteria-assignment/criteria/{criteriaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить назначения критерия */
+        get: operations["getByCriteriaId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/activity/{id}/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить статистику этапов активности */
+        get: operations["getMilestoneStatistics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/activity/occasion/{id}": {
         parameters: {
             query?: never;
@@ -495,7 +671,7 @@ export interface paths {
             cookie?: never;
         };
         /** Получить активности по ID мероприятия */
-        get: operations["getByOccasionId"];
+        get: operations["getByOccasionId_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -752,6 +928,12 @@ export interface components {
              * @example A-102
              */
             number?: string;
+            /**
+             * @description Пол участника
+             * @example MALE
+             * @enum {string}
+             */
+            gender?: "MALE" | "FEMALE";
         };
         /** @description Участник активности */
         ParticipantDto: {
@@ -767,6 +949,12 @@ export interface components {
              * @example A-102
              */
             number?: string;
+            /**
+             * @description Пол участника
+             * @example MALE
+             * @enum {string}
+             */
+            gender?: "MALE" | "FEMALE";
             activity?: components["schemas"]["EntityLinkDto"];
             /** @description Список этапов */
             milestones?: components["schemas"]["EntityLinkDto"][];
@@ -870,13 +1058,15 @@ export interface components {
              */
             description?: string;
             /**
-             * Format: date-time
+             * Format: date
              * @description Дата начала
+             * @example 2025-04-13
              */
             startDate?: string;
             /**
-             * Format: date-time
+             * Format: date
              * @description Дата окончания
+             * @example 2025-04-15
              */
             endDate?: string;
             /**
@@ -910,13 +1100,15 @@ export interface components {
              */
             description?: string;
             /**
-             * Format: date-time
+             * Format: date
              * @description Дата начала
+             * @example 2025-04-13
              */
             startDate?: string;
             /**
-             * Format: date-time
+             * Format: date
              * @description Дата окончания
+             * @example 2025-04-15
              */
             endDate?: string;
             organization?: components["schemas"]["EntityLinkDto"];
@@ -934,6 +1126,11 @@ export interface components {
              * @example Квалификация
              */
             name?: string;
+            /**
+             * @description Описание вехи
+             * @example Квалификационный этап соревнования
+             */
+            description?: string;
             /**
              * Format: int64
              * @description ID активности, частью которой является веха
@@ -955,19 +1152,84 @@ export interface components {
              */
             readonly id?: number;
             /**
-             * @description Название вехи
+             * @description Название этапа'
              * @example Квалификация
              */
             name?: string;
+            /**
+             * @description Описание этапа
+             * @example Квалификационный этап соревнования
+             */
+            description?: string;
             activity?: components["schemas"]["EntityLinkDto"];
             /** @description Список раундов */
             rounds?: components["schemas"]["EntityLinkDto"][];
             /**
-             * @description Статус вехи
+             * @description Статус этапа
              * @example DRAFT
              * @enum {string}
              */
             status?: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+        };
+        /** @description Запрос на обновление назначения критерия оценки этапу */
+        UpdateMilestoneCriteriaAssignmentRequest: {
+            /**
+             * Format: int64
+             * @description ID этапа
+             * @example 1
+             */
+            milestoneId?: number;
+            /**
+             * Format: int64
+             * @description ID критерия оценки
+             * @example 1
+             */
+            criteriaId?: number;
+            /**
+             * @description Пол, к которому относится критерий в рамках этапа
+             * @example MALE
+             * @enum {string}
+             */
+            gender?: "MALE" | "FEMALE";
+        };
+        /** @description Назначение критерия оценки этапу */
+        MilestoneCriteriaAssignmentDto: {
+            /**
+             * Format: int64
+             * @description Id в БД
+             * @example 5
+             */
+            readonly id?: number;
+            milestone?: components["schemas"]["EntityLinkDto"];
+            criteria?: components["schemas"]["EntityLinkDto"];
+            /**
+             * @description Пол, к которому относится критерий в рамках этапа
+             * @example MALE
+             * @enum {string}
+             */
+            gender?: "MALE" | "FEMALE";
+        };
+        /** @description Запрос на обновление критерия оценки */
+        UpdateCriteriaRequest: {
+            /**
+             * @description Название критерия
+             * @example Техника
+             */
+            name: string;
+        };
+        /** @description Критерий оценки для этапа */
+        CriteriaDto: {
+            /**
+             * Format: int64
+             * @description Id в БД
+             * @example 5
+             */
+            readonly id?: number;
+            /**
+             * @description Название критерия
+             * @example Техника
+             */
+            name?: string;
         };
         /** @description Запрос на обновление активности */
         UpdateActivityRequest: {
@@ -1034,8 +1296,6 @@ export interface components {
             endDateTime?: string;
             address?: components["schemas"]["AddressDto"];
             occasion?: components["schemas"]["EntityLinkDto"];
-            /** @description Список этапов */
-            milestones?: components["schemas"]["EntityLinkDto"][];
             /**
              * @description Статус активности
              * @example DRAFT
@@ -1167,6 +1427,12 @@ export interface components {
              * @example A-102
              */
             number?: string;
+            /**
+             * @description Пол участника
+             * @example MALE
+             * @enum {string}
+             */
+            gender: "MALE" | "FEMALE";
         };
         /** @description Запрос на создание организации */
         CreateOrganizationRequest: {
@@ -1205,13 +1471,15 @@ export interface components {
              */
             description?: string;
             /**
-             * Format: date-time
+             * Format: date
              * @description Дата начала
+             * @example 2025-04-13
              */
             startDate: string;
             /**
-             * Format: date-time
+             * Format: date
              * @description Дата окончания
+             * @example 2025-04-15
              */
             endDate: string;
             /**
@@ -1234,6 +1502,11 @@ export interface components {
              */
             name: string;
             /**
+             * @description Описание вехи
+             * @example Квалификационный этап соревнования
+             */
+            description?: string;
+            /**
              * Format: int64
              * @description ID активности, частью которой является веха
              */
@@ -1244,6 +1517,35 @@ export interface components {
              * @enum {string}
              */
             status: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+        };
+        /** @description Запрос на создание назначения критерия оценки этапу */
+        CreateMilestoneCriteriaAssignmentRequest: {
+            /**
+             * Format: int64
+             * @description ID этапа
+             * @example 1
+             */
+            milestoneId: number;
+            /**
+             * Format: int64
+             * @description ID критерия оценки
+             * @example 1
+             */
+            criteriaId: number;
+            /**
+             * @description Пол, к которому относится критерий в рамках этапа
+             * @example MALE
+             * @enum {string}
+             */
+            gender?: "MALE" | "FEMALE";
+        };
+        /** @description Запрос на создание критерия оценки */
+        CreateCriteriaRequest: {
+            /**
+             * @description Название критерия
+             * @example Техника
+             */
+            name: string;
         };
         RegistrationRequest: {
             /**
@@ -1345,10 +1647,10 @@ export interface components {
             sort?: string[];
         };
         PageUserDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["UserDto"][];
@@ -1366,11 +1668,11 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            paged?: boolean;
             /** Format: int32 */
             pageSize?: number;
             /** Format: int32 */
             pageNumber?: number;
-            paged?: boolean;
             unpaged?: boolean;
         };
         SortObject: {
@@ -1379,10 +1681,10 @@ export interface components {
             unsorted?: boolean;
         };
         PageUserActivityAssignmentDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["UserActivityAssignmentDto"][];
@@ -1397,10 +1699,10 @@ export interface components {
             empty?: boolean;
         };
         PageRoundDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["RoundDto"][];
@@ -1415,10 +1717,10 @@ export interface components {
             empty?: boolean;
         };
         PageParticipantDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ParticipantDto"][];
@@ -1433,10 +1735,10 @@ export interface components {
             empty?: boolean;
         };
         PageOrganizationDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["OrganizationDto"][];
@@ -1465,10 +1767,10 @@ export interface components {
             page?: components["schemas"]["PageMetadata"];
         };
         PageOccasionDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["OccasionDto"][];
@@ -1515,10 +1817,10 @@ export interface components {
             totalActivitiesCount?: number;
         };
         PageMilestoneDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["MilestoneDto"][];
@@ -1532,11 +1834,47 @@ export interface components {
             last?: boolean;
             empty?: boolean;
         };
-        PageActivityDto: {
-            /** Format: int32 */
-            totalPages?: number;
+        PageMilestoneCriteriaAssignmentDto: {
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["MilestoneCriteriaAssignmentDto"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
+            empty?: boolean;
+        };
+        PageCriteriaDto: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["CriteriaDto"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
+            empty?: boolean;
+        };
+        PageActivityDto: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ActivityDto"][];
@@ -1549,6 +1887,32 @@ export interface components {
             first?: boolean;
             last?: boolean;
             empty?: boolean;
+        };
+        /** @description Статистика этапов активности */
+        ActivityStatisticsDto: {
+            /**
+             * Format: int64
+             * @description ID активности
+             * @example 1
+             */
+            activityId?: number;
+            /**
+             * @description Название активности
+             * @example Открытие турнира
+             */
+            activityName?: string;
+            /**
+             * Format: int64
+             * @description Количество завершенных этапов
+             * @example 3
+             */
+            completedMilestonesCount?: number;
+            /**
+             * Format: int64
+             * @description Общее количество этапов в активности
+             * @example 5
+             */
+            totalMilestonesCount?: number;
         };
     };
     responses: never;
@@ -2068,6 +2432,142 @@ export interface operations {
         };
         requestBody: {
             content: {
+                "application/json": components["schemas"]["UpdateMilestoneCriteriaAssignmentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MilestoneCriteriaAssignmentDto"];
+                };
+            };
+        };
+    };
+    delete_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getById_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    update_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCriteriaRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CriteriaDto"];
+                };
+            };
+        };
+    };
+    delete_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getById_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    update_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
                 "application/json": components["schemas"]["UpdateActivityRequest"];
             };
         };
@@ -2083,7 +2583,7 @@ export interface operations {
             };
         };
     };
-    delete_7: {
+    delete_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -2489,6 +2989,98 @@ export interface operations {
             };
         };
     };
+    getAll_7: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageMilestoneCriteriaAssignmentDto"];
+                };
+            };
+        };
+    };
+    create_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMilestoneCriteriaAssignmentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MilestoneCriteriaAssignmentDto"];
+                };
+            };
+        };
+    };
+    getAll_8: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageCriteriaDto"];
+                };
+            };
+        };
+    };
+    create_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCriteriaRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CriteriaDto"];
+                };
+            };
+        };
+    };
     register: {
         parameters: {
             query?: never;
@@ -2537,7 +3129,7 @@ export interface operations {
             };
         };
     };
-    getAll_7: {
+    getAll_9: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -2559,7 +3151,7 @@ export interface operations {
             };
         };
     };
-    create_7: {
+    create_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -2727,6 +3319,30 @@ export interface operations {
             };
         };
     };
+    getByMilestoneId: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageRoundDto"];
+                };
+            };
+        };
+    };
     getStatistics: {
         parameters: {
             query?: never;
@@ -2750,6 +3366,123 @@ export interface operations {
         };
     };
     getByOccasionId: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageMilestoneDto"];
+                };
+            };
+        };
+    };
+    getByMilestoneId_1: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                milestoneId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageMilestoneCriteriaAssignmentDto"];
+                };
+            };
+        };
+    };
+    getByMilestoneIdAndCriteriaId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                milestoneId: number;
+                criteriaId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MilestoneCriteriaAssignmentDto"];
+                };
+            };
+        };
+    };
+    getByCriteriaId: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                criteriaId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageMilestoneCriteriaAssignmentDto"];
+                };
+            };
+        };
+    };
+    getMilestoneStatistics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ActivityStatisticsDto"];
+                };
+            };
+        };
+    };
+    getByOccasionId_1: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];

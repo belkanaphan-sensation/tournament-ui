@@ -1,12 +1,11 @@
 import { defineStore } from 'pinia'
 
-export const createOccasionCardStore = (id) => {
-    return defineStore(`occasionCard-${id}`, {
+export const createMilestoneCardStore = (id) => {
+    return defineStore(`milestoneCard-${id}`, {
 
     state: () => ({
         id: undefined,
         name: undefined,
-        startDate: undefined,
         description: undefined,
         status: undefined,
         completedCount: undefined,
@@ -19,9 +18,6 @@ export const createOccasionCardStore = (id) => {
         },
         setName(name) {
             this.name = name ?? '';
-        },
-        setStartDate(startDate) {
-            this.startDate = startDate ?? '';
         },
         setDescription(description) {
             this.description = description ?? '';

@@ -4,6 +4,7 @@ export const createActivityCardStore = (id) => {
     return defineStore(`activityCard-${id}`, {
 
     state: () => ({
+        id: undefined,
         name: undefined,
         description: undefined,
         startDate: undefined,
@@ -14,6 +15,9 @@ export const createActivityCardStore = (id) => {
     }),
 
     actions: {
+        setId(id) {
+            this.id = id;
+        },
         setName(name) {
             this.name = name ?? '';
         },

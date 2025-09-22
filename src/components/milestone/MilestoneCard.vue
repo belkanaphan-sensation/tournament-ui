@@ -1,11 +1,9 @@
 <template>
-  <div class="card" @click="navigateToMilestones">
+  <div class="card" @click="navigateToRounds">
     <div class="card-header">
       <h3>{{ store.name }}</h3>
     </div>
     <div class="card-content">
-        <Field label="Дата начала" :value="store.startDate"/>
-        <Field label="Дата окончания" :value="store.startDate"/>
         <Field label="Описание" :value= "store.description"/>
         <Field label="Статус" :value= "store.status"/>
         <Field label="Прогресс" :value="store.completedCount + '/' + store.allCount"/>
@@ -19,34 +17,32 @@
 <script>
 
 import Field from '../common/Field.vue'
-import { createActivityCardStore } from './ActivityCardStore.js'
+import { createMilestoneCardStore } from './MilestoneCardStore.js'
 import { useRouter } from 'vue-router'
 
 let counter = 0
 
 export default {
-  name: 'ActivityCardComponent',
+  name: 'MilestoneCardComponent',
   components: {
     Field
   },
   props: {
-    activityCard: {
+    milestoneCard: {
       type: Object,
       default: () => ({})
     },
   },
 
 setup(props) {
-      const componentId = `activityCard-${counter++}`
-      const store = createActivityCardStore(componentId)
+      const componentId = `milestoneCard-${counter++}`
+      const store = createMilestoneCardStore(componentId)
       
-      let card = props.activityCard;
+      let card = props.milestoneCard;
       store.setId(card.id);
       store.setName(card.name);
       store.setDescription(card.description);
       store.setStatus(card.status);
-      store.setStartDate(card.startDate);
-      store.setEndDate(card.startDate);
       store.setAllCount(card.allCount);
       store.setCompletedCount(card.completedCount)
 
@@ -60,9 +56,9 @@ setup(props) {
 
           setTimeout(() => {
             router.push({
-              name: 'Milestones',
+              name: 'Rounds',
               params: { 
-                activityId: store.id 
+                milestoneId: store.id 
               }
           })}, 100);
           
@@ -73,11 +69,11 @@ setup(props) {
         }
       }
 
-      const navigateToMilestones = createNavigationHandler();
+      const navigateToRounds = createNavigationHandler();
 
       return {
           store,
-          navigateToMilestones
+          navigateToRounds
       }
   }
 }

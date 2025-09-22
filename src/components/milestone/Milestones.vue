@@ -1,26 +1,26 @@
 <template>
     <ControlPanel @back="handleBack"/>
     <div class="card-list">
-        <div v-for="(activityCard, index) in activities" :key="index" class="card-item">
-        <ActivityCard :activityCard="activityCard"/>
+        <div v-for="(milestoneCard, index) in milestones" :key="index" class="card-item">
+        <MilestoneCard :milestoneCard="milestoneCard"/>
         </div>
     </div>
 </template>
 
 <script>
-import ActivityCard from './ActivityCard.vue';
+import MilestoneCard from './MilestoneCard.vue';
 import ControlPanel from '../common/ControlPanel.vue';
-import { activityApi } from '@/services/activityApi.js';
+import { milestoneApi } from '@/services/milestoneApi.js';
 import { useRoute, useRouter } from 'vue-router'
 
 export default {
-  name: 'Activities',
+  name: 'Milestones',
   components: {
-    ActivityCard,
+    MilestoneCard,
     ControlPanel
   },
   props: {
-    activities: {
+    milestones: {
       type: Array,
       default: () => []
     },
@@ -41,16 +41,16 @@ export default {
     const route = useRoute();
     const params = route.params;
 
-    await this.fetchActivities(parseInt(params.occasionId))
+    await this.fetchMilestones(parseInt(params.activityId))
   },
 
     methods: {
-        async fetchActivities(occasionId) {
+        async fetchMilestones(activityId) {
             this.loading = true
             this.error = null
             try {
-                const response = await activityApi.getActivities(occasionId);
-                this.activities = response.content;
+                const response = await milestoneApi.getMilestones(activityId);
+                this.milestones = response.content;
                 // this.users = response.data
             } catch (err) {
                 // this.error = 'Failed to fetch users: ' + err.message
@@ -63,7 +63,7 @@ export default {
 
     data() {
         return {
-            activities: []
+            milestones: []
         }
     },
 }
