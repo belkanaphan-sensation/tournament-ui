@@ -8,7 +8,8 @@ export const createOccasionCardStore = (id) => {
         name: undefined,
         startDate: undefined,
         description: undefined,
-        status: undefined,
+        state: undefined,
+        stateDisplayValue: undefined,
         completedCount: undefined,
         allCount: undefined
     }),
@@ -26,8 +27,11 @@ export const createOccasionCardStore = (id) => {
         setDescription(description) {
             this.description = description ?? '';
         },
-        setStatus(status) {
-            this.status = status ?? '';
+        setState(state) {
+            this.state = state ?? '';
+        },
+        setStateDisplayValue(stateDisplayValue) {
+            this.stateDisplayValue = stateDisplayValue ?? '';
         },
         setAllCount(allCount) {
             this.allCount = allCount ?? '';

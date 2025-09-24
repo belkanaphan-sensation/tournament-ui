@@ -1,8 +1,22 @@
 <template>
-    <ControlPanel @back="handleBack"/>
-    <div class="card-list">
+    <div class="header-container container-background">
+        <ControlPanel @back="handleBack"/>
+        <UserIcon/>
+    </div>
+    <div class="content-container container-background">
+        <div v-if="isLoading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Загрузка активностей...</p>
+        </div>
+
+        <div v-if="milestones.length === 0 && !isLoading" class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>Нет данных для отображения</h3>
+            <p>Здесь появятся карточки этапов, когда они будут добавлены</p>
+        </div>
+
         <div v-for="(milestoneCard, index) in milestones" :key="index" class="card-item">
-        <MilestoneCard :milestoneCard="milestoneCard"/>
+          <MilestoneCard :milestoneCard="milestoneCard"/>
         </div>
     </div>
 </template>
@@ -10,6 +24,7 @@
 <script>
 import MilestoneCard from './MilestoneCard.vue';
 import ControlPanel from '../common/ControlPanel.vue';
+import UserIcon from './../userinfo/UserIcon.vue';
 import { milestoneApi } from '@/services/milestoneApi.js';
 import { useRoute, useRouter } from 'vue-router'
 
@@ -17,7 +32,8 @@ export default {
   name: 'Milestones',
   components: {
     MilestoneCard,
-    ControlPanel
+    ControlPanel,
+    UserIcon
   },
   props: {
     milestones: {
@@ -41,29 +57,25 @@ export default {
     const route = useRoute();
     const params = route.params;
 
-    await this.fetchMilestones(parseInt(params.activityId))
+    this.isLoading = true;
+    try {
+      await this.fetchMilestones(parseInt(params.activityId))
+    } finally {
+        this.isLoading = false;
+    }
   },
 
     methods: {
         async fetchMilestones(activityId) {
-            this.loading = true
-            this.error = null
-            try {
-                const response = await milestoneApi.getMilestones(activityId);
-                this.milestones = response.content;
-                // this.users = response.data
-            } catch (err) {
-                // this.error = 'Failed to fetch users: ' + err.message
-                // console.error('Error:', err)
-            } finally {
-                // this.loading = false
-            }
+            const response = await milestoneApi.getByActivityIdInLifeStates(activityId);
+            this.milestones = response && response?.content || [];
         },
     },
 
     data() {
         return {
-            milestones: []
+            milestones: [],
+            isLoading: true
         }
     },
 }

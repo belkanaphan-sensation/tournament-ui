@@ -7,9 +7,10 @@ export const createActivityCardStore = (id) => {
         id: undefined,
         name: undefined,
         description: undefined,
-        startDate: undefined,
-        endDate: undefined,
-        status: undefined,
+        startDateTime: undefined,
+        endDateTime: undefined,
+        state: undefined,
+        stateDisplayValue: undefined,
         completedCount: undefined,
         allCount: undefined
     }),
@@ -24,14 +25,17 @@ export const createActivityCardStore = (id) => {
         setDescription(description) {
             this.description = description ?? '';
         },
-        setStartDate(startDate) {
-            this.startDate = startDate ?? '';
+        setStartDateTime(startDateTime) {
+            this.startDateTime = startDateTime ?? '';
         },
-        setEndDate(endDate) {
-            this.endDate = endDate ?? '';
+        setEndDateTime(endDateTime) {
+            this.endDateTime = endDateTime ?? '';
         },
-        setStatus(status) {
-            this.status = status ?? '';
+        setState(state) {
+            this.state = state ?? '';
+        },
+        setStateDisplayValue(stateDisplayValue) {
+            this.stateDisplayValue = stateDisplayValue ?? '';
         },
         setAllCount(allCount) {
             this.allCount = allCount ?? '';

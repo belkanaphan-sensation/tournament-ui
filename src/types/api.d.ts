@@ -272,7 +272,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Получить всех участников с пагинацией */
+        /** Получить всех участников */
         get: operations["getAll_3"];
         put?: never;
         /** Создать нового участника */
@@ -459,6 +459,23 @@ export interface paths {
         patch: operations["changePassword"];
         trace?: never;
     };
+    "/api/v1/user/currentUser": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить данные о текущем залогиненом пользователе */
+        get: operations["getCurrentUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/user-activity-assignment/user/{userId}": {
         parameters: {
             query?: never;
@@ -493,7 +510,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/user-activity-assignment/role/{role}": {
+    "/api/v1/user-activity-assignment/position/{position}": {
         parameters: {
             query?: never;
             header?: never;
@@ -501,7 +518,7 @@ export interface paths {
             cookie?: never;
         };
         /** Получить назначения по роли */
-        get: operations["getByRole"];
+        get: operations["getByPosition"];
         put?: never;
         post?: never;
         delete?: never;
@@ -527,7 +544,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/user-activity-assignment/activity/{activityId}/role/{role}": {
+    "/api/v1/user-activity-assignment/activity/{activityId}/position/{position}": {
         parameters: {
             query?: never;
             header?: never;
@@ -535,7 +552,7 @@ export interface paths {
             cookie?: never;
         };
         /** Получить назначения активности по роли */
-        get: operations["getByActivityIdAndRole"];
+        get: operations["getByActivityIdAndPosition"];
         put?: never;
         post?: never;
         delete?: never;
@@ -561,15 +578,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/occasion/{id}/statistics": {
+    "/api/v1/round/milestone/{id}/life": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Получить статистику активностей мероприятия */
-        get: operations["getStatistics"];
+        /** Получить раунды по ID этапа в лайфстейтах */
+        get: operations["getByMilestoneIdInLifeStates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/participant/{roundId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить всех участников по ID раунда */
+        get: operations["getByRoundId"];
         put?: never;
         post?: never;
         delete?: never;
@@ -586,7 +620,24 @@ export interface paths {
             cookie?: never;
         };
         /** Получить этапы по ID активности */
-        get: operations["getByOccasionId"];
+        get: operations["getByActivityId_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/milestone/activity/{id}/life": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить этапы по ID активности в лайфстейтах */
+        get: operations["getByActivityIdInLifeStates"];
         put?: never;
         post?: never;
         delete?: never;
@@ -604,6 +655,23 @@ export interface paths {
         };
         /** Получить назначения этапа */
         get: operations["getByMilestoneId_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/milestone-criteria-assignment/milestone/{milestoneId}/currentUser": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить критерии для этапа для текущего юзера */
+        get: operations["getByMilestoneIdForCurrentUser"];
         put?: never;
         post?: never;
         delete?: never;
@@ -646,23 +714,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/activity/{id}/statistics": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Получить статистику этапов активности */
-        get: operations["getMilestoneStatistics"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/activity/occasion/{id}": {
         parameters: {
             query?: never;
@@ -671,7 +722,24 @@ export interface paths {
             cookie?: never;
         };
         /** Получить активности по ID мероприятия */
-        get: operations["getByOccasionId_1"];
+        get: operations["getByOccasionId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/activity/occasion/{id}/life": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить активности по ID мероприятия в лайфстейтах */
+        get: operations["getByOccasionIdInLifeStates"];
         put?: never;
         post?: never;
         delete?: never;
@@ -714,8 +782,9 @@ export interface components {
             /**
              * @description Статус пользователя
              * @example ACTIVE
+             * @enum {string}
              */
-            status?: string;
+            status?: "ACTIVE" | "BLOCKED" | "BANNED" | "DELETED";
             /** @description ID организации */
             organizationIds?: number[];
             /** @description Список ролей */
@@ -784,8 +853,9 @@ export interface components {
             /**
              * @description Статус пользователя
              * @example ACTIVE
+             * @enum {string}
              */
-            status?: string;
+            status?: "ACTIVE" | "BLOCKED" | "BANNED" | "DELETED";
             person?: components["schemas"]["PersonDto"];
             /** @description Список организаций пользователя */
             organizations?: components["schemas"]["EntityLinkDto"][];
@@ -807,11 +877,17 @@ export interface components {
              */
             activityId?: number;
             /**
-             * @description Роль пользователя в активности
+             * @description Позиция пользователя в активности
              * @example JUDGE_CHIEF
              * @enum {string}
              */
-            role?: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
+            position?: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
+            /**
+             * @description Кого будет оценивать судья
+             * @example LEADER
+             * @enum {string}
+             */
+            partnerSide?: "LEADER" | "FOLLOWER";
         };
         /** @description Назначение пользователя на активность с ролью */
         UserActivityAssignmentDto: {
@@ -824,11 +900,17 @@ export interface components {
             user?: components["schemas"]["EntityLinkDto"];
             activity?: components["schemas"]["EntityLinkDto"];
             /**
-             * @description Роль пользователя в активности
+             * @description Должность пользователя в активности
              * @example JUDGE_CHIEF
              * @enum {string}
              */
-            role?: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
+            position?: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
+            /**
+             * @description Сторона в соревновании
+             * @example LEADER
+             * @enum {string}
+             */
+            partnerSide?: "LEADER" | "FOLLOWER";
             /**
              * Format: date-time
              * @description Дата назначения
@@ -865,7 +947,7 @@ export interface components {
              * @example DRAFT
              * @enum {string}
              */
-            status?: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
         };
         /** @description Раунд в рамках активности/соревнования */
         RoundDto: {
@@ -894,7 +976,7 @@ export interface components {
              * @example DRAFT
              * @enum {string}
              */
-            status?: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
         };
         /** @description Запрос на обновление участника */
         UpdateParticipantRequest: {
@@ -929,11 +1011,11 @@ export interface components {
              */
             number?: string;
             /**
-             * @description Пол участника
-             * @example MALE
+             * @description Сторона участника в соревновании
+             * @example LEADER
              * @enum {string}
              */
-            gender?: "MALE" | "FEMALE";
+            partnerSide?: "LEADER" | "FOLLOWER";
         };
         /** @description Участник активности */
         ParticipantDto: {
@@ -950,11 +1032,11 @@ export interface components {
              */
             number?: string;
             /**
-             * @description Пол участника
-             * @example MALE
+             * @description Сторона участника в соревновании
+             * @example LEADER
              * @enum {string}
              */
-            gender?: "MALE" | "FEMALE";
+            partnerSide?: "LEADER" | "FOLLOWER";
             activity?: components["schemas"]["EntityLinkDto"];
             /** @description Список этапов */
             milestones?: components["schemas"]["EntityLinkDto"][];
@@ -1079,7 +1161,7 @@ export interface components {
              * @example DRAFT
              * @enum {string}
              */
-            status?: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
         };
         /** @description Мероприятие (высокоуровневое событие, содержащее активности) */
         OccasionDto: {
@@ -1117,31 +1199,50 @@ export interface components {
              * @example DRAFT
              * @enum {string}
              */
-            status?: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
+            /**
+             * Format: int64
+             * @description Количество активностей в состоянии 'Completed'
+             * @example 5
+             */
+            completedActivitiesCount?: number;
+            /**
+             * Format: int64
+             * @description Количество активностей в активном состоянии (не Cancelled, Completed, Draft)
+             * @example 3
+             */
+            activeActivitiesCount?: number;
+            /**
+             * Format: int64
+             * @description Общее количество активностей в мероприятии
+             * @example 8
+             */
+            totalActivitiesCount?: number;
         };
         /** @description Запрос на обновление вехи */
         UpdateMilestoneRequest: {
             /**
-             * @description Название вехи
+             * @description Название этапа
              * @example Квалификация
              */
             name?: string;
             /**
-             * @description Описание вехи
+             * @description Описание этапа
              * @example Квалификационный этап соревнования
              */
             description?: string;
             /**
-             * Format: int64
-             * @description ID активности, частью которой является веха
-             */
-            activityId?: number;
-            /**
-             * @description Статус вехи
+             * @description Статус этапа
              * @example DRAFT
              * @enum {string}
              */
-            status?: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
+            /**
+             * Format: int32
+             * @description Порядок этапа в рамках активности
+             * @example 1
+             */
+            milestoneOrder?: number;
         };
         /** @description Веха (логический этап в рамках активности) */
         MilestoneDto: {
@@ -1162,14 +1263,30 @@ export interface components {
              */
             description?: string;
             activity?: components["schemas"]["EntityLinkDto"];
-            /** @description Список раундов */
-            rounds?: components["schemas"]["EntityLinkDto"][];
             /**
              * @description Статус этапа
              * @example DRAFT
              * @enum {string}
              */
-            status?: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
+            /**
+             * Format: int64
+             * @description Количество завершенных раундов
+             * @example 3
+             */
+            completedRoundsCount?: number;
+            /**
+             * Format: int64
+             * @description Общее количество раундов в этапе
+             * @example 5
+             */
+            totalRoundsCount?: number;
+            /**
+             * Format: int32
+             * @description Порядок этапа в рамках активности
+             * @example 1
+             */
+            milestoneOrder?: number;
         };
         /** @description Запрос на обновление назначения критерия оценки этапу */
         UpdateMilestoneCriteriaAssignmentRequest: {
@@ -1186,11 +1303,22 @@ export interface components {
              */
             criteriaId?: number;
             /**
-             * @description Пол, к которому относится критерий в рамках этапа
-             * @example MALE
+             * @description Сторона в соревновании, к которой относится критерий в рамках этапа
+             * @example LEADER
              * @enum {string}
              */
-            gender?: "MALE" | "FEMALE";
+            partnerSide?: "LEADER" | "FOLLOWER";
+            /**
+             * @description Вес критерия в рамках этапа
+             * @example 1
+             */
+            weight?: number;
+            /**
+             * Format: int32
+             * @description Максимальный балл шкалы для критерия в рамках этапа
+             * @example 10
+             */
+            scale?: number;
         };
         /** @description Назначение критерия оценки этапу */
         MilestoneCriteriaAssignmentDto: {
@@ -1203,11 +1331,22 @@ export interface components {
             milestone?: components["schemas"]["EntityLinkDto"];
             criteria?: components["schemas"]["EntityLinkDto"];
             /**
-             * @description Пол, к которому относится критерий в рамках этапа
-             * @example MALE
+             * @description Сторона в соревновании, к которой относится критерий в рамках этапа
+             * @example LEADER
              * @enum {string}
              */
-            gender?: "MALE" | "FEMALE";
+            partnerSide?: "LEADER" | "FOLLOWER";
+            /**
+             * @description Вес критерия в рамках этапа
+             * @example 1
+             */
+            weight?: number;
+            /**
+             * Format: int32
+             * @description Максимальный балл шкалы для критерия в рамках этапа
+             * @example 10
+             */
+            scale?: number;
         };
         /** @description Запрос на обновление критерия оценки */
         UpdateCriteriaRequest: {
@@ -1264,7 +1403,7 @@ export interface components {
              * @example DRAFT
              * @enum {string}
              */
-            status?: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
         };
         /** @description Активность (событие в рамках мероприятия) */
         ActivityDto: {
@@ -1301,7 +1440,19 @@ export interface components {
              * @example DRAFT
              * @enum {string}
              */
-            status?: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
+            /**
+             * Format: int64
+             * @description Количество завершенных этапов
+             * @example 3
+             */
+            completedMilestonesCount?: number;
+            /**
+             * Format: int64
+             * @description Общее количество этапов в активности
+             * @example 5
+             */
+            totalMilestonesCount?: number;
         };
         /** @description Запрос на создание пользователя */
         CreateUserRequest: {
@@ -1343,8 +1494,9 @@ export interface components {
             /**
              * @description Статус пользователя
              * @example ACTIVE
+             * @enum {string}
              */
-            status: string;
+            status: "ACTIVE" | "BLOCKED" | "BANNED" | "DELETED";
             /** @description ID организации */
             organizationIds?: number[];
             /** @description Список ролей */
@@ -1365,11 +1517,17 @@ export interface components {
              */
             activityId: number;
             /**
-             * @description Роль пользователя в активности
+             * @description Должность пользователя в активности
              * @example JUDGE_CHIEF
              * @enum {string}
              */
-            role: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
+            position: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
+            /**
+             * @description Кого будет оценивать судья
+             * @example LEADER
+             * @enum {string}
+             */
+            partnerSide?: "LEADER" | "FOLLOWER";
         };
         /** @description Запрос на создание раунда */
         CreateRoundRequest: {
@@ -1393,7 +1551,7 @@ export interface components {
              * @example DRAFT
              * @enum {string}
              */
-            status: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
         };
         /** @description Запрос на создание участника */
         CreateParticipantRequest: {
@@ -1428,11 +1586,11 @@ export interface components {
              */
             number?: string;
             /**
-             * @description Пол участника
-             * @example MALE
+             * @description Сторона участника в соревновании
+             * @example LEADER
              * @enum {string}
              */
-            gender: "MALE" | "FEMALE";
+            partnerSide: "LEADER" | "FOLLOWER";
         };
         /** @description Запрос на создание организации */
         CreateOrganizationRequest: {
@@ -1492,31 +1650,37 @@ export interface components {
              * @example DRAFT
              * @enum {string}
              */
-            status: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
         };
-        /** @description Запрос на создание вехи */
+        /** @description Запрос на создание этапа */
         CreateMilestoneRequest: {
             /**
-             * @description Название вехи
+             * @description Название этапа
              * @example Квалификация
              */
             name: string;
             /**
-             * @description Описание вехи
+             * @description Описание этапа
              * @example Квалификационный этап соревнования
              */
             description?: string;
             /**
              * Format: int64
-             * @description ID активности, частью которой является веха
+             * @description ID активности, частью которой является этап
              */
-            activityId?: number;
+            activityId: number;
             /**
-             * @description Статус вехи
+             * @description Статус этапа
              * @example DRAFT
              * @enum {string}
              */
-            status: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
+            /**
+             * Format: int32
+             * @description Порядок этапа в рамках активности (если не указан, будет рассчитан автоматически)
+             * @example 1
+             */
+            milestoneOrder?: number;
         };
         /** @description Запрос на создание назначения критерия оценки этапу */
         CreateMilestoneCriteriaAssignmentRequest: {
@@ -1533,11 +1697,22 @@ export interface components {
              */
             criteriaId: number;
             /**
-             * @description Пол, к которому относится критерий в рамках этапа
-             * @example MALE
+             * @description Сторона в соревновании, к которой относится критерий в рамках этапа
+             * @example LEADER
              * @enum {string}
              */
-            gender?: "MALE" | "FEMALE";
+            partnerSide?: "LEADER" | "FOLLOWER";
+            /**
+             * @description Вес критерия в рамках этапа
+             * @example 1
+             */
+            weight?: number;
+            /**
+             * Format: int32
+             * @description Максимальный балл шкалы для критерия в рамках этапа
+             * @example 10
+             */
+            scale?: number;
         };
         /** @description Запрос на создание критерия оценки */
         CreateCriteriaRequest: {
@@ -1629,7 +1804,7 @@ export interface components {
              * @example DRAFT
              * @enum {string}
              */
-            status: "DRAFT" | "READY" | "ACTIVE" | "COMPLETED";
+            state: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
         };
         ChangePasswordRequest: {
             /** @description Current password */
@@ -1647,109 +1822,109 @@ export interface components {
             sort?: string[];
         };
         PageUserDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["UserDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
-            paged?: boolean;
+            unpaged?: boolean;
             /** Format: int32 */
             pageSize?: number;
             /** Format: int32 */
             pageNumber?: number;
-            unpaged?: boolean;
+            paged?: boolean;
         };
         SortObject: {
             empty?: boolean;
-            sorted?: boolean;
             unsorted?: boolean;
+            sorted?: boolean;
         };
         PageUserActivityAssignmentDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["UserActivityAssignmentDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageRoundDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["RoundDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageParticipantDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ParticipantDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageOrganizationDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["OrganizationDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageMetadata: {
@@ -1767,152 +1942,94 @@ export interface components {
             page?: components["schemas"]["PageMetadata"];
         };
         PageOccasionDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["OccasionDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
-        /** @description Статистика активностей мероприятия */
-        OccasionStatisticsDto: {
-            /**
-             * Format: int64
-             * @description ID мероприятия
-             * @example 1
-             */
-            occasionId?: number;
-            /**
-             * @description Название мероприятия
-             * @example SBF
-             */
-            occasionName?: string;
-            /**
-             * Format: int64
-             * @description Количество активностей в состоянии 'Completed'
-             * @example 5
-             */
-            completedActivitiesCount?: number;
-            /**
-             * Format: int64
-             * @description Количество активностей в активном состоянии (не Cancelled, Completed, Draft)
-             * @example 3
-             */
-            activeActivitiesCount?: number;
-            /**
-             * Format: int64
-             * @description Общее количество активностей в мероприятии
-             * @example 8
-             */
-            totalActivitiesCount?: number;
-        };
         PageMilestoneDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["MilestoneDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageMilestoneCriteriaAssignmentDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["MilestoneCriteriaAssignmentDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageCriteriaDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["CriteriaDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageActivityDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            numberOfElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ActivityDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
-        };
-        /** @description Статистика этапов активности */
-        ActivityStatisticsDto: {
-            /**
-             * Format: int64
-             * @description ID активности
-             * @example 1
-             */
-            activityId?: number;
-            /**
-             * @description Название активности
-             * @example Открытие турнира
-             */
-            activityName?: string;
-            /**
-             * Format: int64
-             * @description Количество завершенных этапов
-             * @example 3
-             */
-            completedMilestonesCount?: number;
-            /**
-             * Format: int64
-             * @description Общее количество этапов в активности
-             * @example 5
-             */
-            totalMilestonesCount?: number;
         };
     };
     responses: never;
@@ -1940,7 +2057,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["UserDto"];
                 };
             };
         };
@@ -2144,7 +2261,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["ParticipantDto"];
                 };
             };
         };
@@ -2416,7 +2533,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["MilestoneCriteriaAssignmentDto"];
                 };
             };
         };
@@ -3199,6 +3316,26 @@ export interface operations {
             };
         };
     };
+    getCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserDto"];
+                };
+            };
+        };
+    };
     getByUserId: {
         parameters: {
             query: {
@@ -3246,14 +3383,14 @@ export interface operations {
             };
         };
     };
-    getByRole: {
+    getByPosition: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
             };
             header?: never;
             path: {
-                role: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
+                position: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
             };
             cookie?: never;
         };
@@ -3294,7 +3431,7 @@ export interface operations {
             };
         };
     };
-    getByActivityIdAndRole: {
+    getByActivityIdAndPosition: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -3302,7 +3439,7 @@ export interface operations {
             header?: never;
             path: {
                 activityId: number;
-                role: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
+                position: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
             };
             cookie?: never;
         };
@@ -3343,9 +3480,11 @@ export interface operations {
             };
         };
     };
-    getStatistics: {
+    getByMilestoneIdInLifeStates: {
         parameters: {
-            query?: never;
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
             header?: never;
             path: {
                 id: number;
@@ -3360,12 +3499,60 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["OccasionStatisticsDto"];
+                    "*/*": components["schemas"]["PageRoundDto"];
                 };
             };
         };
     };
-    getByOccasionId: {
+    getByRoundId: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                roundId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageParticipantDto"];
+                };
+            };
+        };
+    };
+    getByActivityId_1: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageMilestoneDto"];
+                };
+            };
+        };
+    };
+    getByActivityIdInLifeStates: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -3409,6 +3596,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageMilestoneCriteriaAssignmentDto"];
+                };
+            };
+        };
+    };
+    getByMilestoneIdForCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                milestoneId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MilestoneCriteriaAssignmentDto"][];
                 };
             };
         };
@@ -3460,9 +3669,11 @@ export interface operations {
             };
         };
     };
-    getMilestoneStatistics: {
+    getByOccasionId: {
         parameters: {
-            query?: never;
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
             header?: never;
             path: {
                 id: number;
@@ -3477,12 +3688,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ActivityStatisticsDto"];
+                    "*/*": components["schemas"]["PageActivityDto"];
                 };
             };
         };
     };
-    getByOccasionId_1: {
+    getByOccasionIdInLifeStates: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];

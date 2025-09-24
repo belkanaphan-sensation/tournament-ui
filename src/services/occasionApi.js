@@ -2,9 +2,9 @@ import { api } from './api.js';
 
 export const occasionApi = {
 
-  async getOccasions() {
+  getOccasions() {
     try {
-      return await api.get('/v1/occasion');
+      return api.get('/occasion');
     } catch (error) {
       console.error('Failed to fetch occasions:', error);
       throw error;

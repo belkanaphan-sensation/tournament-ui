@@ -1,10 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import LoginPage from '../components/LoginPage.vue'
 import Occasions from '../components/occasion/Occasions.vue'
 import Activities from '../components/activity/Activities.vue'
 import Milestones from '../components/milestone/Milestones.vue'
 import Rounds from '../components/round/Rounds.vue'
+import UserDetails from '../components/userinfo/UserDetails.vue'
+
 const routes = [
   {
+    path: '/auth/login',
+    name: 'LoginPage',
+    component: LoginPage
+  }, {
     path: '/',
     redirect: '/occasions'
   }, {
@@ -23,12 +30,20 @@ const routes = [
     path: '/rounds/:milestoneId',
     name: 'Rounds',
     component: Rounds,
+  }, {
+    path: '/userDetails',
+    name: 'UserDetails',
+    component: UserDetails
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    // Всегда прокручивать к верху страницы
+    return { top: 0 }
+  }
 })
 
 export default router

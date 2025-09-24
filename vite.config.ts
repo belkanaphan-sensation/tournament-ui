@@ -12,20 +12,50 @@ export default defineConfig({
     vueJsx(),
     vueDevTools(),
   ],
+
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true, // Очищает папку перед сборкой
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  },
+
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-  server: {
-    host: '0.0.0.0', // Разрешаем все подключения
+
+  // server: { это тоже рабочий конфиг
+  //   host: '0.0.0.0',
+  //   port: 5173,
+  //   strictPort: false ,
+  //   proxy: {
+  //     '/api': {
+  //       target: 'http://192.168.0.103:8080',
+  //       changeOrigin: true,
+  //       secure: false,
+  //     }
+  //   }
+  // }
+
+   server: {
+    host: '0.0.0.0', // правильно - разрешаем все подключения
     port: 5173,
+    strictPort: false,
+    // Добавьте эту настройку для корректной работы с Hamachi
+    hmr: {
+      host: 'localhost', // для HMR оставляем localhost
+      protocol: 'ws'
+    },
     proxy: {
       '/api': {
-        target: 'http://localhost:8080/api',
+        target: 'http://192.168.0.103:8080',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   }

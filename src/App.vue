@@ -5,17 +5,17 @@
 </template>
 
 <script>
-export default {
-  name: 'App'
-}
+  export default {
+    name: 'App'
+  }
 </script>
 
 <style>
-#app {
-  font-family: Arial, sans-serif;
-  /* text-align: center; */
-  /* padding: 20px; */
-}
+  #app {
+    font-family: Arial, sans-serif;
+    /* text-align: center; */
+    /* padding: 20px; */
+  }
 </style>
 
 <!--

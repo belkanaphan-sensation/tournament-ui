@@ -1,6 +1,9 @@
+import router from '@/router';
+
 /**
  * Базовый сервис для работы с API
  */
+
 class ApiService {
   constructor(baseURL = '') {
     this.baseURL = baseURL;
@@ -50,11 +53,24 @@ class ApiService {
    * @param {Object} headers - заголовки
    * @returns {Promise<Object>}
    */
-  get(url, headers = {}) {
-    return this.request(url, {
-      method: 'GET',
-      headers,
-    });
+  async get(url, headers = {}) {
+    try {
+      return await this.request(url, {
+        method: 'GET',
+        headers,
+      });
+    } catch (error) {
+      if (error.status === 401) {
+        console.log('Unauthorized access');
+        router.push({
+              name: 'LoginPage'});
+        // window.location.href = '/login.html';
+      } else {
+        alert(error.stack);
+        console.log('Error: ' + error.stack);
+        throw error; // пробрасываем ошибку дальше
+      }
+    }
   }
 
   /**
@@ -118,4 +134,4 @@ class ApiService {
 }
 
 // Создаем экземпляр с базовым URL
-export const api = new ApiService(import.meta.env.VITE_API_BASE_URL || '/api');
+export const api = new ApiService(import.meta.env.VITE_API_BASE_URL || '/api/v1');

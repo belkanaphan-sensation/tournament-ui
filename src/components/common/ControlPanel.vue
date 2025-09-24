@@ -27,6 +27,9 @@ export default {
 .control-buttons {
   display: flex;
   gap: 8px;
+  padding-left: 10px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .control-button {

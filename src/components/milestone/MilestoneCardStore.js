@@ -7,7 +7,8 @@ export const createMilestoneCardStore = (id) => {
         id: undefined,
         name: undefined,
         description: undefined,
-        status: undefined,
+        state: undefined,
+        stateDisplayValue: undefined,
         completedCount: undefined,
         allCount: undefined
     }),
@@ -22,8 +23,11 @@ export const createMilestoneCardStore = (id) => {
         setDescription(description) {
             this.description = description ?? '';
         },
-        setStatus(status) {
-            this.status = status ?? '';
+        setState(state) {
+            this.state = state ?? '';
+        },
+        setStateDisplayValue(stateDisplayValue) {
+            this.stateDisplayValue = stateDisplayValue ?? '';
         },
         setAllCount(allCount) {
             this.allCount = allCount ?? '';

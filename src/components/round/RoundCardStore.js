@@ -7,7 +7,8 @@ export const createRoundCardStore = (id) => {
         id: undefined,
         name: undefined,
         description: undefined,
-        status: undefined,
+        state: undefined,
+        stateDisplayValue: undefined,
     }),
 
     actions: {
@@ -20,8 +21,11 @@ export const createRoundCardStore = (id) => {
         setDescription(description) {
             this.description = description ?? '';
         },
-        setStatus(status) {
-            this.status = status ?? '';
+        setState(state) {
+            this.state = state ?? '';
+        },
+        setStateDisplayValue(stateDisplayValue) {
+            this.stateDisplayValue = stateDisplayValue ?? '';
         },
     }
 }) ()

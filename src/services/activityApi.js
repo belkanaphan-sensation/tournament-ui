@@ -6,12 +6,24 @@ export const activityApi = {
   async getActivities(id) {
     try {
       const occasionId = Number(id);
-      return await api.get('/v1/activity/occasion/' + occasionId);
+      return api.get('/activity/occasion/' + occasionId);
     } catch (error) {
       console.error('Failed to fetch activities:', error);
       throw error;
     }
   },
+
+  async getByOccasionIdInLifeStates(id) {
+    try {
+      const occasionId = Number(id);
+      return api.get('/activity/occasion/' + occasionId + '/life');
+    } catch (error) {
+      console.error('Failed to fetch activities:', error);
+      throw error;
+    }
+  },
+
+  
 
 //   /**
 //    * Получить пользователя по ID
