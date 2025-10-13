@@ -1,9 +1,14 @@
 <template>
-    <div class="header-container container-background">
+    <div class="header-container control-panel-background-container">
         <ControlPanel/>
         <UserIcon/>
     </div>
-    <div class="content-container container-background">
+
+    <div class="title-container">
+      <span> Мероприятия </span>
+    </div>
+
+    <div class="content-container">
         <div v-if="isLoading" class="loading-state">
             <div class="spinner"></div>
             <p>Загрузка активностей...</p>

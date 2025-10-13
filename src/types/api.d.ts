@@ -80,6 +80,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/participant-round-result/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить результат раунда по ID */
+        get: operations["getById_4"];
+        /** Обновить результат раунда по ID */
+        put: operations["update_4"];
+        post?: never;
+        /** Удалить результат раунда по ID */
+        delete: operations["delete_4"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/{id}": {
         parameters: {
             query?: never;
@@ -88,12 +107,12 @@ export interface paths {
             cookie?: never;
         };
         /** Получить организацию по ID */
-        get: operations["getById_4"];
+        get: operations["getById_5"];
         /** Обновить организацию по ID */
-        put: operations["update_4"];
+        put: operations["update_5"];
         post?: never;
         /** Удалить организацию по ID */
-        delete: operations["delete_4"];
+        delete: operations["delete_5"];
         options?: never;
         head?: never;
         patch?: never;
@@ -107,12 +126,12 @@ export interface paths {
             cookie?: never;
         };
         /** Получить мероприятие по ID */
-        get: operations["getById_5"];
+        get: operations["getById_6"];
         /** Обновить мероприятие по ID */
-        put: operations["update_5"];
+        put: operations["update_6"];
         post?: never;
         /** Удалить мероприятие по ID */
-        delete: operations["delete_5"];
+        delete: operations["delete_6"];
         options?: never;
         head?: never;
         patch?: never;
@@ -126,12 +145,12 @@ export interface paths {
             cookie?: never;
         };
         /** Получить этап по ID */
-        get: operations["getById_6"];
+        get: operations["getById_7"];
         /** Обновить этап по ID */
-        put: operations["update_6"];
+        put: operations["update_7"];
         post?: never;
         /** Удалить этап по ID */
-        delete: operations["delete_6"];
+        delete: operations["delete_7"];
         options?: never;
         head?: never;
         patch?: never;
@@ -145,12 +164,12 @@ export interface paths {
             cookie?: never;
         };
         /** Получить назначение по ID */
-        get: operations["getById_7"];
+        get: operations["getById_8"];
         /** Обновить назначение по ID */
-        put: operations["update_7"];
+        put: operations["update_8"];
         post?: never;
         /** Удалить назначение по ID */
-        delete: operations["delete_7"];
+        delete: operations["delete_8"];
         options?: never;
         head?: never;
         patch?: never;
@@ -164,12 +183,12 @@ export interface paths {
             cookie?: never;
         };
         /** Получить критерий по ID */
-        get: operations["getById_8"];
+        get: operations["getById_9"];
         /** Обновить критерий по ID */
-        put: operations["update_8"];
+        put: operations["update_9"];
         post?: never;
         /** Удалить критерий по ID */
-        delete: operations["delete_8"];
+        delete: operations["delete_9"];
         options?: never;
         head?: never;
         patch?: never;
@@ -183,12 +202,12 @@ export interface paths {
             cookie?: never;
         };
         /** Получить активность по ID */
-        get: operations["getById_9"];
+        get: operations["getById_10"];
         /** Обновить активность по ID */
-        put: operations["update_9"];
+        put: operations["update_10"];
         post?: never;
         /** Удалить активность по ID */
-        delete: operations["delete_9"];
+        delete: operations["delete_10"];
         options?: never;
         head?: never;
         patch?: never;
@@ -300,6 +319,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/participant-round-result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить все результаты раундов */
+        get: operations["getAll_4"];
+        put?: never;
+        /** Создать новый результат раунда */
+        post: operations["create_4"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization": {
         parameters: {
             query?: never;
@@ -308,10 +345,10 @@ export interface paths {
             cookie?: never;
         };
         /** Получить все организации с пагинацией */
-        get: operations["getAll_4"];
+        get: operations["getAll_5"];
         put?: never;
         /** Создать новую организацию */
-        post: operations["create_4"];
+        post: operations["create_5"];
         delete?: never;
         options?: never;
         head?: never;
@@ -326,10 +363,10 @@ export interface paths {
             cookie?: never;
         };
         /** Получить все мероприятия с пагинацией */
-        get: operations["getAll_5"];
+        get: operations["getAll_6"];
         put?: never;
         /** Создать новое мероприятие */
-        post: operations["create_5"];
+        post: operations["create_6"];
         delete?: never;
         options?: never;
         head?: never;
@@ -344,10 +381,10 @@ export interface paths {
             cookie?: never;
         };
         /** Получить все этапы с пагинацией */
-        get: operations["getAll_6"];
+        get: operations["getAll_7"];
         put?: never;
         /** Создать новую этап */
-        post: operations["create_6"];
+        post: operations["create_7"];
         delete?: never;
         options?: never;
         head?: never;
@@ -362,10 +399,10 @@ export interface paths {
             cookie?: never;
         };
         /** Получить все назначения */
-        get: operations["getAll_7"];
+        get: operations["getAll_8"];
         put?: never;
         /** Создать новое назначение */
-        post: operations["create_7"];
+        post: operations["create_8"];
         delete?: never;
         options?: never;
         head?: never;
@@ -380,10 +417,10 @@ export interface paths {
             cookie?: never;
         };
         /** Получить все критерии с пагинацией */
-        get: operations["getAll_8"];
+        get: operations["getAll_9"];
         put?: never;
         /** Создать новый критерий */
-        post: operations["create_8"];
+        post: operations["create_9"];
         delete?: never;
         options?: never;
         head?: never;
@@ -432,10 +469,10 @@ export interface paths {
             cookie?: never;
         };
         /** Получить все активности с пагинацией */
-        get: operations["getAll_9"];
+        get: operations["getAll_10"];
         put?: never;
         /** Создать новую активность */
-        post: operations["create_9"];
+        post: operations["create_10"];
         delete?: never;
         options?: never;
         head?: never;
@@ -527,6 +564,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/user-activity-assignment/occasion/{occasionId}/currentUser": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить назначение по ID мероприятия для текущего юзера */
+        get: operations["getByOccasionIdForCurrentUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/user-activity-assignment/activity/{activityId}": {
         parameters: {
             query?: never;
@@ -553,6 +607,83 @@ export interface paths {
         };
         /** Получить назначения активности по роли */
         get: operations["getByActivityIdAndPosition"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user-activity-assignment/activity/{activityId}/currentUser": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить назначение по ID активности для текущего юзера */
+        get: operations["getByActivityIdForCurrentUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/round/stop/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Завершить раунд по ID
+         * @description Завершить раунд может или администратор или судья данной активности
+         */
+        get: operations["completeRound"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/round/start/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Начать раунд по ID
+         * @description Начать раунд может или администратор или судья данной активности
+         */
+        get: operations["startRound"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/round/plan/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Запланировать раунд по ID
+         * @description Запланировать раунд может администратор
+         */
+        get: operations["planRound"];
         put?: never;
         post?: never;
         delete?: never;
@@ -595,7 +726,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/participant/{roundId}": {
+    "/api/v1/participant/round/{roundId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -604,6 +735,125 @@ export interface paths {
         };
         /** Получить всех участников по ID раунда */
         get: operations["getByRoundId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/participant/by-round/round/{roundId}/currentUser": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить участников, расформированных по раундам по ID раунда */
+        get: operations["getByRoundByRoundIdForCurrentUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/participant/by-round/milestone/{milestoneId}/currentUser": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить всех участников, расформированных по раундам по ID этапа */
+        get: operations["getByRoundByMilestoneIdForCurrentUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/participant-round-result/round/{roundId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить результаты раунда по ID раунда */
+        get: operations["getByRoundId_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/participant-round-result/participant/{participantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить результаты раунда по ID участника */
+        get: operations["getByParticipantId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/participant-round-result/milestone/{milestoneId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить результаты раунда по ID этапа */
+        get: operations["getResultByMilestoneId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/participant-round-result/judge/{activityUserId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить результаты раунда по ID судьи */
+        get: operations["getByActivityUserId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/milestone/{id}/result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить результаты этапа для участников */
+        get: operations["getResultById"];
         put?: never;
         post?: never;
         delete?: never;
@@ -714,6 +964,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/judge-round/reject/{roundId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Отменить результаты раунда
+         * @description Результаты раунда отменяются для текущего пользователя который должен являться судьей раунда
+         */
+        get: operations["rejectRound"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/judge-round/accept/{roundId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Принять результаты раунда
+         * @description Результаты раунда принимаются для текущего пользователя который должен являться судьей раунда
+         */
+        get: operations["acceptRound"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/activity/{id}/result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить результаты активности */
+        get: operations["getResultById_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/activity/occasion/{id}": {
         parameters: {
             query?: never;
@@ -731,7 +1038,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/activity/occasion/{id}/life": {
+    "/api/v1/activity/occasion/{id}/life/currentUser": {
         parameters: {
             query?: never;
             header?: never;
@@ -785,10 +1092,6 @@ export interface components {
              * @enum {string}
              */
             status?: "ACTIVE" | "BLOCKED" | "BANNED" | "DELETED";
-            /** @description ID организации */
-            organizationIds?: number[];
-            /** @description Список ролей */
-            roles?: ("SUPERADMIN" | "ADMIN" | "OCCASION_ADMIN" | "USER" | "READER")[];
         };
         /** @description Список организаций пользователя */
         EntityLinkDto: {
@@ -865,18 +1168,6 @@ export interface components {
         /** @description Запрос на обновление назначения пользователя на активность */
         UpdateUserActivityAssignmentRequest: {
             /**
-             * Format: int64
-             * @description ID пользователя
-             * @example 1
-             */
-            userId?: number;
-            /**
-             * Format: int64
-             * @description ID активности
-             * @example 1
-             */
-            activityId?: number;
-            /**
              * @description Позиция пользователя в активности
              * @example JUDGE_CHIEF
              * @enum {string}
@@ -906,22 +1197,11 @@ export interface components {
              */
             position?: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
             /**
-             * @description Сторона в соревновании
+             * @description Сторона, которую оценивает или к которой принадлежит юзер в соревновании
              * @example LEADER
              * @enum {string}
              */
             partnerSide?: "LEADER" | "FOLLOWER";
-            /**
-             * Format: date-time
-             * @description Дата назначения
-             */
-            assignedAt?: string;
-            /** @description Имя пользователя */
-            userName?: string;
-            /** @description Фамилия пользователя */
-            userSurname?: string;
-            /** @description Отчество пользователя */
-            userSecondName?: string;
         };
         /** @description Запрос на обновление раунда */
         UpdateRoundRequest: {
@@ -935,13 +1215,6 @@ export interface components {
              * @example Квалификационный раунд
              */
             description?: string;
-            /**
-             * Format: int64
-             * @description ID вехи, частью которой является раунд
-             */
-            milestoneId?: number;
-            /** @description Список ID участников */
-            participantIds?: number[];
             /**
              * @description Статус раунда
              * @example DRAFT
@@ -1042,6 +1315,45 @@ export interface components {
             milestones?: components["schemas"]["EntityLinkDto"][];
             /** @description Список раундов участника */
             rounds?: components["schemas"]["EntityLinkDto"][];
+        };
+        UpdateParticipantRoundResultRequest: {
+            /**
+             * Format: int32
+             * @description Значение оценки для данного участника данным судьей по данному критерию
+             * @example 5
+             */
+            score: number;
+            /**
+             * @description Добавление участника в избранные (возможные кандидаты)
+             * @default false
+             * @example true
+             */
+            isFavorite: boolean;
+        };
+        /** @description Результат раунда по судьям и критериям для участника */
+        ParticipantRoundResultDto: {
+            /**
+             * Format: int64
+             * @description Id в БД
+             * @example 5
+             */
+            readonly id?: number;
+            participant?: components["schemas"]["EntityLinkDto"];
+            round?: components["schemas"]["EntityLinkDto"];
+            milestoneCriteria?: components["schemas"]["EntityLinkDto"];
+            activityUser?: components["schemas"]["EntityLinkDto"];
+            /**
+             * Format: int32
+             * @description Значение оценки для данного участника данным судьей по данному критерию
+             * @example 5
+             */
+            score?: number;
+            /**
+             * @description Добавление участника в избранные (возможные кандидаты)
+             * @default false
+             * @example true
+             */
+            isFavorite: boolean;
         };
         /** @description Адрес организации */
         AddressDto: {
@@ -1152,11 +1464,6 @@ export interface components {
              */
             endDate?: string;
             /**
-             * Format: int64
-             * @description ID организации, проводящей мероприятие
-             */
-            organizationId?: number;
-            /**
              * @description Статус мероприятия
              * @example DRAFT
              * @enum {string}
@@ -1201,19 +1508,19 @@ export interface components {
              */
             state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
             /**
-             * Format: int64
+             * Format: int32
              * @description Количество активностей в состоянии 'Completed'
              * @example 5
              */
             completedActivitiesCount?: number;
             /**
-             * Format: int64
+             * Format: int32
              * @description Количество активностей в активном состоянии (не Cancelled, Completed, Draft)
              * @example 3
              */
             activeActivitiesCount?: number;
             /**
-             * Format: int64
+             * Format: int32
              * @description Общее количество активностей в мероприятии
              * @example 8
              */
@@ -1244,7 +1551,7 @@ export interface components {
              */
             milestoneOrder?: number;
         };
-        /** @description Веха (логический этап в рамках активности) */
+        /** @description Этап в рамках активности */
         MilestoneDto: {
             /**
              * Format: int64
@@ -1270,13 +1577,13 @@ export interface components {
              */
             state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
             /**
-             * Format: int64
+             * Format: int32
              * @description Количество завершенных раундов
              * @example 3
              */
             completedRoundsCount?: number;
             /**
-             * Format: int64
+             * Format: int32
              * @description Общее количество раундов в этапе
              * @example 5
              */
@@ -1287,21 +1594,15 @@ export interface components {
              * @example 1
              */
             milestoneOrder?: number;
+            /**
+             * @description Режим оценивания участника
+             * @example PASS
+             * @enum {string}
+             */
+            assessmentMode?: "PASS" | "CRITERIA";
         };
         /** @description Запрос на обновление назначения критерия оценки этапу */
         UpdateMilestoneCriteriaAssignmentRequest: {
-            /**
-             * Format: int64
-             * @description ID этапа
-             * @example 1
-             */
-            milestoneId?: number;
-            /**
-             * Format: int64
-             * @description ID критерия оценки
-             * @example 1
-             */
-            criteriaId?: number;
             /**
              * @description Сторона в соревновании, к которой относится критерий в рамках этапа
              * @example LEADER
@@ -1319,6 +1620,12 @@ export interface components {
              * @example 10
              */
             scale?: number;
+            /**
+             * Format: int32
+             * @description Приоритет критерия перед другими
+             * @example 10
+             */
+            priority?: number;
         };
         /** @description Назначение критерия оценки этапу */
         MilestoneCriteriaAssignmentDto: {
@@ -1347,6 +1654,12 @@ export interface components {
              * @example 10
              */
             scale?: number;
+            /**
+             * Format: int32
+             * @description Приоритет критерия перед другими
+             * @example 10
+             */
+            priority?: number;
         };
         /** @description Запрос на обновление критерия оценки */
         UpdateCriteriaRequest: {
@@ -1394,11 +1707,6 @@ export interface components {
             endDateTime?: string;
             address?: components["schemas"]["AddressDto"];
             /**
-             * Format: int64
-             * @description ID мероприятия, частью которого является активность
-             */
-            occasionId?: number;
-            /**
              * @description Статус активности
              * @example DRAFT
              * @enum {string}
@@ -1442,13 +1750,13 @@ export interface components {
              */
             state?: "DRAFT" | "PLANNED" | "IN_PROGRESS" | "COMPLETED";
             /**
-             * Format: int64
+             * Format: int32
              * @description Количество завершенных этапов
              * @example 3
              */
             completedMilestonesCount?: number;
             /**
-             * Format: int64
+             * Format: int32
              * @description Общее количество этапов в активности
              * @example 5
              */
@@ -1592,6 +1900,36 @@ export interface components {
              */
             partnerSide: "LEADER" | "FOLLOWER";
         };
+        /** @description Запрос на создание результатов раунда участника */
+        CreateParticipantRoundResultRequest: {
+            /**
+             * Format: int64
+             * @description Участник
+             */
+            participantId: number;
+            /**
+             * Format: int64
+             * @description Раунд
+             */
+            roundId: number;
+            /**
+             * Format: int64
+             * @description Критерий, сформированный для данного этапа
+             */
+            milestoneCriteriaId: number;
+            /**
+             * Format: int32
+             * @description Значение оценки для данного участника данным судьей по данному критерию
+             * @example 5
+             */
+            score: number;
+            /**
+             * @description Добавление участника в избранные (возможные кандидаты)
+             * @default false
+             * @example true
+             */
+            isFavorite: boolean;
+        };
         /** @description Запрос на создание организации */
         CreateOrganizationRequest: {
             /**
@@ -1712,7 +2050,13 @@ export interface components {
              * @description Максимальный балл шкалы для критерия в рамках этапа
              * @example 10
              */
-            scale?: number;
+            scale: number;
+            /**
+             * Format: int32
+             * @description Приоритет критерия перед другими
+             * @example 10
+             */
+            priority: number;
         };
         /** @description Запрос на создание критерия оценки */
         CreateCriteriaRequest: {
@@ -1829,13 +2173,13 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["UserDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -1843,17 +2187,17 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            paged?: boolean;
             unpaged?: boolean;
             /** Format: int32 */
-            pageSize?: number;
-            /** Format: int32 */
             pageNumber?: number;
-            paged?: boolean;
+            /** Format: int32 */
+            pageSize?: number;
         };
         SortObject: {
             empty?: boolean;
-            unsorted?: boolean;
             sorted?: boolean;
+            unsorted?: boolean;
         };
         PageUserActivityAssignmentDto: {
             /** Format: int32 */
@@ -1863,13 +2207,13 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["UserActivityAssignmentDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -1881,13 +2225,13 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["RoundDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -1899,13 +2243,37 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ParticipantDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        /** @description Раунд со списком участников */
+        RoundParticipantsDto: {
+            round?: components["schemas"]["EntityLinkDto"];
+            /** @description Список участников раунда */
+            participants?: components["schemas"]["EntityLinkDto"][];
+        };
+        PageParticipantRoundResultDto: {
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["ParticipantRoundResultDto"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -1917,13 +2285,13 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["OrganizationDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -1949,13 +2317,13 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["OccasionDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -1967,15 +2335,52 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["MilestoneDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
+        };
+        /** @description Суммарный балл участника по критерию в рамках этапа */
+        MilestoneCriteriaScoreDto: {
+            /**
+             * Format: int64
+             * @description Id в БД
+             * @example 5
+             */
+            readonly id?: number;
+            milestoneCriteriaAssignment?: components["schemas"]["EntityLinkDto"];
+            /**
+             * Format: int32
+             * @description Суммарный балл по критерию
+             * @example 85
+             */
+            totalScore?: number;
+        };
+        /** @description Результат этапа для участника */
+        MilestoneResultDto: {
+            /**
+             * Format: int64
+             * @description Id в БД
+             * @example 5
+             */
+            readonly id?: number;
+            participant?: components["schemas"]["EntityLinkDto"];
+            milestone?: components["schemas"]["EntityLinkDto"];
+            /** @description Прошел участник в следующий этап или нет */
+            passed?: boolean;
+            /**
+             * Format: int32
+             * @description Суммарный балл этапа для участника
+             * @example 5
+             */
+            totalScore?: number;
+            /** @description Результаты по критериям */
+            criteriaScores?: components["schemas"]["MilestoneCriteriaScoreDto"][];
         };
         PageMilestoneCriteriaAssignmentDto: {
             /** Format: int32 */
@@ -1985,15 +2390,32 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["MilestoneCriteriaAssignmentDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
+        };
+        /** @description Статус раунда который проставляет судья */
+        JudgeRoundDto: {
+            /**
+             * Format: int64
+             * @description Id в БД
+             * @example 5
+             */
+            readonly id?: number;
+            judge?: components["schemas"]["EntityLinkDto"];
+            round?: components["schemas"]["EntityLinkDto"];
+            /**
+             * @description Статус раунда, проставленный судьей
+             * @example ACCEPTED
+             * @enum {string}
+             */
+            status?: "ACCEPTED" | "REJECTED";
         };
         PageCriteriaDto: {
             /** Format: int32 */
@@ -2003,13 +2425,13 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["CriteriaDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -2021,15 +2443,37 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
-            numberOfElements?: number;
-            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["ActivityDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
+        };
+        /** @description Результат активности для участника */
+        ActivityResultDto: {
+            /**
+             * Format: int64
+             * @description Id в БД
+             * @example 5
+             */
+            readonly id?: number;
+            participant?: components["schemas"]["EntityLinkDto"];
+            /**
+             * Format: int32
+             * @description Суммарный балл активности для участника
+             * @example 5
+             */
+            scoreSum?: number;
+            /**
+             * Format: int32
+             * @description Место, который занял участник в активности
+             * @example 1
+             */
+            place?: number;
         };
     };
     responses: never;
@@ -2125,7 +2569,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["UserActivityAssignmentDto"];
                 };
             };
         };
@@ -2193,7 +2637,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["RoundDto"];
                 };
             };
         };
@@ -2345,7 +2789,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateOrganizationRequest"];
+                "application/json": components["schemas"]["UpdateParticipantRoundResultRequest"];
             };
         };
         responses: {
@@ -2355,7 +2799,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["OrganizationDto"];
+                    "*/*": components["schemas"]["ParticipantRoundResultDto"];
                 };
             };
         };
@@ -2397,7 +2841,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["OrganizationDto"];
                 };
             };
         };
@@ -2413,7 +2857,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateOccasionRequest"];
+                "application/json": components["schemas"]["UpdateOrganizationRequest"];
             };
         };
         responses: {
@@ -2423,7 +2867,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["OccasionDto"];
+                    "*/*": components["schemas"]["OrganizationDto"];
                 };
             };
         };
@@ -2465,7 +2909,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["OccasionDto"];
                 };
             };
         };
@@ -2481,7 +2925,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateMilestoneRequest"];
+                "application/json": components["schemas"]["UpdateOccasionRequest"];
             };
         };
         responses: {
@@ -2491,7 +2935,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MilestoneDto"];
+                    "*/*": components["schemas"]["OccasionDto"];
                 };
             };
         };
@@ -2533,7 +2977,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MilestoneCriteriaAssignmentDto"];
+                    "*/*": Record<string, never>;
                 };
             };
         };
@@ -2549,7 +2993,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateMilestoneCriteriaAssignmentRequest"];
+                "application/json": components["schemas"]["UpdateMilestoneRequest"];
             };
         };
         responses: {
@@ -2559,7 +3003,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MilestoneCriteriaAssignmentDto"];
+                    "*/*": components["schemas"]["MilestoneDto"];
                 };
             };
         };
@@ -2601,7 +3045,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["MilestoneCriteriaAssignmentDto"];
                 };
             };
         };
@@ -2617,7 +3061,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateCriteriaRequest"];
+                "application/json": components["schemas"]["UpdateMilestoneCriteriaAssignmentRequest"];
             };
         };
         responses: {
@@ -2627,7 +3071,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CriteriaDto"];
+                    "*/*": components["schemas"]["MilestoneCriteriaAssignmentDto"];
                 };
             };
         };
@@ -2669,12 +3113,80 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": Record<string, never>;
+                    "*/*": components["schemas"]["CriteriaDto"];
                 };
             };
         };
     };
     update_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCriteriaRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CriteriaDto"];
+                };
+            };
+        };
+    };
+    delete_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getById_10: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ActivityDto"];
+                };
+            };
+        };
+    };
+    update_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -2700,7 +3212,7 @@ export interface operations {
             };
         };
     };
-    delete_9: {
+    delete_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -2967,12 +3479,58 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageOrganizationDto"];
+                    "*/*": components["schemas"]["PageParticipantRoundResultDto"];
                 };
             };
         };
     };
     create_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateParticipantRoundResultRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ParticipantRoundResultDto"];
+                };
+            };
+        };
+    };
+    getAll_5: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageOrganizationDto"];
+                };
+            };
+        };
+    };
+    create_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -2996,7 +3554,7 @@ export interface operations {
             };
         };
     };
-    getAll_5: {
+    getAll_6: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -3036,7 +3594,7 @@ export interface operations {
             };
         };
     };
-    create_5: {
+    create_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -3060,7 +3618,7 @@ export interface operations {
             };
         };
     };
-    getAll_6: {
+    getAll_7: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -3082,7 +3640,7 @@ export interface operations {
             };
         };
     };
-    create_6: {
+    create_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -3106,7 +3664,7 @@ export interface operations {
             };
         };
     };
-    getAll_7: {
+    getAll_8: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -3128,7 +3686,7 @@ export interface operations {
             };
         };
     };
-    create_7: {
+    create_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -3152,7 +3710,7 @@ export interface operations {
             };
         };
     };
-    getAll_8: {
+    getAll_9: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -3174,7 +3732,7 @@ export interface operations {
             };
         };
     };
-    create_8: {
+    create_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -3246,7 +3804,7 @@ export interface operations {
             };
         };
     };
-    getAll_9: {
+    getAll_10: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -3268,7 +3826,7 @@ export interface operations {
             };
         };
     };
-    create_9: {
+    create_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -3338,9 +3896,7 @@ export interface operations {
     };
     getByUserId: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 userId: number;
@@ -3355,7 +3911,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageUserActivityAssignmentDto"];
+                    "*/*": components["schemas"]["UserActivityAssignmentDto"][];
                 };
             };
         };
@@ -3385,9 +3941,7 @@ export interface operations {
     };
     getByPosition: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 position: "JUDGE_CHIEF" | "JUDGE" | "PARTICIPANT" | "ORGANIZER" | "OBSERVER";
@@ -3402,16 +3956,36 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageUserActivityAssignmentDto"];
+                    "*/*": components["schemas"]["UserActivityAssignmentDto"][];
+                };
+            };
+        };
+    };
+    getByOccasionIdForCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                occasionId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserActivityAssignmentDto"][];
                 };
             };
         };
     };
     getByActivityId: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 activityId: number;
@@ -3426,16 +4000,14 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageUserActivityAssignmentDto"];
+                    "*/*": components["schemas"]["UserActivityAssignmentDto"][];
                 };
             };
         };
     };
     getByActivityIdAndPosition: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 activityId: number;
@@ -3451,16 +4023,96 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageUserActivityAssignmentDto"];
+                    "*/*": components["schemas"]["UserActivityAssignmentDto"][];
                 };
+            };
+        };
+    };
+    getByActivityIdForCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                activityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserActivityAssignmentDto"];
+                };
+            };
+        };
+    };
+    completeRound: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    startRound: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    planRound: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
     getByMilestoneId: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 id: number;
@@ -3475,16 +4127,14 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageRoundDto"];
+                    "*/*": components["schemas"]["RoundDto"][];
                 };
             };
         };
     };
     getByMilestoneIdInLifeStates: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 id: number;
@@ -3499,16 +4149,14 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageRoundDto"];
+                    "*/*": components["schemas"]["RoundDto"][];
                 };
             };
         };
     };
     getByRoundId: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 roundId: number;
@@ -3523,16 +4171,168 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageParticipantDto"];
+                    "*/*": components["schemas"]["ParticipantDto"][];
+                };
+            };
+        };
+    };
+    getByRoundByRoundIdForCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roundId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RoundParticipantsDto"];
+                };
+            };
+        };
+    };
+    getByRoundByMilestoneIdForCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                milestoneId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RoundParticipantsDto"][];
+                };
+            };
+        };
+    };
+    getByRoundId_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roundId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ParticipantRoundResultDto"][];
+                };
+            };
+        };
+    };
+    getByParticipantId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                participantId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ParticipantRoundResultDto"][];
+                };
+            };
+        };
+    };
+    getResultByMilestoneId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                milestoneId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ParticipantRoundResultDto"][];
+                };
+            };
+        };
+    };
+    getByActivityUserId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                activityUserId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ParticipantRoundResultDto"][];
+                };
+            };
+        };
+    };
+    getResultById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MilestoneResultDto"][];
                 };
             };
         };
     };
     getByActivityId_1: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 id: number;
@@ -3547,16 +4347,14 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageMilestoneDto"];
+                    "*/*": components["schemas"]["MilestoneDto"][];
                 };
             };
         };
     };
     getByActivityIdInLifeStates: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 id: number;
@@ -3571,7 +4369,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageMilestoneDto"];
+                    "*/*": components["schemas"]["MilestoneDto"][];
                 };
             };
         };
@@ -3669,11 +4467,53 @@ export interface operations {
             };
         };
     };
-    getByOccasionId: {
+    rejectRound: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
+            query?: never;
+            header?: never;
+            path: {
+                roundId: number;
             };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["JudgeRoundDto"];
+                };
+            };
+        };
+    };
+    acceptRound: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roundId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["JudgeRoundDto"];
+                };
+            };
+        };
+    };
+    getResultById_1: {
+        parameters: {
+            query?: never;
             header?: never;
             path: {
                 id: number;
@@ -3688,16 +4528,36 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageActivityDto"];
+                    "*/*": components["schemas"]["ActivityResultDto"][];
+                };
+            };
+        };
+    };
+    getByOccasionId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ActivityDto"][];
                 };
             };
         };
     };
     getByOccasionIdInLifeStates: {
         parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
+            query?: never;
             header?: never;
             path: {
                 id: number;
@@ -3712,7 +4572,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageActivityDto"];
+                    "*/*": components["schemas"]["ActivityDto"][];
                 };
             };
         };

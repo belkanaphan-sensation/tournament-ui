@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="fon">
     <router-view />
   </div>
 </template>
@@ -15,6 +15,11 @@
     font-family: Arial, sans-serif;
     /* text-align: center; */
     /* padding: 20px; */
+  }
+
+  .fon {
+    /* background: linear-gradient(10deg, rgb(251 169 169 / 19%) 100%, rgba(41, 22, 22, 0.952) 100%);
+    border-radius: 8px; */
   }
 </style>
 

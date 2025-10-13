@@ -1,9 +1,14 @@
 <template>
-    <div class="header-container container-background">
+    <div class="header-container control-panel-background-container">
         <ControlPanel @back="handleBack"/>
         <UserIcon/>
     </div>
-    <div class="content-container container-background">
+
+    <div class="title-container">
+      <span> Этапы </span>
+    </div>
+
+    <div class="content-container">
         <div v-if="isLoading" class="loading-state">
             <div class="spinner"></div>
             <p>Загрузка активностей...</p>
@@ -36,10 +41,6 @@ export default {
     UserIcon
   },
   props: {
-    milestones: {
-      type: Array,
-      default: () => []
-    },
   },
 
   setup(props) {
@@ -59,24 +60,23 @@ export default {
 
     this.isLoading = true;
     try {
-      await this.fetchMilestones(parseInt(params.activityId))
+      this.milestones = await this.fetchMilestones(parseInt(params.activityId)) || [];
     } finally {
         this.isLoading = false;
     }
   },
 
-    methods: {
-        async fetchMilestones(activityId) {
-            const response = await milestoneApi.getByActivityIdInLifeStates(activityId);
-            this.milestones = response && response?.content || [];
-        },
-    },
+  methods: {
+      async fetchMilestones(activityId) {
+          return milestoneApi.getByActivityIdInLifeStates(activityId);
+      },
+  },
 
-    data() {
-        return {
-            milestones: [],
-            isLoading: true
-        }
-    },
+  data() {
+      return {
+          milestones: [],
+          isLoading: true
+      }
+  },
 }
 </script>

@@ -1,13 +1,13 @@
 <template>
-  <div class="card" @click="navigateToActivities">
+  <div class="card" @click="() => navigateToActivities(occasionCard.id)">
     <div class="card-header">
-      <h3>{{ store.name }}</h3>
+      <h4>{{ store.getCard(occasionCard.id).name }}</h4>
     </div>
     <div class="card-content">
-        <Field label="Дата начала" :value="store.startDate"/>
-        <Field label="Описание" :value= "store.description"/>
-        <Field label="Состояние" :value= "store.stateDisplayValue"/>
-        <Field label="Прогресс" :value="store.completedCount + '/' + store.allCount"/>
+        <Field label="Дата начала" :value="store.getCard(occasionCard.id).startDate"/>
+        <Field label="Описание" :value= "store.getCard(occasionCard.id).description"/>
+        <Field label="Состояние" :value= "store.getCard(occasionCard.id).stateDisplayValue"/>
+        <Field label="Прогресс" :value="store.getCard(occasionCard.id).completedActivitiesCount + '/' + store.getCard(occasionCard.id).totalActivitiesCount"/>
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -18,11 +18,9 @@
 <script>
 
 import Field from '../common/Field.vue'
-import { createOccasionCardStore } from './OccasionCardStore.js'
+import { useOccasionCardStore } from './OccasionCardStore.js'
 import { useRouter } from 'vue-router'
 import { occasionStateEnum } from '../../utils/EnumLocalizator.js'
-
-let counter = 0
 
 export default {
   name: 'OcassionCardComponent',
@@ -37,36 +35,27 @@ export default {
   },
 
   setup(props) {
-    const componentId = `occasionCard-${counter++}`
-    const store = createOccasionCardStore(componentId)
-    
-    let card = props.occasionCard;
-    store.setId(card.id);
-    store.setName(card.name);
-    store.setDescription(card.description);
-    store.setState(card.state);
-    store.setStateDisplayValue(occasionStateEnum[card.state]);
-    store.setStartDate(card.startDate);
-    store.setAllCount(card.totalActivitiesCount);
-    store.setCompletedCount(card.completedActivitiesCount)
+    const store = useOccasionCardStore();
+
+    const card = props.occasionCard;
+    store.setCard(card.id, Object.assign({
+      stateDisplayValue: occasionStateEnum[card.state]
+    }, card));
 
     const router = useRouter();
 
-    const createNavigationHandler = (customStore = store) => {
-      return () => {
-        router.push({
+    const navigateToActivities = (occasionId) => {
+      router.push({
           name: 'Activities',
           params: { 
-            occasionId: store.id 
+            occasionId: occasionId 
           }
         })
-      }
     }
-
-    const navigateToActivities = createNavigationHandler();
 
     return {
         store,
+        card,
         navigateToActivities
     }
   }

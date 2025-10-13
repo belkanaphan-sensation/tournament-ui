@@ -1,11 +1,12 @@
 <template>
-  <div class="card">
+  <div class="card" @click="() => navigateToParticipants(roundCard.milestone.id, roundCard.id)">
     <div class="card-header">
-      <h3>{{ store.name }}</h3>
+      <h4>{{ store.getCard(roundCard.id).name }}</h4>
     </div>
     <div class="card-content">
-        <Field label="Описание" :value= "store.description"/>
-        <Field label="Состояние" :value= "store.stateDisplayValue"/>
+        <Field label="Описание" :value= "store.getCard(roundCard.id).description"/>
+        <Field label="Состояние" :value= "store.getCard(roundCard.id).stateDisplayValue"/>
+        <Field label="Статус" :value= "store.getCard(roundCard.id).roundResultStatusDisplayValue"/>
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -16,10 +17,9 @@
 <script>
 
 import Field from '../common/Field.vue'
-import { createRoundCardStore } from './RoundCardStore.js'
-import { roundStateEnum } from '../../utils/EnumLocalizator.js'
-
-let counter = 0
+import { useRoundCardStore } from './RoundCardStore.js'
+import { roundStateEnum, roundResultStatusEnum } from '../../utils/EnumLocalizator.js'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'RoundCardComponent',
@@ -31,21 +31,38 @@ export default {
       type: Object,
       default: () => ({})
     },
+
+    roundResultStatus: {
+      type: String,
+    }
   },
 
   setup(props) {
-    const componentId = `roundCard-${counter++}`
-    const store = createRoundCardStore(componentId)
-    
-    let card = props.roundCard;
-    store.setId(card.id);
-    store.setName(card.name);
-    store.setDescription(card.description);
-    store.setState(card.state);
-    store.setStateDisplayValue(roundStateEnum[card.state]);
+    const store = useRoundCardStore()
+    const card = props.roundCard;
+    const roundResultStatus = props.roundResultStatus;
+    store.setCard(card.id, Object.assign({
+      stateDisplayValue: roundStateEnum[card.state],
+      roundResultStatus: roundResultStatus,
+      roundResultStatusDisplayValue: roundResultStatusEnum[roundResultStatus]
+    }, card));
+
+    const router = useRouter();
+
+    const navigateToParticipants = (milestoneId, roundId) => {
+      router.push({
+          name: 'Participants',
+          params: { 
+            milestoneId: milestoneId,
+            roundId: roundId
+          }
+        })
+    }
 
     return {
-        store
+        store,
+        card,
+        navigateToParticipants,
     }
   }
 }

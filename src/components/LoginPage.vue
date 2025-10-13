@@ -36,7 +36,8 @@
     import { ref } from 'vue'
     import { authApi } from '@/services/authApi.js';
     import { userApi } from '@/services/userApi.js';
-    import { useRouter } from 'vue-router'
+    import { useRouter } from 'vue-router';
+    import { useJudgeResultStore } from '../store/JudgeResultStore.js';
 
     const username = ref('')
     const password = ref('')
@@ -69,6 +70,10 @@
                 // JSON.parse(localStorage.getItem('userInfo'))
                 router.push('/');
             }
+
+            const resultStore = useJudgeResultStore();
+            resultStore.clear();
+
         } catch (err) {
             // Обработка сетевых ошибок или других исключений
             error.value = 'Ошибка сети. Проверьте подключение к интернету.'

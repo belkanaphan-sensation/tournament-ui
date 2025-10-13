@@ -22,6 +22,4 @@ export const milestoneApi = {
       throw error;
     }
   },
-
-
 };

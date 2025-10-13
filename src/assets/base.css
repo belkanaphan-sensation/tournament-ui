@@ -34,22 +34,6 @@
     100% { transform: rotate(360deg); }
 }
 
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 8px;
-}
-
-.content-container {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 10px;
-  margin: 10px 0 0 0; /* top right bottom left */
-  min-height: calc(100vh - 120px);
-  /* flex: 1; */
-}
 
 
 

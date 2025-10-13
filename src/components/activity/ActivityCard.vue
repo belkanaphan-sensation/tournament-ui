@@ -1,14 +1,15 @@
 <template>
-  <div class="card" @click="navigateToMilestones">
+  <div class="card" @click="() => navigateToMilestones(activityCard.id)">
     <div class="card-header">
-      <h3>{{ store.name }}</h3>
+      <h4>{{ store.getCard(activityCard.id).name }}</h4>
     </div>
     <div class="card-content">
-        <Field label="Дата начала" :value="store.startDateTime"/>
-        <Field label="Дата окончания" :value="store.endDateTime"/>
-        <Field label="Описание" :value= "store.description"/>
-        <Field label="Состояние" :value= "store.stateDisplayValue"/>
-        <Field label="Прогресс" :value="store.completedCount + '/' + store.allCount"/>
+        <Field label="Дата начала" :value="store.getCard(activityCard.id).startDateTime"/>
+        <Field label="Дата окончания" :value="store.getCard(activityCard.id).endDateTime"/>
+        <Field label="Описание" :value= "store.getCard(activityCard.id).description"/>
+        <Field label="Состояние" :value= "store.getCard(activityCard.id).stateDisplayValue"/>
+        <Field label="Прогресс" :value="store.getCard(activityCard.id).completedMilestonesCount + '/' + store.getCard(activityCard.id).totalMilestonesCount"/>
+        <Field label="Позиция" :value="store.getCard(activityCard.id)?.assignment?.positionDisplayValue"/>
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -19,11 +20,9 @@
 <script>
 
 import Field from '../common/Field.vue'
-import { createActivityCardStore } from './ActivityCardStore.js'
+import { useActivityCardStore } from './ActivityCardStore.js'
 import { useRouter } from 'vue-router'
-import { occasionStateEnum } from '../../utils/EnumLocalizator.js'
-
-let counter = 0
+import { activityStateEnum } from '../../utils/EnumLocalizator.js'
 
 export default {
   name: 'ActivityCardComponent',
@@ -38,37 +37,27 @@ export default {
   },
 
   setup(props) {
-    const componentId = `activityCard-${counter++}`
-    const store = createActivityCardStore(componentId)
-    
-    let card = props.activityCard;
-    store.setId(card.id);
-    store.setName(card.name);
-    store.setDescription(card.description);
-    store.setState(card.state);
-    store.setStateDisplayValue(occasionStateEnum[card.state]);
-    store.setStartDateTime(card.startDateTime);
-    store.setEndDateTime(card.startDateTime);
-    store.setAllCount(card.totalMilestonesCount);
-    store.setCompletedCount(card.completedMilestonesCount)
+    const store = useActivityCardStore();
+
+    const card = props.activityCard;
+    store.setCard(card.id, Object.assign({
+      stateDisplayValue: activityStateEnum[card.state]
+    }, card));
 
     const router = useRouter();
 
-    const createNavigationHandler = (customStore = store) => {
-      return () => {
-        router.push({
+    const navigateToMilestones = (activityId) => {
+      router.push({
           name: 'Milestones',
           params: { 
-            activityId: store.id 
+            activityId: activityId
           }
         })
-      }
     }
-
-    const navigateToMilestones = createNavigationHandler();
 
     return {
         store,
+        card,
         navigateToMilestones
     }
   }

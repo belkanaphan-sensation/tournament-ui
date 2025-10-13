@@ -1,44 +1,45 @@
 import { defineStore } from 'pinia'
 
-export const createOccasionCardStore = (id) => {
-    return defineStore(`occasionCard-${id}`, {
-
+export const useOccasionCardStore = defineStore(`occasionCard`, {
     state: () => ({
-        id: undefined,
-        name: undefined,
-        startDate: undefined,
-        description: undefined,
-        state: undefined,
-        stateDisplayValue: undefined,
-        completedCount: undefined,
-        allCount: undefined
+        cards: new Map()
     }),
 
+    getters: {
+        getCard: (state) => (id) => state.cards.get(id),
+        getAllCards: (state) => Array.from(state.cards.values())
+    },
+
     actions: {
-        setId(id) {
-            this.id = id;
+        setCard(id, data) {
+            this.cards.set(id, { id, ...data })
         },
-        setName(name) {
-            this.name = name ?? '';
+        updateCardName(id, name) {
+            const card = this.cards.get(id)
+            if (card) {
+                card.name = name
+            }
         },
-        setStartDate(startDate) {
-            this.startDate = startDate ?? '';
-        },
-        setDescription(description) {
-            this.description = description ?? '';
-        },
-        setState(state) {
-            this.state = state ?? '';
-        },
-        setStateDisplayValue(stateDisplayValue) {
-            this.stateDisplayValue = stateDisplayValue ?? '';
-        },
-        setAllCount(allCount) {
-            this.allCount = allCount ?? '';
-        },
-        setCompletedCount(completedCount) {
-            this.completedCount = completedCount ?? '';
+        removeCard(id) {
+            this.cards.delete(id)
+        }
+    },
+
+    persist: {
+        key: 'occasion-card-store',
+        storage: localStorage,
+        serializer: {
+            serialize: (state) => {
+                // Преобразуем Map в массив для сериализации
+                const cardsArray = Array.from(state.cards.entries())
+                return JSON.stringify({ cards: cardsArray })
+            },
+            deserialize: (str) => {
+                const parsed = JSON.parse(str)
+                // Восстанавливаем Map из массива
+                const cardsMap = new Map(parsed.cards)
+                return { cards: cardsMap }
+            }
         }
     }
-}) ()
-}
+});

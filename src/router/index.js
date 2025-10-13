@@ -5,6 +5,7 @@ import Activities from '../components/activity/Activities.vue'
 import Milestones from '../components/milestone/Milestones.vue'
 import Rounds from '../components/round/Rounds.vue'
 import UserDetails from '../components/userinfo/UserDetails.vue'
+import Participants from '../components/participant/Participants.vue'
 
 const routes = [
   {
@@ -34,6 +35,11 @@ const routes = [
     path: '/userDetails',
     name: 'UserDetails',
     component: UserDetails
+  }, {
+    path: '/participants/:milestoneId/:roundId',
+    name: 'Participants',
+    component: Participants,
+    props: true,
   }
 ]
 

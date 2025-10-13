@@ -1,0 +1,27 @@
+.star-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+  border: none;
+  padding-top: 10px;
+}
+
+.star-button:hover {
+  background: #f8f8f8;
+  border-color: #d0d0d0;
+}
+
+.star-icon {
+  transition: all 0.3s ease;
+}
+
+.star-button.starred {
+  border-color: #ffcc00;
+  background: #fffdf5;
+}

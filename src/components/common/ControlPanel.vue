@@ -6,7 +6,7 @@
       </svg>
     </button>
     
-    <button class="control-button refresh-button" aria-label="Обновить">
+    <button class="control-button refresh-button" aria-label="Обновить" @click="$emit('refresh')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M23 4V10H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M1 20V14H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -61,9 +61,5 @@ export default {
 
 .back-button:hover svg {
   color: #007bff;
-}
-
-.refresh-button:hover svg {
-  color: #28a745;
 }
 </style>

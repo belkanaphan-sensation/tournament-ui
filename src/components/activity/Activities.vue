@@ -1,9 +1,14 @@
 <template>
-    <div class="header-container container-background">
+    <div class="header-container control-panel-background-container">
         <ControlPanel @back="handleBack"/>
         <UserIcon/>
     </div>
-    <div class="content-container container-background">
+
+    <div class="title-container">
+      <span> Активности </span>
+    </div>
+
+    <div class="content-container">
         <div v-if="isLoading" class="loading-state">
             <div class="spinner"></div>
             <p class=" white-font-color">Загрузка активностей...</p>
@@ -26,7 +31,9 @@ import ActivityCard from './ActivityCard.vue';
 import ControlPanel from '../common/ControlPanel.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
 import { activityApi } from '@/services/activityApi.js';
+import { assignmentApi } from '@/services/assignmentApi.js';
 import { useRoute, useRouter } from 'vue-router'
+import { positionEnum } from '../../utils/EnumLocalizator.js'
 
 export default {
   name: 'Activities',
@@ -36,10 +43,6 @@ export default {
     UserIcon
   },
   props: {
-    activities: {
-      type: Array,
-      default: () => []
-    },
   },
 
   setup(props) {
@@ -67,8 +70,29 @@ export default {
 
     methods: {
         async fetchActivities(occasionId) {
-            const response = await activityApi.getByOccasionIdInLifeStates(occasionId);
-            this.activities = response && response?.content || [];
+            const activityResponse = await activityApi.getByOccasionIdInLifeStates(occasionId);
+
+            let activities = [];
+            if (activityResponse) {
+              activities = activityResponse;
+              const assignmentResponse = await assignmentApi.getAssignmentByOccasionIdForCurrentUser(occasionId);
+              
+              if (assignmentResponse && assignmentResponse.length > 0) {
+                const activityMap = new Map(activities.map(item => [item.id, item]));
+
+                for (let i = 0; i < assignmentResponse.length; i++) {
+                  const assignment = assignmentResponse[i];
+                  assignment.positionDisplayValue = positionEnum[assignment.position];
+                  
+                  const activity = activityMap.get(assignment.activity?.id);
+                  if (activity) {
+                    activity.assignment = assignment;
+                  }
+                }
+              }
+            }
+
+            this.activities = activities;
         },
     },
 

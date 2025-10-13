@@ -1,32 +1,27 @@
 import { defineStore } from 'pinia'
 
-export const createRoundCardStore = (id) => {
-    return defineStore(`roundCard-${id}`, {
-
+export const useRoundCardStore = defineStore(`roundCard`, {
     state: () => ({
-        id: undefined,
-        name: undefined,
-        description: undefined,
-        state: undefined,
-        stateDisplayValue: undefined,
+        cards: new Map()
     }),
 
+    getters: {
+        getCard: (state) => (id) => state.cards.get(id),
+        getAllCards: (state) => Array.from(state.cards.values())
+    },
+
     actions: {
-        setId(id) {
-            this.id = id;
+        setCard(id, data) {
+            this.cards.set(id, { id, ...data })
         },
-        setName(name) {
-            this.name = name ?? '';
+        updateCardName(id, name) {
+            const card = this.cards.get(id)
+            if (card) {
+                card.name = name
+            }
         },
-        setDescription(description) {
-            this.description = description ?? '';
-        },
-        setState(state) {
-            this.state = state ?? '';
-        },
-        setStateDisplayValue(stateDisplayValue) {
-            this.stateDisplayValue = stateDisplayValue ?? '';
-        },
-    }
-}) ()
-}
+        removeCard(id) {
+            this.cards.delete(id)
+        }
+    },
+});

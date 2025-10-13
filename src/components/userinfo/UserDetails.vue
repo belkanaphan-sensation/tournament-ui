@@ -1,19 +1,19 @@
 <template>
-    <div class="header-container container-background">
+    <div class="header-container control-panel-background-container">
         <ControlPanel @back="handleBack"/>
         <LogoutIcon/>
     </div>
 
-    <div class="content-container container-background">
-        <Field class="white-font-color" label="Логин" :value="userInfo.username"/>
-        <Field class="white-font-color" label="Имя" :value="userInfo?.person?.name"/>
-        <Field class="white-font-color" label="Отчество" :value="userInfo?.person?.secondName"/>
-        <Field class="white-font-color" label="Фамилия" :value="userInfo?.person?.surname"/>
-        <Field class="white-font-color" label="email" :value="userInfo?.person?.email"/>
-        <Field class="white-font-color" label="Телeфон" :value="userInfo?.person?.phoneNumber"/>
-        <Field class="white-font-color" label="Статус" :value="userInfo?.statusDisplayValue"/>
-        <Field class="white-font-color" label="Организация" :value="userInfo?.organizations?.organizations[0].value"/>
-        <Field class="white-font-color" label="Роли" :value="userInfo?.roles?.roles[0]"/>
+    <div v-if="userInfo" class="content-container">
+        <Field label="Логин" :value="userInfo.username"/>
+        <Field label="Имя" :value="userInfo?.person?.name"/>
+        <Field label="Отчество" :value="userInfo?.person?.secondName"/>
+        <Field label="Фамилия" :value="userInfo?.person?.surname"/>
+        <Field label="email" :value="userInfo?.person?.email"/>
+        <Field label="Телeфон" :value="userInfo?.person?.phoneNumber"/>
+        <Field label="Статус" :value="userInfo?.statusDisplayValue"/>
+        <Field label="Организация" :value="userInfo?.organizations?.[0].value"/>
+        <Field label="Роли" :value="userInfo?.roleDisplayValue"/>
     </div>
 </template>
 
@@ -21,7 +21,7 @@
     import ControlPanel from '../common/ControlPanel.vue';
     import Field from '../common/Field.vue'
     import { useRouter } from 'vue-router'
-    import { userStatusEnum } from '../../utils/EnumLocalizator.js'
+    import { userStatusEnum, roleEnum } from '../../utils/EnumLocalizator.js'
     import LogoutIcon from './LogoutIcon.vue'
 
     export default {
@@ -45,9 +45,11 @@
                 router.push({
                     name: 'LoginPage'
                 });
+                return;
             }
 
             userInfo.statusDisplayValue = userStatusEnum[userInfo?.status];
+            userInfo.roleDisplayValue = roleEnum[userInfo?.roles?.[0]];
 
             return {
                 handleBack,

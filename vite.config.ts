@@ -9,10 +9,9 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
   plugins: [
     vue(),
-    vueJsx(),
-    vueDevTools(),
+    // vueJsx(),
   ],
-
+  
   build: {
     outDir: 'dist',
     emptyOutDir: true, // Очищает папку перед сборкой

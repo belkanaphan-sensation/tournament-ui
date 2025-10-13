@@ -6,11 +6,11 @@ import './assets/card.css'
 import './assets/container.css'
 import './assets/base.css'
 import './assets/userInfo.css'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 const app = createApp(App)
     .use(router)
-    .use(createPinia())
-    
+    .use(createPinia().use(piniaPluginPersistedstate));
 
 app.config.devtools = false
 app.config.performance = false

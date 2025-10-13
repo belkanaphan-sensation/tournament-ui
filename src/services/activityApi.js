@@ -16,14 +16,13 @@ export const activityApi = {
   async getByOccasionIdInLifeStates(id) {
     try {
       const occasionId = Number(id);
-      return api.get('/activity/occasion/' + occasionId + '/life');
+      return api.get('/activity/occasion/' + occasionId + '/life/currentUser');
     } catch (error) {
       console.error('Failed to fetch activities:', error);
       throw error;
     }
   },
 
-  
 
 //   /**
 //    * Получить пользователя по ID
