@@ -20,7 +20,8 @@
                 </div>
                 <div v-if="criteria[0].scale > 1">
                     <ScaleCriteria 
-                        :criteria="criteria[0]" 
+                        @valueChange="handleCriteriaValueChange"
+                        :milestoneCriteria="criteria[0]" 
                         :initialResult="resultStore.getResult(roundId, criteria[0].id, participantId)"/>
                 </div>
             </div>
@@ -39,7 +40,8 @@
                     </div>
                     <div v-if="currentCriteria.scale > 1">
                         <ScaleCriteria 
-                            :criteria="currentCriteria" 
+                            @valueChange="handleCriteriaValueChange"
+                            :milestoneCriteria="currentCriteria" 
                             :initialResult="resultStore.getResult(roundId, currentCriteria.id, participantId)"/>
                     </div>
                 </div>
@@ -117,12 +119,9 @@ export default {
     data() {
         return {
             isCollapsed: true,
-            // resultStore: undefined,
         }
     }
 }
-
-
 </script>
 
 <style scoped>

@@ -19,11 +19,6 @@
         </button>
         
     </div>
-
-    <!-- <div class="test-message ">
-            <h4> Score: {{ score }} </h4>
-            <h4> isLiked: {{ isLiked }} </h4>
-        </div> -->
 </template>
 
 <script>
@@ -62,8 +57,6 @@
 
         data() {
             return {
-                // score: this.initialResult.score,
-                // isCandidate: this.initialResult.isCandidate,
             }
         }
     }

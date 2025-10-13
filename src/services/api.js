@@ -1,4 +1,5 @@
 import router from '@/router';
+import { showGlobalError } from '@/plugins/errorModal'
 
 /**
  * Базовый сервис для работы с API
@@ -30,7 +31,14 @@ class ApiService {
       const response = await fetch(fullUrl, { ...defaultOptions, ...options });
       
       if (!response.ok) {
-        const error = new Error(`HTTP error! status: ${response.status}`);
+        if (response.status === 401) {
+          console.log('Unauthorized access');
+          router.push({name: 'LoginPage'});
+          return;
+        }
+
+        const errorMessage = await response.text();
+        const error = new Error(errorMessage);
         error.status = response.status;
         throw error;
       }
@@ -42,8 +50,9 @@ class ApiService {
       
       return await response.text();
     } catch (error) {
-      console.error('API Request failed:', error);
-      throw error;
+      console.log('Error: ' + error.stack);
+      showGlobalError(error.message);
+      return null;
     }
   }
 
@@ -54,23 +63,10 @@ class ApiService {
    * @returns {Promise<Object>}
    */
   async get(url, headers = {}) {
-    try {
-      return await this.request(url, {
-        method: 'GET',
-        headers,
-      });
-    } catch (error) {
-      if (error.status === 401) {
-        console.log('Unauthorized access');
-        router.push({
-              name: 'LoginPage'});
-        // window.location.href = '/login.html';
-      } else {
-        alert(error.stack);
-        console.log('Error: ' + error.stack);
-        throw error; // пробрасываем ошибку дальше
-      }
-    }
+    return await this.request(url, {
+      method: 'GET',
+      headers,
+    });
   }
 
   /**

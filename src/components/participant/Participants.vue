@@ -34,7 +34,7 @@
       </div>
 
       <div class="action-container">
-        <button v-if="roundResultStatus === 'NOT_READY'"
+        <button v-if="!roundResultStatus || roundResultStatus == '' || roundResultStatus === 'NOT_READY'"
           class="button"
           @click="toReadyRoundResultStatus"
         > Готово </button>
@@ -119,8 +119,11 @@ export default {
     async toReadyRoundResultStatus() {
       const resultStore = useJudgeResultStore();
       this.roundResults = await this.pushRawResult(resultStore.getRoundResultFlat(this.roundId));
-      resultStore.clearByRoundId(this.roundId);
-      this.updateLocalStorageRoundResults();
+      if (this.roundResults) {
+        resultStore.clearByRoundId(this.roundId);
+        this.updateLocalStorageRoundResults();
+      }
+      
       this.roundResultStatus = await this.fetchRoundResultStatus();
     },
 

@@ -1,8 +1,8 @@
 <template>
     <div class="buttons-row">
-        <button v-for="number in criteria.scale" :key="number" :class="['button', { 
-                  'pressed': number <= score,
-                  'no-pressed': number === score 
+        <button v-for="number in milestoneCriteria.scale" :key="number" :class="['button', { 
+                  'pressed': number <= initialResult?.score,
+                  'no-pressed': number === initialResult?.score 
                 }]"
                 @click="setScore(number)">
               {{ number }}
@@ -14,10 +14,10 @@
 <script>
     export default {
         props: {
-            result: {
+            initialResult: {
                 type: Object
             },
-            criteria: {
+            milestoneCriteria: {
                 type: Object,
             },
         },
@@ -25,6 +25,10 @@
         methods: {
             setScore(score) {
                 this.score = score;
+                this.$emit("valueChange", {
+                    score: this.score,
+                    milestoneCriteriaId: this.milestoneCriteria.id
+                });
             },
 
         },

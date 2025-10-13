@@ -12,8 +12,17 @@
         <Field label="email" :value="userInfo?.person?.email"/>
         <Field label="Телeфон" :value="userInfo?.person?.phoneNumber"/>
         <Field label="Статус" :value="userInfo?.statusDisplayValue"/>
-        <Field label="Организация" :value="userInfo?.organizations?.[0].value"/>
+        <Field label="Организация" :value="userInfo?.organizations?.[0]?.value"/>
         <Field label="Роли" :value="userInfo?.roleDisplayValue"/>
+        <a href="#" @click.prevent="showSnakeGame = true" class="snake-link">
+        Скучно 🐍
+        </a>
+
+        <!-- Компонент змейки -->
+        <SnakeGame 
+        :showSnakeGame="showSnakeGame" 
+        @close="showSnakeGame = false" 
+        />
     </div>
 </template>
 
@@ -23,13 +32,16 @@
     import { useRouter } from 'vue-router'
     import { userStatusEnum, roleEnum } from '../../utils/EnumLocalizator.js'
     import LogoutIcon from './LogoutIcon.vue'
+    import SnakeGame from './SnakeGame.vue'
+    import { ref } from 'vue'
 
     export default {
         name: 'UserDetails',
         components: {
             ControlPanel,
             Field,
-            LogoutIcon
+            LogoutIcon,
+            SnakeGame,
         },
         props: {
             
@@ -51,10 +63,44 @@
             userInfo.statusDisplayValue = userStatusEnum[userInfo?.status];
             userInfo.roleDisplayValue = roleEnum[userInfo?.roles?.[0]];
 
+            const showSnakeGame = ref(false)
+
             return {
                 handleBack,
-                userInfo
+                userInfo,
+                showSnakeGame
             }
-        }
+        },
     }
 </script>
+
+<style scoped>
+.main-app {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  /* position: relative; */
+  z-index: 1;
+}
+
+.bored-text {
+  /* font-size: 16px; */
+  color: #666;
+  margin: 20px 0;
+}
+
+.text-link {
+  color: black;
+  /* text-decoration: none; */
+  /* font-weight: 600; */
+  /* border-bottom: 2px dotted #667eea; */
+  padding-bottom: 2px;
+  transition: all 0.3s ease;
+}
+
+.text-link:hover {
+  color: #764ba2;
+  border-bottom: 2px solid #764ba2;
+  text-decoration: none;
+}
+
+</style>
