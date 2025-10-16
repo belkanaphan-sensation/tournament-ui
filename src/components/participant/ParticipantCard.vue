@@ -93,10 +93,6 @@ export default {
     },
 
     methods: {
-        setScore(number) {
-            // this.roundResult.score = number;
-        },
-
         toogleCollapse() {
             if (this.isMultiCriteria()) {
                 this.isCollapsed = !this.isCollapsed;

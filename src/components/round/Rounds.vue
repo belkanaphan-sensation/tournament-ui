@@ -21,7 +21,7 @@
         </div>
 
         <div v-for="(roundCard, index) in rounds" :key="index" class="card-item">
-          <RoundCard :roundCard="roundCard" :roundResultStatus="roundResultStatusMap[roundCard.id]"/>
+          <RoundCard :roundCard="roundCard"/>
         </div>
     </div>
 </template>
@@ -63,7 +63,7 @@ export default {
     
     this.isLoading = true;
     try {
-      this.roundResultStatusMap = await this.fetchRoundResultStatusByMilestoneId();
+      // this.roundResultStatusMap = await this.fetchRoundResultStatusByMilestoneId();
       this.rounds = await this.fetchRounds();
     } finally {
         this.isLoading = false;
@@ -75,16 +75,16 @@ export default {
       return roundApi.getByMilestoneIdInLifeStates(this.milestoneId) || [];
     },
 
-    async fetchRoundResultStatusByMilestoneId() {
-      return roundResultStatusApi.getRoundResultStatusByMilestoneId(this.milestoneId);
-    },
+    // async fetchRoundResultStatusByMilestoneId() {
+    //   return roundResultStatusApi.getRoundResultStatusByMilestoneId(this.milestoneId);
+    // },
   },
 
   data() {
       return {
           rounds: [],
           isLoading: true,
-          roundResultStatusMap: {}
+          // roundResultStatusMap: {}
       }
   },
 }

@@ -1,20 +1,20 @@
 <template>
     <div class="buttons-row">
         <button @click="setScore(1)" :class="['button', 'pass-button', { 
-                  'pressed': 1 === this?.initialResult?.score || undefined,
-                  'no-pressed': 0 === this?.initialResult?.score ||  undefined
+                  'pressed': 1 === this.initialResult?.score || undefined,
+                  'no-pressed': 0 === this.initialResult?.score ||  undefined
                 }]"> Да
         </button>
 
         <button @click="setScore(0)" :class="['button', 'no-pass-button', { 
-                  'pressed': 0 === this?.initialResult?.score || undefined,
-                  'no-pressed': 1 === this?.initialResult?.score || undefined,
+                  'pressed': 0 === this.initialResult?.score || undefined,
+                  'no-pressed': 1 === this.initialResult?.score || undefined,
                 }]"> Нет
         </button>
 
         <button @click="setIsCandidate()" :class="['button', 'candidate-button', { 
-                  'pressed': this?.initialResult?.isCandidate || undefined,
-                  'no-pressed': !this?.initialResult?.isCandidate || undefined
+                  'pressed': this.initialResult?.isCandidate || undefined,
+                  'no-pressed': !this.initialResult?.isCandidate || undefined
                 }]"> Возможно
         </button>
         
@@ -35,7 +35,7 @@
 
         methods: {
             setScore(score) {
-                this.isCandidate= undefined;
+                this.isCandidate = undefined;
                 this.score = score;
                 this.$emit("valueChange", {
                     score: this.score,
@@ -57,6 +57,7 @@
 
         data() {
             return {
+                
             }
         }
     }

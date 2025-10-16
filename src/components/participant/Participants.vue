@@ -59,6 +59,7 @@ import { criteriaApi } from '@/services/criteriaApi.js';
 import { judgeResultApi } from '@/services/judgeResultApi.js';
 import { milestoneRuleApi } from '@/services/milestoneRuleApi.js';
 import { roundResultStatusApi } from '@/services/roundResultStatusApi.js';
+import { judgeRoundStatusApi } from '@/services/judgeRoundStatusApi.js';
 import { useJudgeResultStore } from '../../store/JudgeResultStore.js';
 
 export default {
@@ -113,7 +114,8 @@ export default {
 
   methods: {
     async backToNotReadyRoundResultStatus() {
-      this.roundResultStatus = 'NOT_READY';
+      this.roundResultStatus = await judgeRoundStatusApi.getJudgeRoundResult(this.roundId).status;
+      let t = '';
     },
 
     async toReadyRoundResultStatus() {
@@ -128,7 +130,7 @@ export default {
     },
 
     async pushRawResult(judgeMilestoneResultRoundRequests) {
-      return judgeResultApi.pushRawResult(judgeMilestoneResultRoundRequests);
+      return judgeResultApi.pushRawResult(this.roundId, judgeMilestoneResultRoundRequests);
     },
 
     async fetchRoundResultStatus() {

@@ -1,10 +1,12 @@
 <template>
-  <div class="card" @click="() => navigateToParticipants(roundCard.milestone.id, roundCard.id)">
+  <div :class="['card', {
+        'ready-status': roundCard.judgeRoundStatus === 'READY',
+        'not-ready-status': roundCard.judgeRoundStatus === 'NOT_READY'}]" 
+      @click="() => navigateToParticipants(roundCard.milestone.id, roundCard.id)">
     <div class="card-header">
       <h4>{{ store.getCard(roundCard.id).name }}</h4>
     </div>
     <div class="card-content">
-        <Field label="Описание" :value= "store.getCard(roundCard.id).description"/>
         <Field label="Состояние" :value= "store.getCard(roundCard.id).stateDisplayValue"/>
         <Field label="Статус" :value= "store.getCard(roundCard.id).roundResultStatusDisplayValue"/>
     </div>
@@ -31,20 +33,14 @@ export default {
       type: Object,
       default: () => ({})
     },
-
-    roundResultStatus: {
-      type: String,
-    }
   },
 
   setup(props) {
     const store = useRoundCardStore()
     const card = props.roundCard;
-    const roundResultStatus = props.roundResultStatus;
     store.setCard(card.id, Object.assign({
       stateDisplayValue: roundStateEnum[card.state],
-      roundResultStatus: roundResultStatus,
-      roundResultStatusDisplayValue: roundResultStatusEnum[roundResultStatus]
+      roundResultStatusDisplayValue: roundResultStatusEnum[card.judgeRoundStatus]
     }, card));
 
     const router = useRouter();
@@ -67,3 +63,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+  .ready-status {
+    background: #6bc94e8a;
+  }
+
+  .not-ready-status {
+    background: #ebe72d7d;
+  }
+</style>

@@ -18,7 +18,6 @@
         Скучно 🐍
         </a>
 
-        <!-- Компонент змейки -->
         <SnakeGame 
         :showSnakeGame="showSnakeGame" 
         @close="showSnakeGame = false" 

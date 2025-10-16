@@ -7,13 +7,10 @@ export const judgeResultApi = {
       return api.get('/judge-milestone-result/round/' + roundId + '/currentUser');
   },
 
-  pushRawResult(judgeMilestoneResultRoundRequests) {
-    return api.post('/judge-milestone-result/createOrUpdateForRound', judgeMilestoneResultRoundRequests, {
+  pushRawResult(id, judgeMilestoneResultRoundRequests) {
+    const roundId = Number(id);
+    return api.post('/judge-milestone-result/createOrUpdateForRound/' + roundId, judgeMilestoneResultRoundRequests, {
       'Content-Type': 'application/json',
     });
-  },
-
-  pushReviewedResult() {
-
   },
 };
