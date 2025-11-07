@@ -1,7 +1,7 @@
 <template>
     <div class="activities-page">
         <div class="header-container control-panel-background-container">
-            <ControlPanel @back="handleBack"/>
+            <ControlPanel @back="handleBack" @refresh="handleRefresh"/>
             <UserIcon/>
         </div>
 
@@ -97,6 +97,10 @@ export default {
             }
 
             this.activities = activities;
+        },
+
+        handleRefresh() {
+          window.location.reload();
         },
     },
 

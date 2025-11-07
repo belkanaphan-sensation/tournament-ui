@@ -1,7 +1,7 @@
 <template>
     <div class="rounds-page">
         <div class="header-container control-panel-background-container">
-            <ControlPanel @back="handleBack"/>
+            <ControlPanel @back="handleBack" @refresh="handleRefresh"/>
             <UserIcon/>
         </div>
 
@@ -91,9 +91,9 @@ export default {
       return judgeRoundStatusApi.getJudgeRoundStatusesByMilestoneId(this.milestoneId) || [];
     },
 
-    // async fetchRoundResultStatusByMilestoneId() {
-    //   return roundResultStatusApi.getRoundResultStatusByMilestoneId(this.milestoneId);
-    // },
+    handleRefresh() {
+      window.location.reload();
+    },
   },
 
   data() {

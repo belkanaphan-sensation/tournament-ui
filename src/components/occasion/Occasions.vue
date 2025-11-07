@@ -1,7 +1,7 @@
 <template>
     <div class="events-page">
         <div class="header-container control-panel-background-container">
-            <ControlPanel/>
+            <ControlPanel @refresh="handleRefresh"/>
             <UserIcon/>
         </div>
 
@@ -62,6 +62,10 @@ export default {
           const response = await occasionApi.getOccasions();
           this.occasions = response && response?.content || [];
       },
+
+      handleRefresh() {
+        window.location.reload();
+    },
   },
 
   data() {

@@ -1,7 +1,7 @@
 <template>
     <div class="milestones-page">
         <div class="header-container control-panel-background-container">
-            <ControlPanel @back="handleBack"/>
+            <ControlPanel @back="handleBack" @refresh="handleRefresh"/>
             <UserIcon/>
         </div>
 
@@ -72,6 +72,10 @@ export default {
   methods: {
       async fetchMilestones(activityId) {
           return milestoneApi.getMilestones(activityId);
+      },
+
+      handleRefresh() {
+        window.location.reload();
       },
   },
 
