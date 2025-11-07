@@ -169,7 +169,7 @@ export default {
       // Запускаем новый интервал каждые 10 секунд
       this.refreshInterval = setInterval(() => {
         this.refreshJudgeStatuses();
-      }, 10000); // 10000 мс = 10 секунд
+      }, 5000);
     },
 
     // Метод для остановки автообновления
