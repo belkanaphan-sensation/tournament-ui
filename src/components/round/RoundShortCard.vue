@@ -1,11 +1,10 @@
 <template>
-  <div class="activity-card">
+  <div class="round-card">
     <div class="card-header">
-      <h4>{{ activityCard.name }}</h4>
+      <h4>{{ roundCard.name }}</h4>
     </div>
     <div class="card-content">
-        <Field label="Описание" :value= "activityCard.description"/>
-        <Field label="Состояние" :value= "getLocalizedActivityState()"/>
+        <Field label="Состояние" :value= "getLocalizedMilestoneState()"/>
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -16,36 +15,34 @@
 <script>
 
 import Field from '../common/Field.vue'
-import { useRouter } from 'vue-router'
-import { activityStateEnum } from '../../utils/EnumLocalizator.js'
+import { roundStateEnum } from '../../utils/EnumLocalizator.js'
 
 export default {
-  name: 'ActivityShortCard',
+  name: 'RoundShortCard',
   components: {
     Field
   },
   props: {
-    activityCard: {
+    roundCard: {
       type: Object,
       default: () => ({})
     },
   },
 
   methods: {
-    getLocalizedActivityState() {
-        return activityStateEnum[this.activityCard.state];
-    },
+    getLocalizedMilestoneState() {
+        return roundStateEnum[this.roundCard.state];
+    }
   }
 }
 </script>
 
 <style scoped>
-.activity-card {
+.round-card {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   padding-top: 20px;
-  /* padding-bottom: 20px; */
   padding-left: 20px;
   padding-right: 20px;
   cursor: pointer;
@@ -56,16 +53,27 @@ export default {
   flex-direction: column;
 }
 
-.activity-card:hover {
+.round-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   border-color: #007bff;
+}
+
+.ready-status {
+  border-left: 4px solid #28a745;
+}
+
+.not-ready-status {
+  border-left: 4px solid #dc3545;
 }
 
 .card-header {
   margin-bottom: 15px;
   padding-bottom: 15px;
   border-bottom: 2px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .card-header h4 {
@@ -74,6 +82,24 @@ export default {
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.3;
+  flex: 1;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-left: 10px;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.status-indicator.ready {
+  background-color: #28a745;
+}
+
+.status-indicator.not_ready {
+  background-color: #dc3545;
 }
 
 .card-content {
@@ -89,7 +115,38 @@ export default {
   border-top: 1px solid #f0f0f0;
 }
 
-.activity-card {
+.round-card {
   animation: cardAppear 0.5s ease-out;
+}
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .round-card {
+    padding: 15px;
+  }
+  
+  .card-header h4 {
+    font-size: 1.1rem;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .status-indicator {
+    align-self: flex-start;
+    margin-left: 0;
+  }
 }
 </style>

@@ -12,7 +12,7 @@
             <div class="occasion-details" v-if="occasion">
                 <div class="occasion-header">
                     <div class="header-left">
-                        <h1 class="occasion-title">{{ occasion.name }}</h1>
+                        <h1 class="occasion-title">Мероприятие: {{ occasion.name }}</h1>
                         <div class="occasion-meta">
                             <span class="occasion-date">{{ formatDate(occasion.startDate) }} - {{ formatDate(occasion.endDate) }}</span>
                             <span class="occasion-status" :class="getStateClass(occasion.state)">{{ occasion.stateDisplayValue }}</span>

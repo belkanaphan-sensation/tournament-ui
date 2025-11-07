@@ -1,5 +1,5 @@
 <template>
-    <div class="activity-detail-page">
+    <div class="milestone-detail-page">
         <div class="header-container control-panel-background-container">
             <ControlPanel @back="handleBack"/>
             <UserIcon/>
@@ -8,15 +8,11 @@
         <div class="content-container">
             <LoadingOverlay :isLoading="isLoading" />
             
-            <!-- Детали Activity -->
-            <div class="activity-details" v-if="activity">
-                <div class="activity-header">
+            <!-- Детали Milestone -->
+            <div class="milestone-details" v-if="milestone">
+                <div class="milestone-header">
                     <div class="header-left">
-                        <h1 class="activity-title">Активность: {{ activity.name }}</h1>
-                        <div class="activity-meta">
-                            <span class="activity-date">{{ formatDate(activity.startDate) }} - {{ formatDate(activity.endDate) }}</span>
-                            <span class="activity-status" :class="getStateClass(activity.state)">{{ activity.stateDisplayValue }}</span>
-                        </div>
+                        <h1 class="milestone-title">Этап: {{ milestone.name }}</h1>
                     </div>
                     <div class="header-actions">
                         <button 
@@ -30,56 +26,56 @@
                     </div>
                 </div>
 
-                <div class="activity-content">
+                <div class="milestone-content">
                     <div class="details-grid">
                         <div class="detail-item">
                             <label class="detail-label">Описание:</label>
-                            <p class="detail-value">{{ activity.description || 'Нет описания' }}</p>
+                            <p class="detail-value">{{ milestone.description || 'Нет описания' }}</p>
                         </div>
 
                         <div class="detail-item">
                             <label class="detail-label">Состояние:</label>
-                            <p class="detail-value">{{ getLocalizedActivityState() || 'Не указан' }}</p>
+                            <p class="detail-value">{{ getLocalizedMilestoneState() || 'Не указан' }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Список майлстоунов -->
-            <div class="milestones-section" v-if="milestones.length > 0">
+            <!-- Список раундов -->
+            <div class="rounds-section" v-if="rounds.length > 0">
                 <div class="section-header">
-                    <h2 class="section-title">Этапы</h2>
-                    <div class="milestones-count">{{ milestones.length }} этапов</div>
+                    <h2 class="section-title">Раунды</h2>
+                    <div class="rounds-count">{{ rounds.length }} раундов</div>
                 </div>
 
-                <div class="milestones-container">
-                    <div class="milestones-scroll-wrapper">
-                        <div class="milestones-horizontal-list">
-                            <div v-for="(milestone, index) in milestones" 
-                                 :key="milestone.id" 
-                                 class="milestone-item">
-                                <MilestoneShortCard :milestoneCard="milestone" @click="() => navigateToMilestoneDetail(milestone.id)"/>
+                <div class="rounds-container">
+                    <div class="rounds-scroll-wrapper">
+                        <div class="rounds-horizontal-list">
+                            <div v-for="(round, index) in rounds" 
+                                 :key="round.id" 
+                                 class="round-item">
+                                <RoundShortCard :roundCard="round"/>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Навигационные стрелки -->
-                    <button class="scroll-btn scroll-btn-prev" @click="scrollMilestones(-1)" 
+                    <button class="scroll-btn scroll-btn-prev" @click="scrollRounds(-1)" 
                             :disabled="isScrollAtStart">
                         ‹
                     </button>
-                    <button class="scroll-btn scroll-btn-next" @click="scrollMilestones(1)"
+                    <button class="scroll-btn scroll-btn-next" @click="scrollRounds(1)"
                             :disabled="isScrollAtEnd">
                         ›
                     </button>
                 </div>
             </div>
 
-            <!-- Состояние пустого списка майлстоунов -->
-            <div v-if="activity && milestones.length === 0 && !isLoading" class="empty-state">
+            <!-- Состояние пустого списка раундов -->
+            <div v-if="milestone && rounds.length === 0 && !isLoading" class="empty-state">
                 <div class="empty-icon">📋</div>
-                <h3>Нет майлстоунов</h3>
-                <p>Для этой активности еще не добавлены майлстоуны</p>
+                <h3>Нет раундов</h3>
+                <p>Для этого этапа еще не добавлены раунды</p>
             </div>
 
             <!-- Состояние загрузки ошибки -->
@@ -87,26 +83,26 @@
                 <div class="error-icon">⚠️</div>
                 <h3>Ошибка загрузки</h3>
                 <p>{{ error }}</p>
-                <button class="retry-btn" @click="fetchActivityDetail">Попробовать снова</button>
+                <button class="retry-btn" @click="fetchMilestoneDetail">Попробовать снова</button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import MilestoneShortCard from '../milestone/MilestoneShortCard.vue';
+import RoundShortCard from '../round/RoundShortCard.vue';
 import ControlPanel from '../common/ControlPanel.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
-import { activityApi } from '@/services/activityApi.js';
 import { milestoneApi } from '@/services/milestoneApi.js';
+import { roundApi } from '@/services/roundApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
-import { activityStateEnum } from '../../utils/EnumLocalizator.js';
+import { milestoneStateEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
 
 export default {
-  name: 'ActivityDetail',
+  name: 'MilestoneDetail',
   components: {
-    MilestoneShortCard,
+    RoundShortCard,
     ControlPanel,
     UserIcon,
     LoadingOverlay
@@ -125,8 +121,8 @@ export default {
 
   data() {
     return {
-      activity: null,
-      milestones: [],
+      milestone: null,
+      rounds: [],
       isLoading: true,
       error: null,
       isScrollAtStart: true,
@@ -135,43 +131,32 @@ export default {
   },
 
   async mounted() {
-    await this.fetchActivityDetail();
+    await this.fetchMilestoneDetail();
   },
 
   methods: {
-    async fetchActivityDetail() {
+    async fetchMilestoneDetail() {
       this.isLoading = true;
       this.error = null;
       
       try {
-        const activityId = this.$route.params.activityId;
-        this.fillDetail(activityId);
+        const milestoneId = this.$route.params.milestoneId;
+        this.fillDetail(milestoneId);
       } catch (err) {
-        this.error = 'Не удалось загрузить данные активности';
-        console.error('Error fetching activity detail:', err);
+        this.error = 'Не удалось загрузить данные этапа';
+        console.error('Error fetching milestone detail:', err);
       } finally {
         this.isLoading = false;
       }
     },
 
-    async fillDetail(activityId) {
-        this.activity = await activityApi.getActivityDetail(activityId);
-        this.milestones = await milestoneApi.getMilestones(activityId);
+    async fillDetail(milestoneId) {
+        this.milestone = await milestoneApi.getMilestoneDetail(milestoneId);
+        this.rounds = await roundApi.getRounds(milestoneId);
     },
 
-    navigateToMilestoneDetail(milestoneId) {
-        const router = this.$router;
-
-        router.push({
-            name: 'MilestoneDetail',
-            params: { 
-                milestoneId: milestoneId
-            }
-        })
-    },
-
-    getLocalizedActivityState() {
-        return activityStateEnum[this.activity.state];
+    getLocalizedMilestoneState() {
+        return milestoneStateEnum[this.milestone.state];
     },
 
     formatDate(dateString) {
@@ -183,89 +168,91 @@ export default {
       const stateClasses = {
         'DRAFT': 'status-planned',
         'PLANNED': 'status-planned',
-        'IN_PROGRESS': 'status-in-progress',
+        'PENDING': 'status-in-progress',
+        'IN_PROGRESS': 'status-completed',
+        'SUMMARIZING': 'status-completed',
         'COMPLETED': 'status-completed',
       };
       return stateClasses[state] || 'status-unknown';
     },
 
     getHeaderActions() {
-      if (!this.activity) return [];
+      if (!this.milestone) return [];
 
       const actions = [
         {
           label: 'Запланировать',
           class: 'default-action-btn',
-          onClick: () => this.planActivity(),
-          visible: this.activity.state === 'DRAFT'
+          onClick: () => this.planMilestone(),
+          visible: this.milestone.state === 'DRAFT'
         },
         {
           label: 'Вернуть в редактирование',
           class: 'default-action-btn',
           onClick: () => this.backToDraft(),
-          visible: this.activity.state === 'PLANNED'
+          visible: this.milestone.state === 'PLANNED'
         },
         {
-          label: 'Закрыть регистрацию',
+          label: 'Подготовить раунды',
           class: 'default-action-btn',
-          onClick: () => this.closeRegistration(),
-          visible: this.activity.state === 'PLANNED'
+          onClick: () => this.prepareRounds(),
+          visible: this.milestone.state === 'PLANNED'
         },
         {
           label: 'Старт',
           class: 'default-action-btn',
-          onClick: () => this.startActivity(),
-          visible: this.activity.state === 'REGISTRATION_CLOSED'
+          onClick: () => this.startMilestone(),
+          visible: this.milestone.state === 'PENDING'
         },
         {
           label: 'Подсчитать результаты',
           class: 'default-action-btn',
-          onClick: () => this.sumUpActivity(),
-          visible: this.activity.state === 'IN_PROGRESS'
+          onClick: () => this.sumUpMilestone(),
+          visible: this.milestone.state === 'IN_PROGRESS'
         },
         {
-          label: 'Заершить активность',
+          label: 'Завершить Этап',
           class: 'default-action-btn',
-          onClick: () => this.completeActivity(),
-          visible: this.activity.state === 'SUMMARIZING'
-        }
+          onClick: () => this.completeMilestone(),
+          visible: this.milestone.state === 'SUMMARIZING'
+        },
       ];
 
       return actions.filter(action => action.visible);
     },
 
-    async planActivity() {
-        await activityApi.planActivity(this.activity.id);
-        this.fillDetail(this.activity.id);
+    async planMilestone() {
+        await milestoneApi.planMilestone(this.milestone.id);
+        this.fillDetail(this.milestone.id);
     },
 
     async backToDraft() {
-        await activityApi.backToDraft(this.activity.id);
-        this.fillDetail(this.activity.id);
+        await milestoneApi.backToDraft(this.milestone.id);
+        this.fillDetail(this.milestone.id);
     },
 
-    async closeRegistration() {
-        await activityApi.closeRegistration(this.activity.id);
-        this.fillDetail(this.activity.id);
+    async prepareRounds() {
+        await milestoneApi.prepareRounds(this.milestone.id);
+        this.fillDetail(this.milestone.id);
     },
 
-    async startActivity() {
-        await activityApi.startActivity(this.activity.id);
-        this.fillDetail(this.activity.id);
+    async startMilestone() {
+        await milestoneApi.startMilestone(this.milestone.id);
+        this.fillDetail(this.milestone.id);
     },
 
-    async sumUpActivity() {
-        await activityApi.sumUpActivity(this.activity.id);
-        this.fillDetail(this.activity.id);
+    async sumUpMilestone() {
+        await milestoneApi.sumUpMilestone(this.milestone.id);
+        this.fillDetail(this.milestone.id);
     },
 
-    async completeActivity() {
-        await activityApi.completeActivity(this.activity.id);
-        this.fillDetail(this.activity.id);
+    async completeMilestone() {
+        await milestoneApi.completeMilestone(this.milestone.id);
+        this.fillDetail(this.milestone.id);
     },
 
-    scrollMilestones(direction) {
-      const container = this.$el.querySelector('.milestones-horizontal-list');
+    scrollRounds(direction) {
+      const container = this.$el.querySelector('.rounds-horizontal-list');
       if (container) {
         const scrollAmount = 300;
         container.scrollLeft += direction * scrollAmount;
@@ -277,22 +264,22 @@ export default {
     },
 
     updateScrollButtons() {
-      const container = this.$el.querySelector('.milestones-horizontal-list');
+      const container = this.$el.querySelector('.rounds-horizontal-list');
       if (container) {
         this.isScrollAtStart = container.scrollLeft <= 0;
         this.isScrollAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
       }
     },
 
-    handleMilestonesScroll() {
+    handleRoundsScroll() {
       this.updateScrollButtons();
     }
   },
 
   watch: {
-    '$route.params.activityId': {
+    '$route.params.milestoneId': {
       handler() {
-        this.fetchActivityDetail();
+        this.fetchMilestoneDetail();
       },
       immediate: false
     }
@@ -301,7 +288,7 @@ export default {
 </script>
 
 <style scoped>
-.activity-detail-page {
+.milestone-detail-page {
     min-height: 100vh;
     background-color: #f5f5f5;
     font-family: Arial, sans-serif;
@@ -322,16 +309,15 @@ export default {
     position: relative;
 }
 
-/* Стили для деталей Activity */
-.activity-details {
+/* Стили для деталей Milestone */
+.milestone-details {
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     padding: 30px;
-    /* margin-bottom: 30px; */
 }
 
-.activity-header {
+.milestone-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -375,7 +361,7 @@ export default {
     color: white;
 }
 
-.activity-title {
+.milestone-title {
     font-size: 2.2rem;
     font-weight: bold;
     color: #333;
@@ -383,20 +369,20 @@ export default {
     line-height: 1.2;
 }
 
-.activity-meta {
+.milestone-meta {
     display: flex;
     align-items: center;
     gap: 20px;
     flex-wrap: wrap;
 }
 
-.activity-date {
+.milestone-date {
     color: #666;
     font-size: 1.1rem;
     font-weight: 500;
 }
 
-.activity-status {
+.milestone-status {
     padding: 6px 30px;
     border-radius: 20px;
     font-size: 0.9rem;
@@ -432,12 +418,13 @@ export default {
     line-height: 1.5;
 }
 
-/* Стили для секции майлстоунов */
-.milestones-section {
+/* Стили для секции раундов */
+.rounds-section {
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     padding: 25px;
+    margin-top: 30px;
 }
 
 .section-header {
@@ -456,22 +443,22 @@ export default {
     margin: 0;
 }
 
-.milestones-count {
+.rounds-count {
     color: #666;
     font-size: 0.95rem;
     font-weight: 500;
 }
 
-.milestones-container {
+.rounds-container {
     position: relative;
 }
 
-.milestones-scroll-wrapper {
+.rounds-scroll-wrapper {
     overflow: hidden;
     border-radius: 8px;
 }
 
-.milestones-horizontal-list {
+.rounds-horizontal-list {
     display: flex;
     gap: 20px;
     overflow-x: auto;
@@ -482,25 +469,25 @@ export default {
     scrollbar-color: #c1c1c1 transparent;
 }
 
-.milestones-horizontal-list::-webkit-scrollbar {
+.rounds-horizontal-list::-webkit-scrollbar {
     height: 6px;
 }
 
-.milestones-horizontal-list::-webkit-scrollbar-track {
+.rounds-horizontal-list::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 3px;
 }
 
-.milestones-horizontal-list::-webkit-scrollbar-thumb {
+.rounds-horizontal-list::-webkit-scrollbar-thumb {
     background: #c1c1c1;
     border-radius: 3px;
 }
 
-.milestones-horizontal-list::-webkit-scrollbar-thumb:hover {
+.rounds-horizontal-list::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
 
-.milestone-item {
+.round-item {
     flex: 0 0 350px;
     min-width: 0;
 }
@@ -588,5 +575,9 @@ export default {
     cursor: pointer;
     font-size: 0.95rem;
     transition: background 0.3s ease;
+}
+
+.retry-btn:hover {
+    background: #0056b3;
 }
 </style>
