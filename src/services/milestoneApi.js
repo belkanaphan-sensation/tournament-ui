@@ -37,7 +37,9 @@ export const milestoneApi = {
 
   completeMilestone(id) {
       const miletoneId = Number(id);
-      return api.post('/milestone/complete/' + miletoneId);
+      return api.post('/milestone/complete/' + miletoneId, {}, {
+      'Content-Type': 'application/json',
+    });
   },
 
   getMilestoneDetail(id) {
