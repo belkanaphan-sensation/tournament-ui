@@ -54,7 +54,7 @@
                             <div v-for="(round, index) in rounds" 
                                  :key="round.id" 
                                  class="round-item">
-                                <RoundShortCard :roundCard="round"/>
+                                <RoundShortCard :roundCard="round" @click="() => navigateToRoundDetail(round.id)"/>
                             </div>
                         </div>
                     </div>
@@ -153,6 +153,17 @@ export default {
     async fillDetail(milestoneId) {
         this.milestone = await milestoneApi.getMilestoneDetail(milestoneId);
         this.rounds = await roundApi.getRounds(milestoneId);
+    },
+
+    navigateToRoundDetail(roundId) {
+        const router = this.$router;
+
+        router.push({
+            name: 'RoundDetail',
+            params: { 
+                roundId: roundId
+            }
+        })
     },
 
     getLocalizedMilestoneState() {

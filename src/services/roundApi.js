@@ -4,13 +4,13 @@ export const roundApi = {
 
   //Получить раунды по milestoneId
   getRounds(id) {
-    try {
       const milestoneId = Number(id);
       return api.get('/round/milestone/' + milestoneId);
-    } catch (error) {
-      console.error('Failed to fetch milestones:', error);
-      throw error;
-    }
+  },
+
+  getRoundDetail(id) {
+      const roundId = Number(id);
+      return api.get('/round/' + roundId);
   },
 
   getByMilestoneIdInLifeStates(id) {

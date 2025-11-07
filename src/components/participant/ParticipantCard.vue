@@ -14,7 +14,7 @@
             <div v-if="criterion[0].scale == 1">
                 <PassCriterion 
                     @valueChange="handleCriterionValueChange"
-                    :milestoneCriterionId="criterion[0].criterion.id"
+                    :milestoneCriterionId="criterion[0].id"
                     :initialResult="resultStore.getResult(roundId, criterion[0].id, participantId)"/>
             </div>
             <div v-if="criterion[0].scale > 1">
@@ -35,7 +35,7 @@
                     <div v-if="currentCriterion.scale == 1">
                         <PassCriterion 
                             @valueChange="handleCriterionValueChange"
-                            :milestoneCriterionId="criterion[0].criterion.id"
+                            :milestoneCriterionId="criterion[0].id"
                             :initialResult="resultStore.getResult(roundId, currentCriterion.id, participantId)"/>
                     </div>
                     <div v-if="currentCriterion.scale > 1">

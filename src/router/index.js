@@ -8,6 +8,7 @@ import ActivityDetail from '../components/activity/ActivityDetail.vue'
 import Milestones from '../components/milestone/Milestones.vue'
 import MilestoneDetail from '../components/milestone/MilestoneDetail.vue'
 import Rounds from '../components/round/Rounds.vue'
+import RoundDetail from '../components/round/RoundDetail.vue'
 import UserDetails from '../components/userinfo/UserDetails.vue'
 import Participants from '../components/participant/Participants.vue'
 import Test from '../components/test/Test.vue'
@@ -58,6 +59,10 @@ const routes = [
     path: '/rounds/:milestoneId',
     name: 'Rounds',
     component: Rounds,
+  }, {
+    path: '/roundDetail/:roundId',
+    name: 'RoundDetail',
+    component: RoundDetail,
   }, {
     path: '/userDetails',
     name: 'UserDetails',
