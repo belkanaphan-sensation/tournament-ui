@@ -43,27 +43,17 @@
                     <div class="judges-count">{{ judges.length }} судей</div>
                 </div>
 
-                <div class="judges-container">
-                    <div class="judges-columns">
-                        <div class="judges-column">
-                            <div v-for="(judge, index) in firstColumnJudges" 
-                                 :key="judge.id" 
-                                 class="judge-item">
-                                <div class="judge-info">
-                                    <span class="judge-name">{{ judge.name }}</span>
-                                    <span class="judge-role" v-if="judge.role">{{ judge.role }}</span>
-                                </div>
-                                <div class="judge-status" :class="getStatusClass(judge)">
-                                    <span v-if="judge.hasEvaluated" class="status-icon">✓</span>
-                                    <span v-else class="status-icon pending">⏳</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="judges-column" v-if="secondColumnJudges.length > 0">
-                            <div v-for="(judge, index) in secondColumnJudges" 
-                                 :key="judge.id" 
-                                 class="judge-item">
+                <div class="judges-section" v-if="judges.length > 0">
+                    <div class="section-header">
+                        <h2 class="section-title">Статусы оценок судей</h2>
+                        <div class="judges-count">{{ judges.length }} судей</div>
+                    </div>
+
+                    <div class="judges-container">
+                        <div class="judges-grid">
+                            <div v-for="judge in judges" 
+                                :key="judge.id" 
+                                class="judge-item">
                                 <div class="judge-info">
                                     <span class="judge-name">{{ judge.name }}</span>
                                     <span class="judge-role" v-if="judge.role">{{ judge.role }}</span>
@@ -100,6 +90,7 @@
 import ControlPanel from '../common/ControlPanel.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
 import { roundApi } from '@/services/roundApi.js';
+import { judgeRoundStatusApi } from '@/services/judgeRoundStatusApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import { roundStateEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
@@ -132,18 +123,6 @@ export default {
     }
   },
 
-  computed: {
-    firstColumnJudges() {
-      const mid = Math.ceil(this.judges.length / 2);
-      return this.judges.slice(0, mid);
-    },
-    
-    secondColumnJudges() {
-      const mid = Math.ceil(this.judges.length / 2);
-      return this.judges.slice(mid);
-    }
-  },
-
   async mounted() {
     await this.fetchRoundDetail();
   },
@@ -166,7 +145,7 @@ export default {
 
     async fillDetail(roundId) {
         this.round = await roundApi.getRoundDetail(roundId);
-        this.judges = await roundApi.getRoundJudges(roundId);
+        // this.judges = await roundApi.judgeRoundStatusApi(roundId);
     },
 
     getLocalizedRoundState() {
@@ -361,7 +340,6 @@ export default {
     padding: 25px;
     margin-top: 30px;
 }
-
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -388,15 +366,9 @@ export default {
     position: relative;
 }
 
-.judges-columns {
+.judges-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
-
-.judges-column {
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 15px;
 }
 
@@ -507,29 +479,5 @@ export default {
 
 .retry-btn:hover {
     background: #0056b3;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-    .judges-columns {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .details-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .round-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-    
-    .header-actions {
-        justify-content: flex-start;
-        width: 100%;
-    }
 }
 </style>
