@@ -6,7 +6,7 @@ export const createAssessmentStore = (id) => {
     state: () => ({
         id: undefined,
         participants: [],
-        criteria: [],
+        criterion: [],
     }),
 
     actions: {
@@ -16,8 +16,8 @@ export const createAssessmentStore = (id) => {
         setParticipants(participants) {
             this.participants = participants || []
         },
-        setCriteria(criteria) {
-            this.criteria = criteria || []
+        setCriterion(criterion) {
+            this.criterion = criterion || []
         }
     }
 }) ()

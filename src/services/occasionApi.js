@@ -3,13 +3,30 @@ import { api } from './api.js';
 export const occasionApi = {
 
   getOccasions() {
-    try {
-      return api.get('/occasion');
-    } catch (error) {
-      console.error('Failed to fetch occasions:', error);
-      throw error;
-    }
+    return api.get('/occasion');
   },
+
+  getOccasionDetail(id) {
+    const occasionId = Number(id);
+    return api.get('/occasion/' + occasionId);
+  },
+
+  planOccasion(id) {
+    const occasionId = Number(id);
+    return api.post('/occasion/plan/' + occasionId);
+  },
+
+  startOccasion(id) {
+    const occasionId = Number(id);
+    return api.post('/occasion/start/' + occasionId);
+  },
+
+  completeOccasion(id) {
+    const occasionId = Number(id);
+    return api.post('/occasion/complete/' + occasionId);
+  },
+
+  
 
 //   /**
 //    * Получить пользователя по ID

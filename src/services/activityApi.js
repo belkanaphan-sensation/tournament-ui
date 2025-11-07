@@ -2,27 +2,56 @@ import { api } from './api.js';
 
 export const activityApi = {
 
-  //Получить активности по occasionId
-  async getActivities(id) {
-    try {
-      const occasionId = Number(id);
-      return api.get('/activity/occasion/' + occasionId);
-    } catch (error) {
-      console.error('Failed to fetch activities:', error);
-      throw error;
-    }
-  },
+    //Получить активности по occasionId
+    async getActivities(id) {
+        const occasionId = Number(id);
+        return api.get('/activity/occasion/' + occasionId);
+    },
 
-  async getByOccasionIdInLifeStates(id) {
-    try {
-      const occasionId = Number(id);
-      return api.get('/activity/occasion/' + occasionId + '/life/currentUser');
-    } catch (error) {
-      console.error('Failed to fetch activities:', error);
-      throw error;
-    }
-  },
+    async getActivityDetail(id) {
+        const activityId = Number(id);
+        return api.get('/activity/' + activityId);
+    },
 
+    async getByOccasionIdInLifeStates(id) {
+        const occasionId = Number(id);
+        return api.get('/activity/occasion/' + occasionId + '/life/currentUser');
+    },
+
+    async planActivity(id) {
+        const activityId = Number(id);
+        return api.post('/activity/plan/' + activityId);
+    },
+
+    async backToDraft(id) {
+        const activityId = Number(id);
+        return api.post('/activity/draft/' + activityId);
+    },
+
+    async backToDraft(id) {
+      const activityId = Number(id);
+      return api.post('/activity/draft/' + activityId);
+    },
+
+    async closeRegistration(id) {
+      const activityId = Number(id);
+      return api.post('/activity/close-registration/' + activityId);
+    },
+
+    async startActivity(id) {
+      const activityId = Number(id);
+      return api.post('/activity/start/' + activityId);
+    },
+
+    async sumUpActivity(id) {
+      const activityId = Number(id);
+      return api.post('/activity/sum-up/' + activityId);
+    },
+
+    async completeActivity(id) {
+      const activityId = Number(id);
+      return api.post('/activity/complete/' + activityId);
+    },
 
 //   /**
 //    * Получить пользователя по ID

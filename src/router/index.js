@@ -1,24 +1,42 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '../components/LoginPage.vue'
 import Occasions from '../components/occasion/Occasions.vue'
+import OccasionList from '../components/occasion/OccasionList.vue'
+import OccasionDetail from '../components/occasion/OccasionDetail.vue'
 import Activities from '../components/activity/Activities.vue'
+import ActivityDetail from '../components/activity/ActivityDetail.vue'
 import Milestones from '../components/milestone/Milestones.vue'
 import Rounds from '../components/round/Rounds.vue'
 import UserDetails from '../components/userinfo/UserDetails.vue'
 import Participants from '../components/participant/Participants.vue'
+import Test from '../components/test/Test.vue'
 
 const routes = [
   {
     path: '/auth/login',
     name: 'LoginPage',
-    component: LoginPage
+    component: LoginPage,
+    meta: {}
   }, {
     path: '/',
-    redirect: '/occasions'
+    redirect: '/occasions',
+    meta: {}
   }, {
     path: '/occasions',
     name: 'Occasions',
-    component: Occasions
+    // component: Occasions
+  }, {
+    path: '/occasions',
+    name: 'OccasionsForUser',
+    component: Occasions,
+  }, {
+    path: '/occasions',
+    name: 'OccasionList',
+    component: OccasionList,
+  }, {
+    path: '/occasionDetail/:occasionId',
+    name: 'OccasionDetail',
+    component: OccasionDetail,
   }, {
     path: '/activities/:occasionId',
     name: 'Activities',
@@ -27,6 +45,10 @@ const routes = [
     path: '/milestones/:activityId',
     name: 'Milestones',
     component: Milestones,
+  }, {
+    path: '/activityDetail/:activityId',
+    name: 'ActivityDetail',
+    component: ActivityDetail,
   }, {
     path: '/rounds/:milestoneId',
     name: 'Rounds',
@@ -40,6 +62,10 @@ const routes = [
     name: 'Participants',
     component: Participants,
     props: true,
+  }, {
+    path: '/test',
+    name: 'Test',
+    component: Test
   }
 ]
 
@@ -50,6 +76,100 @@ const router = createRouter({
     // Всегда прокручивать к верху страницы
     return { top: 0 }
   }
+});
+
+
+router.beforeEach((to, from, next) => {
+    if (to.name === 'LoginPage') {
+        return next();
+    }
+
+    // Если это уже редирект по роли - пропускаем
+    if (!!to.meta?.isRoleRedirect) {
+        return next();
+    }
+
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+    if (!userInfo || !userInfo.roles || userInfo.roles.length < 1) {
+        return next({
+                        name: 'LoginPage',
+                        params: to.params,
+                        query: to.query,
+                        meta: { ...to.meta, isRoleRedirect: true }
+                    })
+    }
+
+
+
+    // // Если уже на странице логина и пользователь авторизован - редирект на главную
+
+
+    const userRole = userInfo.roles[0];
+
+    switch (userRole) {
+        case 'USER': {
+            const toName = to.name;
+            switch (toName) {
+                case 'Occasions': {
+                    return next({
+                        name: 'OccasionsForUser',
+                        params: to.params,
+                        query: to.query,
+                        meta: { ...to.meta, isRoleRedirect: true }
+                    });
+                }
+                case 'Activities': {
+                    // return next({
+                    //     name: 'ActivitiesUser', // ДОЛЖЕН БЫТЬ ДРУГОЙ МАРШРУТ!
+                    //     params: to.params,
+                    //     query: to.query,
+                    //     meta: { ...to.meta, isRoleRedirect: true }
+                    // });
+                    return next();
+                }
+                case 'Milestones': {
+                    // return next({
+                    //     name: 'MilestonesUser', // ДОЛЖЕН БЫТЬ ДРУГОЙ МАРШРУТ!
+                    //     params: to.params,
+                    //     query: to.query,
+                    //     meta: { ...to.meta, isRoleRedirect: true }
+                    // });
+                    return next();
+                }
+                case 'Participants': {
+                    // return next({
+                    //     name: 'ParticipantsUser', // ДОЛЖЕН БЫТЬ ДРУГОЙ МАРШРУТ!
+                    //     params: to.params,
+                    //     query: to.query,
+                    //     meta: { ...to.meta, isRoleRedirect: true }
+                    // });
+                    return next();
+                }
+                // Если маршрут уже для USER - пропускаем
+                // default:
+                //     return next();
+            }
+        }
+        case 'SUPERADMIN': {
+            const toName = to.name;
+            switch (toName) {
+                case 'Occasions': {
+                    return next({
+                        name: 'OccasionList',
+                        params: to.params,
+                        query: to.query,
+                        meta: { ...to.meta, isRoleRedirect: true }
+                    });
+                }
+                default: {
+                  return next();
+                }
+            }
+        }
+    }
+
+    next();
 })
 
-export default router
+export default router;

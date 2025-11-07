@@ -6,13 +6,13 @@ export const useJudgeResultStore = defineStore(`judgeResult`, {
     }),
 
     getters: {
-        getResult: (state) => (roundId, milestoneCriteriaId, participantId) => {
+        getResult: (state) => (roundId, milestoneCriterionId, participantId) => {
             if (state.results[roundId]) {
                 let roundResult = state.results[roundId];
-                if (roundResult[milestoneCriteriaId]) {
-                    let roundCriteriaResult = roundResult[milestoneCriteriaId];
-                    if (roundCriteriaResult[participantId]) {
-                        return roundCriteriaResult[participantId];
+                if (roundResult[milestoneCriterionId]) {
+                    let roundCriterionResult = roundResult[milestoneCriterionId];
+                    if (roundCriterionResult[participantId]) {
+                        return roundCriterionResult[participantId];
                     }
                 } 
             }
@@ -24,8 +24,8 @@ export const useJudgeResultStore = defineStore(`judgeResult`, {
             if (state.results[roundId]) {
                 let roundResult = state.results[roundId];
                 let resultArray = [];
-                for (let milestoneCriteriaId in roundResult) {
-                    let participants = roundResult[milestoneCriteriaId];
+                for (let milestoneCriterionId in roundResult) {
+                    let participants = roundResult[milestoneCriterionId];
                     for (let participantId in participants) {
                         resultArray.push(participants[participantId])
                     }
@@ -41,12 +41,12 @@ export const useJudgeResultStore = defineStore(`judgeResult`, {
             return state.results;
         },
 
-        hasResult: (state) => (roundId, milestoneCriteriaId, participantId) => {
+        hasResult: (state) => (roundId, milestoneCriterionId, participantId) => {
             if (state.results[roundId]) {
                 let roundResult = state.results[roundId];
-                if (roundResult[milestoneCriteriaId]) {
-                    let roundCriteriaResult = roundResult[milestoneCriteriaId];
-                    if (roundCriteriaResult[participantId]) {
+                if (roundResult[milestoneCriterionId]) {
+                    let roundCriterionResult = roundResult[milestoneCriterionId];
+                    if (roundCriterionResult[participantId]) {
                         return true;
                     }
                 }
@@ -57,45 +57,41 @@ export const useJudgeResultStore = defineStore(`judgeResult`, {
     },
 
     actions: {
-        setResult(roundId, milestoneCriteriaId, participantId, score, isCandidate, id) {
+        setResult(roundId, milestoneCriterionId, participantId, score, id) {
             let roundResult = this.results[roundId];
             if (roundResult) {
-                let roundCriteriaResult = roundResult[milestoneCriteriaId];
-                if (roundCriteriaResult) {
-                    let roundCriteriaParticipantResult = roundCriteriaResult[participantId];
-                    if (roundCriteriaParticipantResult) {
-                        roundCriteriaParticipantResult.score = score;
-                        roundCriteriaParticipantResult.isCandidate = isCandidate;
+                let roundCriterionResult = roundResult[milestoneCriterionId];
+                if (roundCriterionResult) {
+                    let roundCriterionParticipantResult = roundCriterionResult[participantId];
+                    if (roundCriterionParticipantResult) {
+                        roundCriterionParticipantResult.score = score;
                     } else {
-                        roundCriteriaResult[participantId] = {
+                        roundCriterionResult[participantId] = {
                             roundId: roundId,
-                            milestoneCriteriaId: milestoneCriteriaId,
+                            milestoneCriterionId: milestoneCriterionId,
                             participantId: participantId,
                             score: score,
-                            isCandidate: isCandidate,
                             id: id
                         };
                     }
                 } else {
-                    roundResult[milestoneCriteriaId] = {};
-                    roundResult[milestoneCriteriaId][participantId] = {
+                    roundResult[milestoneCriterionId] = {};
+                    roundResult[milestoneCriterionId][participantId] = {
                         roundId: roundId,
-                        milestoneCriteriaId: milestoneCriteriaId,
+                        milestoneCriterionId: milestoneCriterionId,
                         participantId: participantId,
                         score: score,
-                        isCandidate: isCandidate,
                         id: id
                     };
                 }
             } else {
                 this.results[roundId] = {};
-                this.results[roundId][milestoneCriteriaId] = {};
-                this.results[roundId][milestoneCriteriaId][participantId] = {
+                this.results[roundId][milestoneCriterionId] = {};
+                this.results[roundId][milestoneCriterionId][participantId] = {
                     roundId: roundId,
-                    milestoneCriteriaId: milestoneCriteriaId,
+                    milestoneCriterionId: milestoneCriterionId,
                     participantId: participantId,
                     score: score,
-                    isCandidate: isCandidate,
                     id: id
                 };
             }

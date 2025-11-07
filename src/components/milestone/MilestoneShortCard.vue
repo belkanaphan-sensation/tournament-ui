@@ -1,13 +1,12 @@
 <template>
-  <div class="occasion-card" @click="() => navigateToActivities(occasionCard.id)">
+  <div class="milestone-card">
     <div class="card-header">
-      <h4>{{ store.getCard(occasionCard.id).name }}</h4>
+      <h4>{{ milestoneCard.name }}</h4>
     </div>
     <div class="card-content">
-        <Field label="Дата начала" :value="store.getCard(occasionCard.id).startDate"/>
-        <Field label="Описание" :value= "store.getCard(occasionCard.id).description"/>
-        <Field label="Состояние" :value= "store.getCard(occasionCard.id).stateDisplayValue"/>
-        <Field label="Прогресс" :value="store.getCard(occasionCard.id).completedActivitiesCount + '/' + store.getCard(occasionCard.id).totalActivitiesCount"/>
+        <Field label="Описание" :value= "milestoneCard.description"/>
+        <Field label="Состояние" :value= "getLocalizedMilestoneState()"/>
+        <!-- <Field label="Прогресс" :value="store.getCard(milestoneCard.id).completedRoundsCount + '/' + store.getCard(milestoneCard.id).totalRoundsCount"/> -->
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -18,56 +17,61 @@
 <script>
 
 import Field from '../common/Field.vue'
-import { useOccasionCardStore } from './OccasionCardStore.js'
+import { useMilestoneCardStore } from './MilestoneCardStore.js'
 import { useRouter } from 'vue-router'
-import { occasionStateEnum } from '../../utils/EnumLocalizator.js'
+import { milestoneStateEnum } from '../../utils/EnumLocalizator.js'
+import { criterionApi } from '@/services/criterionApi.js';
 
 export default {
-  name: 'OcassionCardComponent',
+  name: 'MilestoneCardComponent',
   components: {
     Field
   },
   props: {
-    occasionCard: {
+    milestoneCard: {
       type: Object,
       default: () => ({})
-    },
+    }
   },
 
   setup(props) {
-    const store = useOccasionCardStore();
+    // const router = useRouter();
 
-    const card = props.occasionCard;
-    store.setCard(card.id, Object.assign({
-      stateDisplayValue: occasionStateEnum[card.state]
-    }, card));
-
-    const router = useRouter();
-
-    const navigateToActivities = (occasionId) => {
-      router.push({
-          name: 'Activities',
-          params: { 
-            occasionId: occasionId 
-          }
-        })
-    }
+    // const navigateToRounds = (milestoneId) => {
+    //     router.push({
+    //       name: 'Rounds',
+    //       params: { 
+    //         milestoneId: milestoneId 
+    //       }
+    //     })
+    // }
 
     return {
-        store,
-        card,
-        navigateToActivities
+        // navigateToRounds
     }
+  },
+
+  methods: {
+    getLocalizedMilestoneState() {
+        return milestoneStateEnum[this.milestoneCard.state];
+    }
+  },
+
+  async mounted() {
+    // const criterion = await criterionApi.getCriterionByMilestoneId(this.milestoneCard.id);
+    // this.store.getCard(this.milestoneCard.id).criterion = criterion;
   }
 }
 </script>
 
 <style scoped>
-.occasion-card {
+.milestone-card {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   border: 1px solid #e0e0e0;
@@ -76,7 +80,7 @@ export default {
   flex-direction: column;
 }
 
-.occasion-card:hover {
+.milestone-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   border-color: #007bff;
@@ -109,7 +113,7 @@ export default {
   border-top: 1px solid #f0f0f0;
 }
 
-.occasion-card {
+.milestone-card {
   animation: cardAppear 0.5s ease-out;
 }
 
@@ -125,7 +129,7 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .occasion-card {
+  .milestone-card {
     padding: 15px;
   }
   
