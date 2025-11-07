@@ -7,8 +7,8 @@ export const judgeRoundStatusApi = {
       return api.post('/judge-round-status/not-ready?roundId=' + roundId);
   },
 
-  getRoundJudges(id) {
+  getJudgeRoundStatusesByRound(id) {
       const roundId = Number(id);
-      return api.get('/judge-round-status/round/{roundId}' + roundId);
+      return api.get('/judge-round-status/round/' + roundId);
   }
 };

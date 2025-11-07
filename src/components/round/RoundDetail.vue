@@ -37,29 +37,28 @@
             </div>
 
             <!-- Панель судей и их статусов оценки -->
-            <div class="judges-section" v-if="judges.length > 0">
+            <div class="judges-section" v-if="judgeRoundStatuses.length > 0">
                 <div class="section-header">
                     <h2 class="section-title">Статусы оценок судей</h2>
-                    <div class="judges-count">{{ judges.length }} судей</div>
+                    <div class="judges-count">{{ judgeRoundStatuses.length }} судей</div>
                 </div>
 
-                <div class="judges-section" v-if="judges.length > 0">
+                <div class="judges-section" v-if="judgeRoundStatuses.length > 0">
                     <div class="section-header">
                         <h2 class="section-title">Статусы оценок судей</h2>
-                        <div class="judges-count">{{ judges.length }} судей</div>
+                        <div class="judges-count">{{ judgeRoundStatuses.length }} судей</div>
                     </div>
 
                     <div class="judges-container">
                         <div class="judges-grid">
-                            <div v-for="judge in judges" 
-                                :key="judge.id" 
+                            <div v-for="judgeRoundStatus in judgeRoundStatuses" 
+                                :key="judgeRoundStatus.id" 
                                 class="judge-item">
                                 <div class="judge-info">
-                                    <span class="judge-name">{{ judge.name }}</span>
-                                    <span class="judge-role" v-if="judge.role">{{ judge.role }}</span>
+                                    <span class="judge-name">{{ judgeRoundStatus.judge.value }}</span>
                                 </div>
-                                <div class="judge-status" :class="getStatusClass(judge)">
-                                    <span v-if="judge.hasEvaluated" class="status-icon">✓</span>
+                                <div class="judge-status" :class="getStatusClass(judgeRoundStatus.status)">
+                                    <span v-if="judgeRoundStatus.status == 'READY'" class="status-icon">✓</span>
                                     <span v-else class="status-icon pending">⏳</span>
                                 </div>
                             </div>
@@ -69,7 +68,7 @@
             </div>
 
             <!-- Состояние пустого списка судей -->
-            <div v-if="round && judges.length === 0 && !isLoading" class="empty-state">
+            <div v-if="round && judgeRoundStatuses.length === 0 && !isLoading" class="empty-state">
                 <div class="empty-icon">👨‍⚖️</div>
                 <h3>Нет назначенных судей</h3>
                 <p>Для этого раунда еще не назначены судьи</p>
@@ -117,7 +116,7 @@ export default {
   data() {
     return {
       round: null,
-      judges: [],
+      judgeRoundStatuses: [],
       isLoading: true,
       error: null
     }
@@ -125,6 +124,11 @@ export default {
 
   async mounted() {
     await this.fetchRoundDetail();
+    this.startAutoRefresh();
+  },
+
+  beforeUnmount() {
+    this.stopAutoRefresh();
   },
 
   methods: {
@@ -145,7 +149,35 @@ export default {
 
     async fillDetail(roundId) {
         this.round = await roundApi.getRoundDetail(roundId);
-        // this.judges = await roundApi.judgeRoundStatusApi(roundId);
+        this.judgeRoundStatuses = await judgeRoundStatusApi.getJudgeRoundStatusesByRound(roundId);
+    },
+
+    async refreshJudgeStatuses() {
+      try {
+        const roundId = this.$route.params.roundId;
+        this.judgeRoundStatuses = await judgeRoundStatusApi.getJudgeRoundStatusesByRound(roundId);
+      } catch (err) {
+        console.error('Error refreshing judge statuses:', err);
+        // Не показываем ошибку пользователю при автообновлении, только в консоль
+      }
+    },
+
+    startAutoRefresh() {
+      // Останавливаем предыдущий интервал, если он был
+      this.stopAutoRefresh();
+      
+      // Запускаем новый интервал каждые 10 секунд
+      this.refreshInterval = setInterval(() => {
+        this.refreshJudgeStatuses();
+      }, 10000); // 10000 мс = 10 секунд
+    },
+
+    // Метод для остановки автообновления
+    stopAutoRefresh() {
+      if (this.refreshInterval) {
+        clearInterval(this.refreshInterval);
+        this.refreshInterval = null;
+      }
     },
 
     getLocalizedRoundState() {
@@ -157,8 +189,8 @@ export default {
       return new Date(dateString).toLocaleDateString('ru-RU');
     },
 
-    getStatusClass(judge) {
-      return judge.hasEvaluated ? 'status-evaluated' : 'status-pending';
+    getStatusClass(status) {
+      return status == 'READY' ? 'status-evaluated' : 'status-pending';
     },
 
     getHeaderActions() {
