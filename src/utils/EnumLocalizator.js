@@ -26,7 +26,7 @@ export const roundStateEnum = {
     DRAFT: "Черновик",
     PLANNED: "Запланирован",
     IN_PROGRESS: "В процессе",
-    READY: "Оценка судей завершена",
+    READY: "Оценен",
     COMPLETED: "Завершено"
 }
 

@@ -31,7 +31,7 @@ import RoundCard from './RoundCard.vue';
 import ControlPanel from '../common/ControlPanel.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
 import { roundApi } from '@/services/roundApi.js';
-import { roundResultStatusApi } from '@/services/roundResultStatusApi.js';
+import { judgeRoundStatusApi } from '@/services/judgeRoundStatusApi.js';
 import { useRoute, useRouter } from 'vue-router'
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 
@@ -74,7 +74,21 @@ export default {
 
   methods: {
     async fetchRounds() {
-      return roundApi.getByMilestoneIdInLifeStates(this.milestoneId) || [];
+      const rounds = await roundApi.getRounds(this.milestoneId) || [];
+      const judgeRoundStatuses = await this.fetchJudgeRoundStatusesByMilestoneId();
+      for (let i = 0; i < rounds.length; i++) {
+        for (let j = 0; j < judgeRoundStatuses.length; j++) {
+            if (rounds[i].id == judgeRoundStatuses[j].round.id) {
+                rounds[i].judgeRoundStatus = judgeRoundStatuses[j].status
+            }
+        } 
+      }
+
+      return rounds;
+    },
+
+    async fetchJudgeRoundStatusesByMilestoneId() {
+      return judgeRoundStatusApi.getJudgeRoundStatusesByMilestoneId(this.milestoneId) || [];
     },
 
     // async fetchRoundResultStatusByMilestoneId() {

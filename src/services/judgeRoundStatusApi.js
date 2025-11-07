@@ -10,5 +10,10 @@ export const judgeRoundStatusApi = {
   getJudgeRoundStatusesByRound(id) {
       const roundId = Number(id);
       return api.get('/judge-round-status/round/' + roundId);
+  },
+
+  getJudgeRoundStatusesByMilestoneId(id) {
+      const milestoneId = Number(id);
+      return api.get('/judge-round-status/milestone/' + milestoneId + '/currentUser');
   }
 };

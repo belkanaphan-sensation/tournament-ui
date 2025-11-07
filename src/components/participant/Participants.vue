@@ -33,12 +33,12 @@
         </div>
 
         <div class="action-container">
-            <button v-if="!roundResultStatus || roundResultStatus == '' || roundResultStatus === 'NOT_READY'"
+            <button v-if="(!roundResultStatus || roundResultStatus == '' || roundResultStatus === 'NOT_READY') && isActiveRoundState()"
                 class="button"
                 @click="toReadyRoundResultStatus"
             >Готово</button>
 
-            <button v-if="roundResultStatus === 'READY'"
+            <button v-if="roundResultStatus === 'READY' && isActiveRoundState()"
                 class="button edit-button"
                 @click="backToNotReadyRoundResultStatus"
             >Редактировать</button>
@@ -60,6 +60,7 @@ import { milestoneRuleApi } from '@/services/milestoneRuleApi.js';
 import { roundResultStatusApi } from '@/services/roundResultStatusApi.js';
 import { judgeRoundStatusApi } from '@/services/judgeRoundStatusApi.js';
 import { useJudgeResultStore } from '../../store/JudgeResultStore.js';
+import { roundApi } from '@/services/roundApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue'
 
 export default {
@@ -105,6 +106,7 @@ export default {
       this.criterion = await this.fetchCriterion() || [];
       this.roundResults = await this.fetchJudgeRoundResults() || [];
       this.roundResultStatus = await this.fetchRoundResultStatus();
+      this.round = await this.fetchRound();
       this.updateLocalStorageRoundResults();
     } finally {
         this.isLoading = false;
@@ -137,6 +139,10 @@ export default {
       }
     },
 
+    isActiveRoundState() {
+      return this.round && (this.round.state == 'IN_PROGRESS' || this.round.state == 'READY');
+    },
+
     async pushRawResult(judgeMilestoneResultRoundRequests) {
       return judgeResultApi.pushRawResult(this.roundId, judgeMilestoneResultRoundRequests);
     },
@@ -159,6 +165,10 @@ export default {
 
     async fetchJudgeRoundResults() {
         return judgeResultApi.getJudgeRoundResult(this.roundId);
+    },
+
+    async fetchRound() {
+        return roundApi.getRoundDetail(this.roundId);
     },
 
     updateLocalStorageRoundResults() {
@@ -192,6 +202,7 @@ export default {
         criterionMode: undefined,
         roundResult: [],
         roundResultStatus: undefined,
+        round: undefined,
     }
   },
 }
