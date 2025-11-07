@@ -36,15 +36,15 @@
                             <label class="detail-label">Описание:</label>
                             <p class="detail-value">{{ occasion.description || 'Нет описания' }}</p>
                         </div>
-                                        
-                        <div class="detail-item">
-                            <label class="detail-label">Организатор:</label>
-                            <p class="detail-value">{{ occasion.organization.value || 'Не указан' }}</p>
-                        </div>
-
+                               
                         <div class="detail-item">
                             <label class="detail-label">Состояние:</label>
                             <p class="detail-value">{{ getLocalizedOccasionState() || 'Не указан' }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label class="detail-label">Организатор:</label>
+                            <p class="detail-value">{{ occasion.organization.value || 'Не указан' }}</p>
                         </div>
                     </div>
                 </div>
@@ -382,7 +382,7 @@ export default {
 
 .details-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, minmax(300px, 1fr));
     gap: 20px;
 }
 
