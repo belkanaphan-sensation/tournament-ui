@@ -361,6 +361,7 @@ export default {
 
       for (let i = 0; i < selected.length; i++) {
             selected[i].isRegistered = false;
+            selected[i].number = undefined;
             await participantApi.unregisterParticipants(selected[i].id);
       }
       
