@@ -3,13 +3,23 @@ import { api } from './api.js';
 export const participantApi = {
 
   getParticipantsByRoundId(id) {
-    try {
       const roundId = Number(id);
       return api.get('/participant/by-round/round/' + roundId + '/currentUser');
-    } catch (error) {
-      console.error('Failed to fetch participants: ', error);
-      throw error;
-    }
   },
+
+  getParticipantsByActivity(id) {
+      const activityId = Number(id);
+      return api.get('/participant/activity/' + activityId);
+  },
+
+  registerParticipant(id, number) {
+      const participantId = Number(id);
+      return api.post('/participant/' + participantId + '/register/' + number);
+  },
+
+  unregisterParticipants(id) {
+      const participantId = Number(id);
+      return api.post('/participant/' + participantId + '/unregister');
+  }
 }
 

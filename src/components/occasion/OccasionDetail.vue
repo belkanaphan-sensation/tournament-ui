@@ -176,12 +176,24 @@ export default {
     navigateToActivityDetail(activityId) {
         const router = this.$router;
 
-        router.push({
-            name: 'ActivityDetail',
-            params: { 
-                activityId: activityId
-            }
-        })
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        const role = userInfo?.roles?.[0];
+
+        if (role === 'SUPERADMIN') {
+            router.push({
+                name: 'ActivityDetail',
+                params: { 
+                    activityId: activityId
+                }
+            })
+        } else if (role === 'ADMINISTRATOR') {
+            router.push({
+                name: 'ActivityRegistrationDetail',
+                params: { 
+                    activityId: activityId
+                }
+            })
+        }
     },
 
     getStateClass(state) {
@@ -197,24 +209,27 @@ export default {
     getHeaderActions() {
       if (!this.occasion) return [];
 
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const role = userInfo?.roles?.[0];
+
       const actions = [
         {
           label: 'Запланировать',
           class: 'default-action-btn',
           onClick: () => this.planOccasion(),
-          visible: this.occasion.state === 'DRAFT'
+          visible: this.occasion.state === 'DRAFT' && role === 'SUPERADMIN'
         },
         {
           label: 'Старт',
           class: 'default-action-btn',
           onClick: () => this.startOccasion(),
-          visible: this.occasion.state === 'PLANNED'
+          visible: this.occasion.state === 'PLANNED' && role === 'SUPERADMIN'
         },
         {
           label: 'Завершить',
           class: 'default-action-btn',
           onClick: () => this.completeOccasion(),
-          visible: this.occasion.state === 'IN_PROGRESS'
+          visible: this.occasion.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
         }
       ];
 

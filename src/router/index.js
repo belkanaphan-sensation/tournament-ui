@@ -5,6 +5,7 @@ import OccasionList from '../components/occasion/OccasionList.vue'
 import OccasionDetail from '../components/occasion/OccasionDetail.vue'
 import Activities from '../components/activity/Activities.vue'
 import ActivityDetail from '../components/activity/ActivityDetail.vue'
+import ActivityRegistrationDetail from '../components/activity/ActivityRegistrationDetail.vue'
 import Milestones from '../components/milestone/Milestones.vue'
 import MilestoneDetail from '../components/milestone/MilestoneDetail.vue'
 import Rounds from '../components/round/Rounds.vue'
@@ -55,6 +56,10 @@ const routes = [
     path: '/activityDetail/:activityId',
     name: 'ActivityDetail',
     component: ActivityDetail,
+  }, {
+    path: '/activityRegistrationDetail/:activityId',
+    name: 'ActivityRegistrationDetail',
+    component: ActivityRegistrationDetail,
   }, {
     path: '/rounds/:milestoneId',
     name: 'Rounds',
@@ -162,6 +167,22 @@ router.beforeEach((to, from, next) => {
             }
         }
         case 'SUPERADMIN': {
+            const toName = to.name;
+            switch (toName) {
+                case 'Occasions': {
+                    return next({
+                        name: 'OccasionList',
+                        params: to.params,
+                        query: to.query,
+                        meta: { ...to.meta, isRoleRedirect: true }
+                    });
+                }
+                default: {
+                  return next();
+                }
+            }
+        }
+        case 'ADMINISTRATOR': {
             const toName = to.name;
             switch (toName) {
                 case 'Occasions': {

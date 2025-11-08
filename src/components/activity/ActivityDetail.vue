@@ -192,42 +192,45 @@ export default {
     getHeaderActions() {
       if (!this.activity) return [];
 
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const role = userInfo?.roles?.[0];
+
       const actions = [
         {
           label: 'Запланировать',
           class: 'default-action-btn',
           onClick: () => this.planActivity(),
-          visible: this.activity.state === 'DRAFT'
+          visible: this.activity.state === 'DRAFT' && role === 'SUPERADMIN'
         },
         {
           label: 'Вернуть в редактирование',
           class: 'default-action-btn',
           onClick: () => this.backToDraft(),
-          visible: this.activity.state === 'PLANNED'
+          visible: this.activity.state === 'PLANNED' && role === 'SUPERADMIN'
         },
         {
           label: 'Закрыть регистрацию',
           class: 'default-action-btn',
           onClick: () => this.closeRegistration(),
-          visible: this.activity.state === 'PLANNED'
+          visible: this.activity.state === 'PLANNED' && role === 'SUPERADMIN'
         },
         {
           label: 'Старт',
           class: 'default-action-btn',
           onClick: () => this.startActivity(),
-          visible: this.activity.state === 'REGISTRATION_CLOSED'
+          visible: this.activity.state === 'REGISTRATION_CLOSED' && role === 'SUPERADMIN'
         },
         {
           label: 'Подсчитать результаты',
           class: 'default-action-btn',
           onClick: () => this.sumUpActivity(),
-          visible: this.activity.state === 'IN_PROGRESS'
+          visible: this.activity.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
         },
         {
           label: 'Заершить активность',
           class: 'default-action-btn',
           onClick: () => this.completeActivity(),
-          visible: this.activity.state === 'SUMMARIZING'
+          visible: this.activity.state === 'SUMMARIZING' && role === 'SUPERADMIN'
         }
       ];
 

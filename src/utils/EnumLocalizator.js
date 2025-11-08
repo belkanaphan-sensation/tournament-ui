@@ -57,3 +57,8 @@ export const roundResultStatusEnum = {
     NOT_READY: 'Оценка раунда не завершена',
     READY: 'Оценка раунда завершена'
 }
+
+export const partnerSideEnum = {
+    LEADER: 'Партнер',
+    FOLLOWER: 'Партнерша'
+}
