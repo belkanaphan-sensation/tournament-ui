@@ -346,8 +346,13 @@ export default {
         );
 
         for (let i = 0; i < selected.length; i++) {
-            selected[i].isRegistered = true;
-            await participantApi.registerParticipant(selected[i].id, selected[i].number);
+            const updateResult = await participantApi.registerParticipant(selected[i].id, selected[i].number);
+            if (!updateResult) {
+                selected[i].number = undefined;
+            } else {
+                selected[i].isRegistered = true;
+                selected[i].number = updateResult.number;
+            }
         }
 
         this.selectedParticipants = [];
@@ -360,9 +365,11 @@ export default {
       );
 
       for (let i = 0; i < selected.length; i++) {
-            selected[i].isRegistered = false;
-            selected[i].number = undefined;
-            await participantApi.unregisterParticipants(selected[i].id);
+            const updateResult =  await participantApi.unregisterParticipants(selected[i].id);
+            if (updateResult) {
+                selected[i].isRegistered = false;
+                selected[i].number = undefined;
+            }
       }
       
       this.selectedParticipants = [];
