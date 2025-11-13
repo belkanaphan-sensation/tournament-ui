@@ -9,7 +9,7 @@
             <table class="participants-table">
                 <thead>
                     <tr>
-                        <th class="selection-column">
+                        <th v-if="showActionPanel" class="selection-column">
                             <input 
                                 type="checkbox" 
                                 :checked="isAllSelected"
@@ -30,7 +30,7 @@
                         :key="participant.id"
                         :class="{ 'selected': selectedParticipants.includes(participant.id) }"
                     >
-                        <td class="selection-column">
+                        <td v-if="showActionPanel" class="selection-column">
                             <input 
                                 type="checkbox" 
                                 :value="participant.id"
