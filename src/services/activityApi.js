@@ -18,6 +18,11 @@ export const activityApi = {
         return api.get('/activity/occasion/' + occasionId + '/life/currentUser');
     },
 
+    async getPlannedActivityEntityLinkByOccasionId(id) {
+        const occasionId = Number(id);
+        return api.get('/activity/planned/occasion/' + occasionId);
+    },
+
     async planActivity(id) {
         const activityId = Number(id);
         return api.post('/activity/plan/' + activityId);

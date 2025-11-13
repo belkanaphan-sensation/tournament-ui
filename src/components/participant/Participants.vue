@@ -32,7 +32,8 @@
             </div>
         </div>
 
-        <div class="action-container">
+        <div class="action-container-wrapper">
+          <div class="action-container">
             <button v-if="(!roundResultStatus || roundResultStatus == '' || roundResultStatus === 'NOT_READY') && isActiveRoundState()"
                 class="button"
                 @click="toReadyRoundResultStatus"
@@ -42,6 +43,7 @@
                 class="button edit-button"
                 @click="backToNotReadyRoundResultStatus"
             >Редактировать</button>
+          </div>
         </div>
     </div>
 </template>
@@ -210,13 +212,36 @@ export default {
 
 <style scoped>
 
-
-
-
 .participants-page {
-    min-height: 100vh;
+    /* min-height: 200vh; */
     background-color: #f5f5f5;
     font-family: Arial, sans-serif;
+    padding-bottom: 40px;
+}
+
+.action-container-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #f5f5f5;
+    /* padding: 15px 20px; */
+    padding-bottom: 10px;
+    box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: flex;
+    align-items: center; /* Выравнивание по вертикали по центру */
+    justify-content: center; /* Выравнивание по горизонтали по центру */
+    /* min-height: 80px; Фиксированная высота для центрирования */
+}
+
+.action-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center; /* Дополнительное выравнивание по вертикали */
 }
 
 .header-container {
@@ -273,7 +298,7 @@ export default {
 
 .empty-state {
     text-align: center;
-    padding: 60px 20px;
+    /* padding: 60px 20px; */
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);

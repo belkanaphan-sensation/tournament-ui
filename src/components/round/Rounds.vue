@@ -108,7 +108,7 @@ export default {
 
 <style scoped>
 .rounds-page {
-    min-height: 100vh;
+    /* min-height: 100vh; */
     background-color: #f5f5f5;
     font-family: Arial, sans-serif;
 }
@@ -138,6 +138,27 @@ export default {
     margin: 0 auto;
     padding: 0 20px 40px;
     position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+    .content-container {
+        max-width: 100%;
+        padding: 0 20px 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        padding: 0 15px 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-container {
+        padding: 0 10px 20px;
+    }
 }
 
 .cards-grid {
@@ -157,7 +178,7 @@ export default {
 
 .empty-state {
     text-align: center;
-    padding: 60px 20px;
+    /* padding: 60px 20px; */
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);

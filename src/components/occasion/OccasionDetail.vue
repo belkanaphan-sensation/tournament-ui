@@ -189,7 +189,8 @@ export default {
         } else if (role === 'ADMINISTRATOR') {
             router.push({
                 name: 'ActivityRegistrationDetail',
-                params: { 
+                params: {
+                    occasionId: this.occasion.id,
                     activityId: activityId
                 }
             })
@@ -538,7 +539,7 @@ export default {
 .empty-state,
 .error-state {
     text-align: center;
-    padding: 60px 20px;
+    /* padding: 60px 20px; */
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);

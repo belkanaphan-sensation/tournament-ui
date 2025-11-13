@@ -47,84 +47,62 @@
 
             <!-- Секция участников -->
             <div class="participants-section">
-                <div class="section-header">
-                    <h2 class="section-title">Участники</h2>
-                    <div class="participants-count">{{ participants.length }} участников</div>
-                </div>
+                <div class="tabs-container">
+                    <div class="tabs-header">
+                        <button 
+                            class="tab-button" 
+                            :class="{ active: activeTab === 'leaders' }"
+                            @click="switchTab('leaders')"
+                        >
+                            Партнеры
+                        </button>
+                        <button 
+                            class="tab-button" 
+                            :class="{ active: activeTab === 'followers' }"
+                            @click="switchTab('followers')"
+                        >
+                            Партнерши
+                        </button>
+                    </div>
 
-                <div class="participants-table-container">
-                    <table class="participants-table">
-                        <thead>
-                            <tr>
-                                <th class="selection-column">
-                                    <input 
-                                        type="checkbox" 
-                                        v-model="selectAll"
-                                        @change="toggleSelectAll"
-                                    >
-                                </th>
-                                <th>ФИО</th>
-                                <th>Email</th>
-                                <th>Телефон</th>
-                                <th>Номер</th>
-                                <th>Сторона</th>
-                                <th>Статус регистрации</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr 
-                                v-for="participant in participants" 
-                                :key="participant.id"
-                                :class="{ 'selected': selectedParticipants.includes(participant.id) }"
-                            >
-                                <td class="selection-column">
-                                <input 
-                                    type="checkbox" 
-                                    :value="participant.id"
-                                    v-model="selectedParticipants"
-                                >
-                                </td>
-                                <td>
-                                <div class="participant-name">
-                                    {{ getFullName(participant) }}
-                                </div>
-                                </td>
-                                <td>{{ getEmail(participant)}}</td>
-                                <td>{{ getPhoneNumber(participant)}}</td>
-                                <td>
-                                <input 
-                                    v-if="canEditNumber(participant)"
-                                    type="text"
-                                    :value="participant.number"
-                                    @input="handleNumberChange(participant, $event.target.value)"
-                                    class="number-input"
-                                    placeholder="Введите номер"
-                                >
-                                <span v-else>{{ participant.number || 'Не указан' }}</span>
-                                </td>
-                                <td>
-                                <span class="partner-side-badge" :class="getPartnerSideClass(participant.partnerSide)">
-                                    {{ getPartnerSideDisplay(participant.partnerSide) }}
-                                </span>
-                                </td>
-                                <td>
-                                <span class="registration-status" :class="participant.isRegistered ? 'registered' : 'not-registered'">
-                                    {{ participant.isRegistered ? 'Зарегистрирован' : 'Не зарегистрирован' }}
-                                </span>
-                                </td>
-                            </tr>
-                            </tbody>
-                    </table>
-                    
-                    <!-- Состояние пустого списка участников -->
-                    <div v-if="participants.length === 0 && !isLoading" class="empty-participants">
-                        <div class="empty-icon">👥</div>
-                        <h3>Нет участников</h3>
-                        <p>Для этой активности еще не добавлены участники</p>
+                    <div class="tab-content">
+                        <!-- Таб Партнеры -->
+                        <ParticipantsTab 
+                            v-if="activeTab === 'leaders'"
+                            :participants="leaders"
+                            :selectedParticipants="selectedParticipants"
+                            :showActionPanel="showActionPanel"
+                            :isLoading="isLoading"
+                            tabTitle="Партнеры"
+                            emptyIcon="👨"
+                            emptyTitle="Нет партнеров"
+                            emptyDescription="Для этой активности еще не добавлены партнеры"
+                            @update:selectedParticipants="updateSelectedParticipants"
+                            @openRegisterModal="openRegisterModal"
+                            @unregisterSingleParticipant="unregisterSingleParticipant"
+                            @toggleSelectAll="toggleSelectAllLeaders"
+                        />
+
+                        <!-- Таб Партнерши -->
+                        <ParticipantsTab 
+                            v-if="activeTab === 'followers'"
+                            :participants="followers"
+                            :selectedParticipants="selectedParticipants"
+                            :showActionPanel="showActionPanel"
+                            :isLoading="isLoading"
+                            tabTitle="Партнерши"
+                            emptyIcon="👩"
+                            emptyTitle="Нет партнерш"
+                            emptyDescription="Для этой активности еще не добавлены партнерши"
+                            @update:selectedParticipants="updateSelectedParticipants"
+                            @openRegisterModal="openRegisterModal"
+                            @unregisterSingleParticipant="unregisterSingleParticipant"
+                            @toggleSelectAll="toggleSelectAllFollowers"
+                        />
                     </div>
                 </div>
 
-                <!-- Панель действий с выбранными участниками - всегда видима -->
+                <!-- Панель действий с выбранными участниками -->
                 <div class="selection-actions" v-if="showActionPanel">
                     <div class="selected-count">
                         Выбрано: {{ selectedParticipants.length }}
@@ -132,17 +110,16 @@
                     <div class="action-buttons">
                         <button 
                             class="action-btn primary-btn" 
-                            @click="registerSelected"
-                            :disabled="!canRegisterSelected"
+                            @click="changeActivity"
+                            :disabled="selectedParticipants.length !== 1"
                         >
-                            Зарегистрировать
+                            Изменить активность
                         </button>
                         <button 
-                            class="action-btn warning-btn" 
-                            @click="unregisterSelected"
-                            :disabled="!canUnregisterSelected"
+                            class="action-btn success-btn" 
+                            @click="openAddParticipantModal"
                         >
-                            Отменить регистрацию
+                            Добавить участника
                         </button>
                     </div>
                 </div>
@@ -156,6 +133,33 @@
                 <button class="retry-btn" @click="fetchActivityDetail">Попробовать снова</button>
             </div>
         </div>
+
+        <!-- Модальное окно регистрации -->
+        <RegisterModal
+            ref="registerModal"
+            :participant="selectedParticipantForModal"
+            :show="showRegisterModal"
+            @close="closeRegisterModal"
+            @confirm="confirmRegistration"
+        />
+
+        <!-- Модальное окно добавления участника -->
+        <AddParticipantModal
+            :show="showAddParticipantModal"
+            :activityId="activity?.id"
+            @close="closeAddParticipantModal"
+            @add="addNewParticipant"
+        />
+
+        <ChangeActivityModal
+            :show="showChangeActivityModal"
+            :currentActivityId="activity?.id"
+            :currentActivityName="activity?.name"
+            :participantId="selectedParticipantForChange?.id"
+            :occasionId="activity?.occasion?.id"
+            @close="closeChangeActivityModal"
+            @change="changeParticipantActivity"
+        />
     </div>
 </template>
 
@@ -167,13 +171,21 @@ import { participantApi } from '@/services/participantApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import { activityStateEnum, partnerSideEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
+import ParticipantsTab from '../participant/ParticipantsTab.vue';
+import RegisterModal from './RegisterModal.vue';
+import AddParticipantModal from '../participant/AddParticipantModal.vue';
+import ChangeActivityModal from './ChangeActivityModal.vue';
 
 export default {
   name: 'ActivityRegistrationDetail',
   components: {
     ControlPanel,
     UserIcon,
-    LoadingOverlay
+    LoadingOverlay,
+    ParticipantsTab,
+    RegisterModal,
+    AddParticipantModal,
+    ChangeActivityModal,
   },
 
   setup(props) {
@@ -194,37 +206,29 @@ export default {
       error: null,
       participants: [],
       selectedParticipants: [],
-      selectAll: false
+      selectAll: false,
+      activeTab: 'leaders',
+      selectAllLeaders: false,
+      selectAllFollowers: false,
+      showRegisterModal: false,
+      selectedParticipantForModal: null,
+      showAddParticipantModal: false,
+      participantNumber: '',
+      numberError: '',
+      showChangeActivityModal: false,
+      selectedParticipantForChange: null
     }
   },
 
   computed: {
-    canRegisterSelected() {
-      if (this.selectedParticipants.length === 0) return false;
-        
-        const selectedParticipants = this.participants.filter(p => 
-        this.selectedParticipants.includes(p.id)
-        );
-        
-        // Регистрация возможна только если ВСЕ выбранные участники незарегистрированы
-        return selectedParticipants.length > 0 && 
-            selectedParticipants.every(participant => !participant.isRegistered);
+    leaders() {
+        return this.participants.filter(p => p.partnerSide === 'LEADER');
     },
 
-    // Может ли быть отменена регистрация выбранных участников
-    canUnregisterSelected() {
-        if (this.selectedParticipants.length === 0) return false;
-        
-        const selectedParticipants = this.participants.filter(p => 
-        this.selectedParticipants.includes(p.id)
-        );
-        
-        // Отмена регистрации возможна только если ВСЕ выбранные участники зарегистрированы
-        return selectedParticipants.length > 0 && 
-            selectedParticipants.every(participant => participant.isRegistered);
+    followers() {
+        return this.participants.filter(p => p.partnerSide === 'FOLLOWER');
     },
 
-    // Показывать ли панель действий с кнопками
     showActionPanel() {
         return this.activity && this.activity.state === 'PLANNED';
     }
@@ -241,7 +245,7 @@ export default {
       
       try {
         const activityId = this.$route.params.activityId;
-        this.fillDetail(activityId);
+        await this.fillDetail(activityId);
       } catch (err) {
         this.error = 'Не удалось загрузить данные активности';
         console.error('Error fetching activity detail:', err);
@@ -252,56 +256,51 @@ export default {
 
     async fillDetail(activityId) {
         this.activity = await activityApi.getActivityDetail(activityId);
-
         this.participants = await participantApi.getParticipantsByActivity(activityId);
-
-        // this.participants = [
-        //   {
-        //     id: 1,
-        //     name: 'Иван',
-        //     surname: 'Иванов',
-        //     secondName: 'Иванович',
-        //     email: 'ivanov@example.com',
-        //     phoneNumber: '+7 (999) 123-45-67',
-        //     number: '001',
-        //     partnerSide: 'LEADER',
-        //     isRegistered: true,
-        //     activityId: activityId
-        //   },
-        //   {
-        //     id: 2,
-        //     name: 'Петр',
-        //     surname: 'Петров',
-        //     secondName: 'Петрович',
-        //     email: 'petrov@example.com',
-        //     phoneNumber: '+7 (999) 765-43-21',
-        //     number: '002',
-        //     partnerSide: 'LEADER',
-        //     isRegistered: false,
-        //     activityId: activityId
-        //   },
-        //   {
-        //     id: 3,
-        //     name: 'Мария',
-        //     surname: 'Сидорова',
-        //     secondName: 'Ивановna',
-        //     email: 'sidorova@example.com',
-        //     phoneNumber: '+7 (999) 555-55-55',
-        //     number: '003',
-        //     partnerSide: 'FOLLOWER',
-        //     isRegistered: true,
-        //     activityId: activityId
-        //   }
-        // ];
     },
 
-    canEditNumber(participant) {
-        return this.selectedParticipants.includes(participant.id) && !participant.isRegistered;
+    // Новый метод для переключения табов с очисткой выделения
+    switchTab(tabName) {
+      // Очищаем выделение при переключении табов
+      this.selectedParticipants = [];
+      this.selectAllLeaders = false;
+      this.selectAllFollowers = false;
+      this.selectAll = false;
+      this.activeTab = tabName;
     },
 
-    handleNumberChange(participant, newNumber) {
-        participant.number = newNumber;
-        // TODO: Сохранение через API
+    changeActivity() {
+        if (this.selectedParticipants.length === 1) {
+            const selectedParticipantId = this.selectedParticipants[0];
+            this.selectedParticipantForChange = this.participants.find(p => p.id === selectedParticipantId);
+            this.showChangeActivityModal = true;
+        }
+    },
+
+    closeChangeActivityModal() {
+        this.showChangeActivityModal = false;
+        this.selectedParticipantForChange = null;
+    },
+
+    async changeParticipantActivity(changeData) {
+        try {
+            // Вызов API для изменения активности участника
+            const result = await participantApi.changeParticipantActivity(
+                changeData.participantId,
+                changeData.newActivityId
+            );
+            
+            if (result) {
+                // Обновляем список участников
+                await this.fillDetail(this.activity.id);
+                this.closeChangeActivityModal();
+                // Очищаем выделение
+                this.selectedParticipants = [];
+            }
+        } catch (error) {
+            console.error('Error changing participant activity:', error);
+            // TODO: Показать сообщение об ошибке
+        }
     },
 
     getFullName(participant) {
@@ -332,48 +331,124 @@ export default {
         window.location.reload();
     },
 
-    toggleSelectAll() {
-      if (this.selectAll) {
-        this.selectedParticipants = this.participants.map(p => p.id);
-      } else {
-        this.selectedParticipants = [];
-      }
+    toggleSelectAllLeaders() {
+        if (this.selectAllLeaders) {
+            const leaderIds = this.leaders.map(p => p.id);
+            this.selectedParticipants = [...new Set([...this.selectedParticipants, ...leaderIds])];
+        } else {
+            const leaderIds = this.leaders.map(p => p.id);
+            this.selectedParticipants = this.selectedParticipants.filter(id => !leaderIds.includes(id));
+        }
     },
 
-    async registerSelected() {
-        const selected = this.participants.filter(p => 
-            this.selectedParticipants.includes(p.id) && !p.isRegistered
-        );
+    toggleSelectAllFollowers() {
+        if (this.selectAllFollowers) {
+            const followerIds = this.followers.map(p => p.id);
+            this.selectedParticipants = [...new Set([...this.selectedParticipants, ...followerIds])];
+        } else {
+            const followerIds = this.followers.map(p => p.id);
+            this.selectedParticipants = this.selectedParticipants.filter(id => !followerIds.includes(id));
+        }
+    },
 
-        for (let i = 0; i < selected.length; i++) {
-            const updateResult = await participantApi.registerParticipant(selected[i].id, selected[i].number);
-            if (!updateResult) {
-                selected[i].number = undefined;
-            } else {
-                selected[i].isRegistered = true;
-                selected[i].number = updateResult.number;
+    updateSelectedParticipants(newSelected) {
+        // Ограничиваем выбор только одной записью
+        if (newSelected.length > 1) {
+            // Оставляем только последнюю выбранную запись
+            this.selectedParticipants = [newSelected[newSelected.length - 1]];
+        } else {
+            this.selectedParticipants = newSelected;
+        }
+    },
+
+    openRegisterModal(participant) {
+        this.selectedParticipantForModal = participant;
+        this.showRegisterModal = true;
+    },
+
+    closeRegisterModal() {
+        this.showRegisterModal = false;
+        this.selectedParticipantForModal = null;
+    },
+
+    // Методы для модального окна добавления участника
+    openAddParticipantModal() {
+        this.showAddParticipantModal = true;
+    },
+
+    closeAddParticipantModal() {
+        this.showAddParticipantModal = false;
+    },
+
+    async addNewParticipant(newParticipantData) {
+        try {
+            // Добавляем нового участника через API
+            const result = await participantApi.addParticipantToActivity(
+                newParticipantData
+            );
+            
+            if (result) {
+                // Обновляем список участников
+                await this.fillDetail(this.activity.id);
+                this.closeAddParticipantModal();
             }
+        } catch (error) {
+            console.error('Error adding participant:', error);
+            // TODO: Показать сообщение об ошибке
+        }
+    },
+
+    validateNumber(participantNumber) {
+        if (!participantNumber.trim()) {
+            return false;
+        }
+        
+        // Проверка на уникальность номера в рамках активности
+        const isNumberTaken = this.participants.some(p => 
+            p.number === participantNumber && 
+            p.id !== this.selectedParticipantForModal.id
+        );
+        
+        return !isNumberTaken;
+    },
+
+    async confirmRegistration(participantNumber) {
+        // Проверяем уникальность номера
+        const isNumberValid = this.validateNumber(participantNumber);
+        
+        if (!isNumberValid) {
+            // Передаем ошибку в модальное окно через событие
+            this.$refs.registerModal.setNumberError('Этот номер уже занят другим участником');
+            return;
         }
 
-        this.selectedParticipants = [];
-        this.selectAll = false;
+        try {
+            const updateResult = await participantApi.registerParticipant(
+                this.selectedParticipantForModal.id, 
+                participantNumber
+            );
+            
+            if (updateResult) {
+                this.selectedParticipantForModal.isRegistered = true;
+                this.selectedParticipantForModal.number = updateResult.number;
+                this.closeRegisterModal();
+            }
+        } catch (error) {
+            console.error('Error registering participant:', error);
+            this.$refs.registerModal.setNumberError('Ошибка при регистрации участника');
+        }
     },
 
-    async unregisterSelected() {
-      const selected = this.participants.filter(p => 
-        this.selectedParticipants.includes(p.id) && p.isRegistered
-      );
-
-      for (let i = 0; i < selected.length; i++) {
-            const updateResult =  await participantApi.unregisterParticipants(selected[i].id);
+    async unregisterSingleParticipant(participant) {
+        try {
+            const updateResult = await participantApi.unregisterParticipants(participant.id);
             if (updateResult) {
-                selected[i].isRegistered = false;
-                selected[i].number = undefined;
+                participant.isRegistered = false;
+                participant.number = undefined;
             }
-      }
-      
-      this.selectedParticipants = [];
-      this.selectAll = false;
+        } catch (error) {
+            console.error('Error unregistering participant:', error);
+        }
     },
 
     getLocalizedActivityState() {
@@ -433,7 +508,7 @@ export default {
           visible: this.activity.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
         },
         {
-          label: 'Заершить активность',
+          label: 'Завершить активность',
           class: 'default-action-btn',
           onClick: () => this.completeActivity(),
           visible: this.activity.state === 'SUMMARIZING' && role === 'SUPERADMIN'
@@ -471,21 +546,6 @@ export default {
     async completeActivity() {
         await activityApi.completeActivity(this.activity.id);
         this.fillDetail(this.activity.id);
-    },
-
-    watch: {
-        '$route.params.activityId': {
-        handler() {
-            this.fetchActivityDetail();
-        },
-        immediate: false
-        },
-        
-        selectedParticipants: {
-        handler(newVal) {
-            this.selectAll = newVal.length === this.participants.length && this.participants.length > 0;
-        }
-        }
     }
   },
 
@@ -495,12 +555,25 @@ export default {
         this.fetchActivityDetail();
       },
       immediate: false
+    },
+
+    selectedParticipants: {
+        handler(newVal) {
+            const leaderIds = this.leaders.map(p => p.id);
+            this.selectAllLeaders = leaderIds.length > 0 && leaderIds.every(id => newVal.includes(id));
+            
+            const followerIds = this.followers.map(p => p.id);
+            this.selectAllFollowers = followerIds.length > 0 && followerIds.every(id => newVal.includes(id));
+            
+            this.selectAll = newVal.length === this.participants.length && this.participants.length > 0;
+        }
     }
   }
 }
 </script>
 
 <style scoped>
+/* Стили остаются без изменений */
 .activity-detail-page {
     min-height: 100vh;
     background-color: #f5f5f5;
@@ -522,13 +595,11 @@ export default {
     position: relative;
 }
 
-/* Стили для деталей Activity */
 .activity-details {
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     padding: 30px;
-    /* margin-bottom: 30px; */
 }
 
 .activity-header {
@@ -584,6 +655,15 @@ export default {
     background: #0056b3;
 }
 
+.success-btn {
+    background: #28a745;
+    color: white;
+}
+
+.success-btn:hover:not(:disabled) {
+    background: #218838;
+}
+
 .warning-btn {
     background: #ffc107;
     color: #212529;
@@ -591,6 +671,12 @@ export default {
 
 .warning-btn:hover:not(:disabled) {
     background: #e0a800;
+}
+
+.small-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    min-width: 60px;
 }
 
 .activity-title {
@@ -650,17 +736,6 @@ export default {
     line-height: 1.5;
 }
 
-/* Стили для пустой секции */
-.empty-section {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    padding: 25px;
-    min-height: 200px;
-    /* Содержимое будет добавлено позже */
-}
-
-/* Состояния пустого списка и ошибки */
 .error-state {
     text-align: center;
     padding: 60px 20px;
@@ -706,134 +781,6 @@ export default {
     padding: 25px;
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
-}
-
-.section-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-    margin: 0;
-}
-
-.participants-count {
-    color: #666;
-    font-size: 0.95rem;
-    font-weight: 500;
-}
-
-.participants-table-container {
-    overflow-x: auto;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-}
-
-.participants-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 800px;
-}
-
-.participants-table th,
-.participants-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-    white-space: nowrap;
-}
-
-.participants-table td:nth-child(7) { /* Колонка статуса регистрации */
-    white-space: normal;
-    min-width: 150px;
-}
-
-.participants-table th {
-    background: #f8f9fa;
-    font-weight: 600;
-    color: #333;
-    font-size: 0.9rem;
-}
-
-.participants-table tbody tr:hover {
-    background: #f8f9fa;
-}
-
-.participants-table tbody tr.selected {
-    background: #e3f2fd;
-}
-
-.selection-column {
-    width: 40px;
-    text-align: center;
-}
-
-.selection-column input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-}
-
-.participant-name {
-    font-weight: 500;
-    color: #333;
-}
-
-.partner-side-badge {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.partner-side-badge.internal {
-    background: #e3f2fd;
-    color: #1976d2;
-}
-
-.partner-side-badge.external {
-    background: #fff3e0;
-    color: #f57c00;
-}
-
-.partner-side-badge.partner {
-    background: #e8f5e8;
-    color: #2e7d32;
-}
-
-.partner-side-badge.unknown {
-    background: #f5f5f5;
-    color: #666;
-}
-
-.registration-status {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    white-space: nowrap;
-    display: inline-block;
-    min-width: 140px;
-    text-align: center;
-    box-sizing: border-box;
-}
-
-.registration-status.registered {
-    background: #e8f5e8;
-    color: #2e7d32;
-}
-
-.registration-status.not-registered {
-    background: #ffebee;
-    color: #c62828;
-}
-
-/* Панель действий с выбранными участниками - всегда видима */
 .selection-actions {
     display: flex;
     justify-content: space-between;
@@ -842,6 +789,7 @@ export default {
     background: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
+    margin-top: 20px;
 }
 
 .selected-count {
@@ -854,45 +802,6 @@ export default {
     gap: 10px;
 }
 
-/* Состояние пустого списка участников */
-.empty-participants {
-    text-align: center;
-    padding: 60px 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.empty-participants .empty-icon {
-    font-size: 3rem;
-    margin-bottom: 15px;
-}
-
-.empty-participants h3 {
-    color: #333;
-    margin-bottom: 10px;
-    font-size: 1.3rem;
-}
-
-.empty-participants p {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
-
-.number-input {
-  padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  width: 80px;
-}
-
-.number-input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
-}
-
 .action-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -902,5 +811,45 @@ export default {
 .action-btn:disabled:hover {
     background: inherit;
     color: inherit;
+}
+
+.tabs-container {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabs-header {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-button:hover {
+    background: #e9ecef;
+    color: #333;
+}
+
+.tab-button.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background: white;
+}
+
+.tab-content {
+    background: white;
 }
 </style>

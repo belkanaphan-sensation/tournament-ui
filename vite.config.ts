@@ -53,6 +53,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://192.168.0.103:8080',
+        // target: 'http://192.168.31.60:5173',
         changeOrigin: true,
         secure: false,
       }
