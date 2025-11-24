@@ -48,29 +48,6 @@
     overflow: hidden;
 }
 
-/* .field-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-}
-
-.field-container:hover {
-    background: linear-gradient(135deg, #ffffff, #f8f9fa);
-    border-color: #007bff;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
-}
-
-.field-container:hover::before {
-    transform: scaleX(1);
-} */
-
 .field-label {
     display: block;
     font-weight: 600;

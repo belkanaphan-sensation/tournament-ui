@@ -29,13 +29,11 @@
                 <div class="milestone-content">
                     <div class="details-grid">
                         <div class="detail-item">
-                            <label class="detail-label">Описание:</label>
-                            <p class="detail-value">{{ milestone.description || 'Нет описания' }}</p>
+                            <Field label="Описание" :value= "milestone.description"/>
                         </div>
 
                         <div class="detail-item">
-                            <label class="detail-label">Состояние:</label>
-                            <p class="detail-value">{{ getLocalizedMilestoneState() || 'Не указан' }}</p>
+                            <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedMilestoneState()"/>
                         </div>
                     </div>
                 </div>
@@ -95,9 +93,11 @@ import ControlPanel from '../common/ControlPanel.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
 import { milestoneApi } from '@/services/milestoneApi.js';
 import { roundApi } from '@/services/roundApi.js';
+import { activityApi } from '@/services/activityApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import { milestoneStateEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
+import Field from '../common/Field.vue'
 
 export default {
   name: 'MilestoneDetail',
@@ -105,7 +105,8 @@ export default {
     RoundShortCard,
     ControlPanel,
     UserIcon,
-    LoadingOverlay
+    LoadingOverlay,
+    Field
   },
 
   setup(props) {
@@ -122,6 +123,7 @@ export default {
   data() {
     return {
       milestone: null,
+      activity: null,
       rounds: [],
       isLoading: true,
       error: null,
@@ -152,6 +154,7 @@ export default {
 
     async fillDetail(milestoneId) {
         this.milestone = await milestoneApi.getMilestoneDetail(milestoneId);
+        this.activity = await activityApi.getActivityDetail(this.milestone.activity.id);
         this.rounds = await roundApi.getRounds(milestoneId);
     },
 
@@ -175,57 +178,50 @@ export default {
       return new Date(dateString).toLocaleDateString('ru-RU');
     },
 
-    getStateClass(state) {
-      const stateClasses = {
-        'DRAFT': 'status-planned',
-        'PLANNED': 'status-planned',
-        'PENDING': 'status-in-progress',
-        'IN_PROGRESS': 'status-completed',
-        'SUMMARIZING': 'status-completed',
-        'COMPLETED': 'status-completed',
-      };
-      return stateClasses[state] || 'status-unknown';
-    },
-
     getHeaderActions() {
       if (!this.milestone) return [];
+
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const role = userInfo?.roles?.[0];
 
       const actions = [
         {
           label: 'Запланировать',
           class: 'default-action-btn',
           onClick: () => this.planMilestone(),
-          visible: this.milestone.state === 'DRAFT'
+          visible: this.milestone.state === 'DRAFT' && role === 'SUPERADMIN'
         },
-        {
-          label: 'Вернуть в редактирование',
-          class: 'default-action-btn',
-          onClick: () => this.backToDraft(),
-          visible: this.milestone.state === 'PLANNED'
-        },
+        //не нужно пока показывать, нет функционала и проверок состояния активности
+        // {
+        //   label: 'Вернуть в редактирование',
+        //   class: 'default-action-btn',
+        //   onClick: () => this.backToDraft(),
+        //   visible: this.milestone.state === 'PLANNED'
+        // },
         {
           label: 'Подготовить раунды',
           class: 'default-action-btn',
           onClick: () => this.prepareRounds(),
-          visible: this.milestone.state === 'PLANNED'
+          visible: this.milestone.state === 'PLANNED' && this.activity.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
         },
         {
           label: 'Старт',
           class: 'default-action-btn',
           onClick: () => this.startMilestone(),
-          visible: this.milestone.state === 'PENDING'
+          visible: this.milestone.state === 'PENDING' && role === 'SUPERADMIN'
         },
         {
           label: 'Подсчитать результаты',
           class: 'default-action-btn',
           onClick: () => this.sumUpMilestone(),
-          visible: this.milestone.state === 'IN_PROGRESS'
+          visible: this.milestone.state === 'IN_PROGRESS' && this.rounds.every(round => 
+                ['CLOSED'].includes(round.state)) && role === 'SUPERADMIN'
         },
         {
           label: 'Завершить Этап',
           class: 'default-action-btn',
           onClick: () => this.completeMilestone(),
-          visible: this.milestone.state === 'SUMMARIZING'
+          visible: this.milestone.state === 'SUMMARIZING' && role === 'SUPERADMIN'
         },
       ];
 
@@ -284,7 +280,20 @@ export default {
 
     handleRoundsScroll() {
       this.updateScrollButtons();
-    }
+    },
+
+    getStateClass() {
+      const stateClasses = {
+        'DRAFT': 'status-opened',
+        'PLANNED': 'status-opened',
+        'PENDING': 'status-opened',
+        'IN_PROGRESS': 'status-opened',
+        'SUMMARIZING': 'status-opened',
+        'COMPLETED': 'status-closed',
+        'SKIPPED': 'status-closed',
+      };
+      return stateClasses[this.milestone.state] || 'status-unknown';
+    },
   },
 
   watch: {
@@ -299,6 +308,10 @@ export default {
 </script>
 
 <style scoped>
+.status-opened { background: #e3f2fd; color: #1976d2; }
+.status-closed { background: #e8f5e8; color: #2e7d32; }
+.status-unknown { background: #f5f5f5; color: #666; }
+
 .milestone-detail-page {
     min-height: 100vh;
     background-color: #f5f5f5;
@@ -399,11 +412,6 @@ export default {
     font-size: 0.9rem;
     font-weight: 500;
 }
-
-.status-planned { background: #e3f2fd; color: #1976d2; }
-.status-in-progress { background: #fff3e0; color: #f57c00; }
-.status-completed { background: #e8f5e8; color: #2e7d32; }
-.status-unknown { background: #f5f5f5; color: #666; }
 
 .details-grid {
     display: grid;

@@ -16,7 +16,6 @@
 <script>
 
 import Field from '../common/Field.vue'
-import { useRouter } from 'vue-router'
 import { activityStateEnum } from '../../utils/EnumLocalizator.js'
 
 export default {

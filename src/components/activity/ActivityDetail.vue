@@ -33,13 +33,11 @@
                 <div class="activity-content">
                     <div class="details-grid">
                         <div class="detail-item">
-                            <label class="detail-label">Описание:</label>
-                            <p class="detail-value">{{ activity.description || 'Нет описания' }}</p>
+                            <Field label="Описание" :value= "activity.description"/>
                         </div>
 
                         <div class="detail-item">
-                            <label class="detail-label">Состояние:</label>
-                            <p class="detail-value">{{ getLocalizedActivityState() || 'Не указан' }}</p>
+                            <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedActivityState()"/>
                         </div>
                     </div>
                 </div>
@@ -102,6 +100,7 @@ import { milestoneApi } from '@/services/milestoneApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import { activityStateEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
+import Field from '../common/Field.vue'
 
 export default {
   name: 'ActivityDetail',
@@ -109,7 +108,8 @@ export default {
     MilestoneShortCard,
     ControlPanel,
     UserIcon,
-    LoadingOverlay
+    LoadingOverlay,
+    Field
   },
 
   setup(props) {
@@ -159,13 +159,13 @@ export default {
         this.milestones = await milestoneApi.getMilestones(activityId);
     },
 
-    navigateToMilestoneDetail(milestoneId) {
+    navigateToMilestoneDetail(milestoneId, activityId) {
         const router = this.$router;
 
         router.push({
             name: 'MilestoneDetail',
             params: { 
-                milestoneId: milestoneId
+                milestoneId: milestoneId,
             }
         })
     },
@@ -177,16 +177,6 @@ export default {
     formatDate(dateString) {
       if (!dateString) return 'Не указана';
       return new Date(dateString).toLocaleDateString('ru-RU');
-    },
-
-    getStateClass(state) {
-      const stateClasses = {
-        'DRAFT': 'status-planned',
-        'PLANNED': 'status-planned',
-        'IN_PROGRESS': 'status-in-progress',
-        'COMPLETED': 'status-completed',
-      };
-      return stateClasses[state] || 'status-unknown';
     },
 
     getHeaderActions() {
@@ -214,6 +204,12 @@ export default {
           onClick: () => this.closeRegistration(),
           visible: this.activity.state === 'PLANNED' && role === 'SUPERADMIN'
         },
+        // {
+        //   label: 'Вернуть в Запланирован (Нет реализации)',
+        //   class: 'default-action-btn',
+        //   onClick: () => this.backToPlanned(),
+        //   visible: this.activity.state === 'REGISTRATION_CLOSED' && role === 'SUPERADMIN'
+        // },
         {
           label: 'Старт',
           class: 'default-action-btn',
@@ -224,7 +220,8 @@ export default {
           label: 'Подсчитать результаты',
           class: 'default-action-btn',
           onClick: () => this.sumUpActivity(),
-          visible: this.activity.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
+          visible: this.activity.state === 'IN_PROGRESS' && this.milestones.every(milestone => 
+                ['COMPLETED', 'SKIPPED'].includes(milestone.state)) && role === 'SUPERADMIN'
         },
         {
           label: 'Заершить активность',
@@ -254,6 +251,11 @@ export default {
 
     async startActivity() {
         await activityApi.startActivity(this.activity.id);
+        this.fillDetail(this.activity.id);
+    },
+
+    async backToPlanned() {
+        await activityApi.backToPlanned(this.activity.id);
         this.fillDetail(this.activity.id);
     },
 
@@ -289,7 +291,17 @@ export default {
 
     handleMilestonesScroll() {
       this.updateScrollButtons();
-    }
+    },
+
+    getStateClass() {
+      const stateClasses = {
+        'DRAFT': 'status-opened',
+        'PLANNED': 'status-opened',
+        'IN_PROGRESS': 'status-opened',
+        'COMPLETED': 'status-closed'
+      };
+      return stateClasses[this.activity.state] || 'status-unknown';
+    },
   },
 
   watch: {
@@ -304,6 +316,10 @@ export default {
 </script>
 
 <style scoped>
+.status-opened { background: #e3f2fd; color: #1976d2; }
+.status-closed { background: #e8f5e8; color: #2e7d32; }
+.status-unknown { background: #f5f5f5; color: #666; }
+
 .activity-detail-page {
     min-height: 100vh;
     background-color: #f5f5f5;

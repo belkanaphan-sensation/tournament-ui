@@ -5,8 +5,7 @@
     </div>
     <div class="card-content">
         <Field label="Описание" :value= "milestoneCard.description"/>
-        <Field label="Состояние" :value= "getLocalizedMilestoneState()"/>
-        <!-- <Field label="Прогресс" :value="store.getCard(milestoneCard.id).completedRoundsCount + '/' + store.getCard(milestoneCard.id).totalRoundsCount"/> -->
+        <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedMilestoneState()"/>
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -17,10 +16,7 @@
 <script>
 
 import Field from '../common/Field.vue'
-import { useMilestoneCardStore } from './MilestoneCardStore.js'
-import { useRouter } from 'vue-router'
 import { milestoneStateEnum } from '../../utils/EnumLocalizator.js'
-import { criterionApi } from '@/services/criterionApi.js';
 
 export default {
   name: 'MilestoneCardComponent',
@@ -54,7 +50,20 @@ export default {
   methods: {
     getLocalizedMilestoneState() {
         return milestoneStateEnum[this.milestoneCard.state];
-    }
+    },
+
+        getStateClass() {
+      const stateClasses = {
+        'DRAFT': 'status-opened',
+        'PLANNED': 'status-opened',
+        'PENDING': 'status-opened',
+        'IN_PROGRESS': 'status-opened',
+        'SUMMARIZING': 'status-opened',
+        'COMPLETED': 'status-closed',
+        'SKIPPED': 'status-closed',
+      };
+      return stateClasses[this.milestoneCard.state] || 'status-unknown';
+    },
   },
 
   async mounted() {
@@ -65,6 +74,10 @@ export default {
 </script>
 
 <style scoped>
+.status-opened { background: #e3f2fd; color: #1976d2; }
+.status-closed { background: #e8f5e8; color: #2e7d32; }
+.status-unknown { background: #f5f5f5; color: #666; }
+
 .milestone-card {
   background: white;
   border-radius: 12px;

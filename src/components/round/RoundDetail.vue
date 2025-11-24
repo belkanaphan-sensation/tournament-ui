@@ -28,10 +28,7 @@
 
                 <div class="round-content">
                     <div class="details-grid">
-                        <div class="detail-item">
-                            <label class="detail-label">Состояние:</label>
-                            <p class="detail-value">{{ getLocalizedRoundState() || 'Не указан' }}</p>
-                        </div>
+                        <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedRoundState()"/>
                     </div>
                 </div>
             </div>
@@ -93,13 +90,15 @@ import { judgeRoundStatusApi } from '@/services/judgeRoundStatusApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import { roundStateEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
+import Field from '../common/Field.vue'
 
 export default {
   name: 'RoundDetail',
   components: {
     ControlPanel,
     UserIcon,
-    LoadingOverlay
+    LoadingOverlay,
+    Field
   },
 
   setup(props) {
@@ -244,7 +243,15 @@ export default {
     async completeRound() {
         await roundApi.completeRound(this.round.id);
         this.fillDetail(this.round.id);
-    }
+    },
+
+    getStateClass() {
+      const stateClasses = {
+        'OPENED': 'status-opened',
+        'CLOSED': 'status-closed',
+      };
+      return stateClasses[this.round.state] || 'status-unknown';
+    },
   },
 
   watch: {
@@ -259,6 +266,10 @@ export default {
 </script>
 
 <style scoped>
+.status-opened { background: #e3f2fd; color: #1976d2; }
+.status-closed { background: #e8f5e8; color: #2e7d32; }
+.status-unknown { background: #f5f5f5; color: #666; }
+
 .round-detail-page {
     min-height: 100vh;
     background-color: #f5f5f5;

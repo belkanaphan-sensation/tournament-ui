@@ -4,7 +4,7 @@
       <h4>{{ roundCard.name }}</h4>
     </div>
     <div class="card-content">
-        <Field label="Состояние" :value= "getLocalizedMilestoneState()"/>
+        <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedMilestoneState()"/>
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -32,12 +32,25 @@ export default {
   methods: {
     getLocalizedMilestoneState() {
         return roundStateEnum[this.roundCard.state];
-    }
+    },
+
+    getStateClass() {
+      const stateClasses = {
+        'OPENED': 'status-opened',
+        'CLOSED': 'status-closed',
+      };
+      return stateClasses[this.roundCard.state] || 'status-unknown';
+    },
   }
 }
 </script>
 
 <style scoped>
+
+.status-opened { background: #e3f2fd; color: #1976d2; }
+.status-closed { background: #e8f5e8; color: #2e7d32; }
+.status-unknown { background: #f5f5f5; color: #666; }
+
 .round-card {
   background: white;
   border-radius: 12px;

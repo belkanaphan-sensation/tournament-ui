@@ -43,6 +43,12 @@ export const activityApi = {
       return api.post('/activity/close-registration/' + activityId);
     },
 
+    async backToPlanned(id) {
+      //такого экшена пока нет, но в стейт машине такой стейт транзишен есть
+      // const activityId = Number(id);
+      // return api.post('/activity/start/' + activityId);
+    },
+
     async startActivity(id) {
       const activityId = Number(id);
       return api.post('/activity/start/' + activityId);

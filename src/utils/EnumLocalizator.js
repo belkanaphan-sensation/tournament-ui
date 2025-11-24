@@ -23,11 +23,8 @@ export const milestoneStateEnum = {
 }
 
 export const roundStateEnum = {
-    DRAFT: "Черновик",
-    PLANNED: "Запланирован",
-    IN_PROGRESS: "В процессе",
-    READY: "Оценен",
-    COMPLETED: "Завершено"
+    OPENED: "Открыт",
+    CLOSED: "Закрыт",
 }
 
 export const userStatusEnum = {
