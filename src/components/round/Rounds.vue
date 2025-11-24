@@ -74,7 +74,7 @@ export default {
 
   methods: {
     async fetchRounds() {
-      const rounds = await roundApi.getRounds(this.milestoneId) || [];
+      const rounds = await roundApi.getByMilestoneIdInLifeStates(this.milestoneId) || [];
       const judgeRoundStatuses = await this.fetchJudgeRoundStatusesByMilestoneId();
       for (let i = 0; i < rounds.length; i++) {
         for (let j = 0; j < judgeRoundStatuses.length; j++) {

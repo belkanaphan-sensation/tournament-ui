@@ -48,12 +48,12 @@ export const milestoneApi = {
   },
 
   getByActivityIdInLifeStates(id) {
-    try {
       const activityId = Number(id);
       return api.get('/milestone/activity/' + activityId + '/life');
-    } catch (error) {
-      console.error('Failed to fetch milestones:', error);
-      throw error;
-    }
+  },
+
+  getByActivityIdInInProgressState(id) {
+      const activityId = Number(id);
+      return api.get('/milestone/activity/' + activityId + '/inProgress/currentUser');
   },
 };

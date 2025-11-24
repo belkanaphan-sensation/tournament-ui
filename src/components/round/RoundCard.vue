@@ -2,7 +2,7 @@
   <div :class="['round-card', {
         'ready-status': roundCard.judgeRoundStatus === 'READY',
         'not-ready-status': roundCard.judgeRoundStatus === 'NOT_READY'}]" 
-      @click="() => navigateToParticipants(roundCard.milestone.id, roundCard.id)">
+      @click="() => navigateToContestants(roundCard.milestone.id, roundCard.id)">
     <div class="card-header">
       <h4>{{ store.getCard(roundCard.id).name }}</h4>
       <div class="status-indicator" :class="roundCard.judgeRoundStatus?.toLowerCase()"></div>
@@ -46,9 +46,9 @@ export default {
 
     const router = useRouter();
 
-    const navigateToParticipants = (milestoneId, roundId) => {
+    const navigateToContestants = (milestoneId, roundId) => {
       router.push({
-          name: 'Participants',
+          name: 'Contestants',
           params: { 
             milestoneId: milestoneId,
             roundId: roundId
@@ -59,7 +59,7 @@ export default {
     return {
         store,
         card,
-        navigateToParticipants,
+        navigateToContestants,
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
     <div class="field-container">
         <label class="field-label">{{ label }}:</label>
-        <span class="field-value">{{ store.value }}</span>
+        <span class="field-value">{{ value }}</span>
     </div>
 </template>
 
@@ -24,13 +24,13 @@
         },
 
         setup(props) {
-            const componentId = `field-${counter++}`
-            const store = createFieldStore(componentId)
+            // const componentId = `field-${counter++}`
+            // const store = createFieldStore(componentId)
             
-            store.setValue(props.value);
+            // store.setValue(props.value);
 
             return {
-                store
+                // store
             }
         }
     }

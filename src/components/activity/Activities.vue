@@ -73,7 +73,7 @@ export default {
 
     methods: {
         async fetchActivities(occasionId) {
-            const activityResponse = await activityApi.getByOccasionIdInLifeStates(occasionId);
+            const activityResponse = await activityApi.getByOccasionIdInInProgressState(occasionId);
 
             let activities = [];
             if (activityResponse) {

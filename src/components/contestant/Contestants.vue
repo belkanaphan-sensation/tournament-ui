@@ -1,5 +1,5 @@
 <template>
-    <div class="participants-page">
+    <div class="contestants-page">
         <!-- Control panel -->
         <div class="header-container control-panel-background-container">
             <ControlPanel @back="handleBack" @refresh="handleRefresh"/>
@@ -12,18 +12,18 @@
 
         <div class="content-container" :class="{'disabled-container': roundResultStatus === 'READY'}">
             <LoadingOverlay :isLoading="isLoading" />
-            <div v-if="participants.length === 0 && !isLoading" class="empty-state">
+            <div v-if="contestants.length === 0 && !isLoading" class="empty-state">
                 <div class="empty-icon">📭</div>
                 <h3>Нет данных для отображения</h3>
                 <p>Здесь появятся участники на оценку, когда они будут добавлены</p>
             </div>
 
             <div class="cards-grid">
-                <div v-for="(participant, index) in participants" :key="index" class="participant-item">
+                <div v-for="(contestant, index) in contestants" :key="index" class="contestant-item">
                     <div class="test-mask">
-                        <ParticipantCard 
-                            :participantId="participant.id"
-                            :participantNumber="participant.number"
+                        <ContestantCard 
+                            :contestantId="contestant.id"
+                            :contestantNumber="contestant.number"
                             :criterion="criterion" 
                             :roundId="Number(this.roundId)"/>
                         <Mask v-if="roundResultStatus === 'READY'" />
@@ -53,9 +53,9 @@ import ControlPanel from '../common/ControlPanel.vue';
 import Mask from '../common/Mask.vue';
 import Field from '../common/Field.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
-import ParticipantCard from './ParticipantCard.vue';
+import ContestantCard from './ContestantCard.vue';
 import { useRouter } from 'vue-router'
-import { participantApi } from '@/services/participantApi.js';
+import { contestantApi } from '@/services/contestantApi.js';
 import { criterionApi } from '@/services/criterionApi.js';
 import { judgeResultApi } from '@/services/judgeResultApi.js';
 import { milestoneRuleApi } from '@/services/milestoneRuleApi.js';
@@ -72,7 +72,7 @@ export default {
     ControlPanel,
     UserIcon,
     Field,
-    ParticipantCard,
+    ContestantCard,
     Mask,
     LoadingOverlay
   },
@@ -103,7 +103,7 @@ export default {
   async mounted() {
     this.isLoading = true;
     try {
-      this.participants = await this.fetchParticipants(this.roundId) || [];
+      this.contestants = await this.fetchContestants(this.roundId) || [];
       this.milestoneRule = await this.fetchMilesoneRule() || {};
       this.criterion = await this.fetchCriterion() || [];
       this.roundResults = await this.fetchJudgeRoundResults() || [];
@@ -142,7 +142,7 @@ export default {
     },
 
     isActiveRoundState() {
-      return this.round && (this.round.state == 'IN_PROGRESS' || this.round.state == 'READY');
+      return this.round && (this.round.state == 'OPENED');
     },
 
     async pushRawResult(judgeMilestoneResultRoundRequests) {
@@ -153,8 +153,8 @@ export default {
       return roundResultStatusApi.getRoundResultStatus(this.roundId);
     },
 
-    async fetchParticipants() {
-        return participantApi.getParticipantsByRoundId(this.roundId);
+    async fetchContestants() {
+        return contestantApi.getContestantsByRoundId(this.roundId);
     },
 
     async fetchMilesoneRule() {
@@ -180,8 +180,8 @@ export default {
         if (allResults) {
           for (let i = 0; i < this.roundResults.length; i++) {
             let r = this.roundResults[i];
-            if (!resultStore.hasResult(r.round.id, r.milestoneCriterion.id,r.participant.id)) {
-              resultStore.setResult(r.round.id, r.milestoneCriterion.id,r.participant.id, r.score, r.id);
+            if (!resultStore.hasResult(r.round.id, r.milestoneCriterion.id,r.contestant.id)) {
+              resultStore.setResult(r.round.id, r.milestoneCriterion.id,r.contestant.id, r.score, r.id);
             }
           }
         }
@@ -199,7 +199,7 @@ export default {
   data() {
     return {
         isLoading: true,
-        participants: [],
+        contestants: [],
         criterion: [],
         criterionMode: undefined,
         roundResult: [],
@@ -212,7 +212,7 @@ export default {
 
 <style scoped>
 
-.participants-page {
+.contestants-page {
     /* min-height: 200vh; */
     background-color: #f5f5f5;
     font-family: Arial, sans-serif;
@@ -284,13 +284,9 @@ export default {
     margin-bottom: 30px;
 }
 
-.participant-item {
+.contestant-item {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
-/* .participant-item:hover {
-    transform: translateY(-5px);
-} */
 
 .test-mask {
     position: relative;
@@ -298,7 +294,6 @@ export default {
 
 .empty-state {
     text-align: center;
-    /* padding: 60px 20px; */
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);

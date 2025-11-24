@@ -1,9 +1,9 @@
 <template>
-    <div class="participant-card">
+    <div class="contestant-card">
         <div class="card-header" @click="toogleCollapse()">
-            <div class="participant-card-header">
+            <div class="contestant-card-header">
                 <div>
-                    <h3>№ {{ participantNumber }}</h3>
+                    <h3>№ {{ contestantNumber }}</h3>
                 </div>
 
                 <span v-if="isMultiCriterion()" class="collapse-icon"> {{ isCollapsed ? '▶' : '▼' }} </span>
@@ -15,13 +15,13 @@
                 <PassCriterion 
                     @valueChange="handleCriterionValueChange"
                     :milestoneCriterionId="criterion[0].id"
-                    :initialResult="resultStore.getResult(roundId, criterion[0].id, participantId)"/>
+                    :initialResult="resultStore.getResult(roundId, criterion[0].id, contestantId)"/>
             </div>
             <div v-if="criterion[0].scale > 1">
                 <ScaleCriterion 
                     @valueChange="handleCriterionValueChange"
                     :milestoneCriterion="criterion[0]" 
-                    :initialResult="resultStore.getResult(roundId, criterion[0].id, participantId)"/>
+                    :initialResult="resultStore.getResult(roundId, criterion[0].id, contestantId)"/>
             </div>
         </div>
 
@@ -36,13 +36,13 @@
                         <PassCriterion 
                             @valueChange="handleCriterionValueChange"
                             :milestoneCriterionId="criterion[0].id"
-                            :initialResult="resultStore.getResult(roundId, currentCriterion.id, participantId)"/>
+                            :initialResult="resultStore.getResult(roundId, currentCriterion.id, contestantId)"/>
                     </div>
                     <div v-if="currentCriterion.scale > 1">
                         <ScaleCriterion 
                             @valueChange="handleCriterionValueChange"
                             :milestoneCriterion="currentCriterion" 
-                            :initialResult="resultStore.getResult(roundId, currentCriterion.id, participantId)"/>
+                            :initialResult="resultStore.getResult(roundId, currentCriterion.id, contestantId)"/>
                     </div>
                 </div>
             </div>
@@ -66,10 +66,10 @@ export default {
     },
 
     props: {
-        participantId: {
+        contestantId: {
             type: Number,
         },
-        participantNumber: {
+        contestantNumber: {
             type: String,
         },
         criterion: {
@@ -115,7 +115,7 @@ export default {
         },
 
         handleCriterionValueChange(data) {
-            this.resultStore.setResult(this.roundId, data.milestoneCriterionId, this.participantId, data.score);
+            this.resultStore.setResult(this.roundId, data.milestoneCriterionId, this.contestantId, data.score);
         }
     },
 
@@ -128,7 +128,7 @@ export default {
 </script>
 
 <style scoped>
-.participant-card {
+.contestant-card {
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -140,12 +140,6 @@ export default {
     flex-direction: column;
 }
 
-/* .participant-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    border-color: #007bff;
-} */
-
 .card-header {
     margin-bottom: 15px;
     padding-bottom: 15px;
@@ -154,21 +148,13 @@ export default {
     transition: background-color 0.2s ease;
 }
 
-/* .card-header:hover {
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    margin: -5px;
-    padding: 5px;
-    padding-bottom: 15px;
-} */
-
-.participant-card-header {
+.contestant-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.participant-card-header h3 {
+.contestant-card-header h3 {
     margin: 0;
     color: #333;
     font-size: 1.5rem;
@@ -189,33 +175,4 @@ export default {
     border-bottom: 1px solid #e0e0e0;
     font-size: 1.1rem;
 }
-
-/* .participant-card {
-    animation: cardAppear 0.5s ease-out;
-} */
-
-/* @keyframes cardAppear {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-} */
-
-/* @media (max-width: 480px) {
-    .participant-card {
-        padding: 15px;
-    }
-    
-    .participant-card-header h3 {
-        font-size: 1.3rem;
-    }
-    
-    .criterion-label {
-        font-size: 1rem;
-    }
-} */
 </style>

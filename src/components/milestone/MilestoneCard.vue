@@ -20,7 +20,6 @@ import Field from '../common/Field.vue'
 import { useMilestoneCardStore } from './MilestoneCardStore.js'
 import { useRouter } from 'vue-router'
 import { milestoneStateEnum } from '../../utils/EnumLocalizator.js'
-import { criterionApi } from '@/services/criterionApi.js';
 
 export default {
   name: 'MilestoneCardComponent',

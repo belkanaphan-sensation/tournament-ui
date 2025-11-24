@@ -14,12 +14,7 @@ export const roundApi = {
   },
 
   getByMilestoneIdInLifeStates(id) {
-    try {
       const milestoneId = Number(id);
       return api.get('/round/milestone/' + milestoneId + '/life');
-    } catch (error) {
-      console.error('Failed to fetch milestones:', error);
-      throw error;
-    }
   },
 };

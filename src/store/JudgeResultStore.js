@@ -6,13 +6,13 @@ export const useJudgeResultStore = defineStore(`judgeResult`, {
     }),
 
     getters: {
-        getResult: (state) => (roundId, milestoneCriterionId, participantId) => {
+        getResult: (state) => (roundId, milestoneCriterionId, contestantId) => {
             if (state.results[roundId]) {
                 let roundResult = state.results[roundId];
                 if (roundResult[milestoneCriterionId]) {
                     let roundCriterionResult = roundResult[milestoneCriterionId];
-                    if (roundCriterionResult[participantId]) {
-                        return roundCriterionResult[participantId];
+                    if (roundCriterionResult[contestantId]) {
+                        return roundCriterionResult[contestantId];
                     }
                 } 
             }
@@ -25,9 +25,9 @@ export const useJudgeResultStore = defineStore(`judgeResult`, {
                 let roundResult = state.results[roundId];
                 let resultArray = [];
                 for (let milestoneCriterionId in roundResult) {
-                    let participants = roundResult[milestoneCriterionId];
-                    for (let participantId in participants) {
-                        resultArray.push(participants[participantId])
+                    let contestants = roundResult[milestoneCriterionId];
+                    for (let contestantId in contestants) {
+                        resultArray.push(contestants[contestantId])
                     }
                 }
 
@@ -41,12 +41,12 @@ export const useJudgeResultStore = defineStore(`judgeResult`, {
             return state.results;
         },
 
-        hasResult: (state) => (roundId, milestoneCriterionId, participantId) => {
+        hasResult: (state) => (roundId, milestoneCriterionId, contestantId) => {
             if (state.results[roundId]) {
                 let roundResult = state.results[roundId];
                 if (roundResult[milestoneCriterionId]) {
                     let roundCriterionResult = roundResult[milestoneCriterionId];
-                    if (roundCriterionResult[participantId]) {
+                    if (roundCriterionResult[contestantId]) {
                         return true;
                     }
                 }
@@ -57,29 +57,29 @@ export const useJudgeResultStore = defineStore(`judgeResult`, {
     },
 
     actions: {
-        setResult(roundId, milestoneCriterionId, participantId, score, id) {
+        setResult(roundId, milestoneCriterionId, contestantId, score, id) {
             let roundResult = this.results[roundId];
             if (roundResult) {
                 let roundCriterionResult = roundResult[milestoneCriterionId];
                 if (roundCriterionResult) {
-                    let roundCriterionParticipantResult = roundCriterionResult[participantId];
-                    if (roundCriterionParticipantResult) {
-                        roundCriterionParticipantResult.score = score;
+                    let roundCriterionContestantResult = roundCriterionResult[contestantId];
+                    if (roundCriterionContestantResult) {
+                        roundCriterionContestantResult.score = score;
                     } else {
-                        roundCriterionResult[participantId] = {
+                        roundCriterionResult[contestantId] = {
                             roundId: roundId,
                             milestoneCriterionId: milestoneCriterionId,
-                            participantId: participantId,
+                            contestantId: contestantId,
                             score: score,
                             id: id
                         };
                     }
                 } else {
                     roundResult[milestoneCriterionId] = {};
-                    roundResult[milestoneCriterionId][participantId] = {
+                    roundResult[milestoneCriterionId][contestantId] = {
                         roundId: roundId,
                         milestoneCriterionId: milestoneCriterionId,
-                        participantId: participantId,
+                        contestantId: contestantId,
                         score: score,
                         id: id
                     };
@@ -87,10 +87,10 @@ export const useJudgeResultStore = defineStore(`judgeResult`, {
             } else {
                 this.results[roundId] = {};
                 this.results[roundId][milestoneCriterionId] = {};
-                this.results[roundId][milestoneCriterionId][participantId] = {
+                this.results[roundId][milestoneCriterionId][contestantId] = {
                     roundId: roundId,
                     milestoneCriterionId: milestoneCriterionId,
-                    participantId: participantId,
+                    contestantId: contestantId,
                     score: score,
                     id: id
                 };

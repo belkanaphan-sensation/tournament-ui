@@ -211,11 +211,10 @@ export default {
           visible: this.milestone.state === 'PENDING' && role === 'SUPERADMIN'
         },
         {
-          label: 'Подсчитать результаты',
+          label: 'Подсчитать результаты (Проверь что можно начать подсчитывать )',
           class: 'default-action-btn',
           onClick: () => this.sumUpMilestone(),
-          visible: this.milestone.state === 'IN_PROGRESS' && this.rounds.every(round => 
-                ['CLOSED'].includes(round.state)) && role === 'SUPERADMIN'
+          visible: this.milestone.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
         },
         {
           label: 'Завершить Этап',

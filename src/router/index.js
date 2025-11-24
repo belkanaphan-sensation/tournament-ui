@@ -11,7 +11,7 @@ import MilestoneDetail from '../components/milestone/MilestoneDetail.vue'
 import Rounds from '../components/round/Rounds.vue'
 import RoundDetail from '../components/round/RoundDetail.vue'
 import UserDetails from '../components/userinfo/UserDetails.vue'
-import Participants from '../components/participant/Participants.vue'
+import Contestants from '../components/contestant/Contestants.vue'
 import Test from '../components/test/Test.vue'
 
 const routes = [
@@ -73,9 +73,9 @@ const routes = [
     name: 'UserDetails',
     component: UserDetails
   }, {
-    path: '/participants/:milestoneId/:roundId',
-    name: 'Participants',
-    component: Participants,
+    path: '/contestants/:milestoneId/:roundId',
+    name: 'Contestants',
+    component: Contestants,
     props: true,
   }, {
     path: '/test',
@@ -152,9 +152,9 @@ router.beforeEach((to, from, next) => {
                     // });
                     return next();
                 }
-                case 'Participants': {
+                case 'Contestants': {
                     // return next({
-                    //     name: 'ParticipantsUser', // ДОЛЖЕН БЫТЬ ДРУГОЙ МАРШРУТ!
+                    //     name: 'ContestantsUser', // ДОЛЖЕН БЫТЬ ДРУГОЙ МАРШРУТ!
                     //     params: to.params,
                     //     query: to.query,
                     //     meta: { ...to.meta, isRoleRedirect: true }

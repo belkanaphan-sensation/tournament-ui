@@ -71,7 +71,7 @@ export default {
 
   methods: {
       async fetchMilestones(activityId) {
-          return milestoneApi.getMilestones(activityId);
+          return milestoneApi.getByActivityIdInInProgressState(activityId);
       },
 
       handleRefresh() {
