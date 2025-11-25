@@ -74,17 +74,25 @@ export default {
 
   methods: {
     async fetchRounds() {
-      const rounds = await roundApi.getByMilestoneIdInLifeStates(this.milestoneId) || [];
-      const judgeRoundStatuses = await this.fetchJudgeRoundStatusesByMilestoneId();
-      for (let i = 0; i < rounds.length; i++) {
-        for (let j = 0; j < judgeRoundStatuses.length; j++) {
-            if (rounds[i].id == judgeRoundStatuses[j].round.id) {
-                rounds[i].judgeRoundStatus = judgeRoundStatuses[j].status
-            }
-        } 
-      }
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        const role = userInfo?.roles?.[0];
 
-      return rounds;
+        let rounds;
+        if (role === 'USER') {
+            rounds = await roundApi.getByMilestoneIdInLifeStates(this.milestoneId) || [];
+            const judgeRoundStatuses = await this.fetchJudgeRoundStatusesByMilestoneId();
+            for (let i = 0; i < rounds.length; i++) {
+                for (let j = 0; j < judgeRoundStatuses.length; j++) {
+                    if (rounds[i].id == judgeRoundStatuses[j].round.id) {
+                        rounds[i].judgeRoundStatus = judgeRoundStatuses[j].status
+                    }
+                } 
+            }
+        } else if (role === 'ANNOUNCER') {
+            rounds = await roundApi.getRounds(this.milestoneId) || [];
+        }
+
+        return rounds;
     },
 
     async fetchJudgeRoundStatusesByMilestoneId() {

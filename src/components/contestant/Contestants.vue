@@ -154,7 +154,7 @@ export default {
     },
 
     async fetchContestants() {
-        return contestantApi.getContestantsByRoundId(this.roundId);
+        return contestantApi.getByRoundByRoundIdForCurrentUser(this.roundId);
     },
 
     async fetchMilesoneRule() {

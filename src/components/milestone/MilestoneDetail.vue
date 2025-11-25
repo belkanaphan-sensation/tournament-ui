@@ -222,6 +222,12 @@ export default {
           onClick: () => this.completeMilestone(),
           visible: this.milestone.state === 'SUMMARIZING' && role === 'SUPERADMIN'
         },
+        {
+          label: 'Пропустить этап',
+          class: 'default-action-btn',
+          onClick: () => this.skipMilestone(),
+          visible: (this.milestone.state === 'DRAFT' || this.milestone.state === 'PLANNED' || this.milestone.state === 'PENDING') && role === 'SUPERADMIN'
+        },
       ];
 
       return actions.filter(action => action.visible);
@@ -254,6 +260,11 @@ export default {
 
     async completeMilestone() {
         await milestoneApi.completeMilestone(this.milestone.id);
+        this.fillDetail(this.milestone.id);
+    },
+
+    async skipMilestone() {
+        await milestoneApi.skipMilestone(this.milestone.id);
         this.fillDetail(this.milestone.id);
     },
 

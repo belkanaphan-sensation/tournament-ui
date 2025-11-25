@@ -2,14 +2,16 @@
   <div :class="['round-card', {
         'ready-status': roundCard.judgeRoundStatus === 'READY',
         'not-ready-status': roundCard.judgeRoundStatus === 'NOT_READY'}]" 
-      @click="() => navigateToContestants(roundCard.milestone.id, roundCard.id)">
+      @click="() => navigateTo(roundCard.milestone.id, roundCard.id)">
     <div class="card-header">
       <h4>{{ store.getCard(roundCard.id).name }}</h4>
       <div class="status-indicator" :class="roundCard.judgeRoundStatus?.toLowerCase()"></div>
     </div>
     <div class="card-content">
         <Field label="Состояние" :value= "store.getCard(roundCard.id).stateDisplayValue"/>
-        <Field label="Статус" :value= "store.getCard(roundCard.id).roundResultStatusDisplayValue"/>
+        <div v-if="showStatus">
+          <Field label="Статус" :value= "store.getCard(roundCard.id)?.roundResultStatusDisplayValue"/>
+        </div>
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -46,21 +48,45 @@ export default {
 
     const router = useRouter();
 
-    const navigateToContestants = (milestoneId, roundId) => {
-      router.push({
+    const navigateTo = (milestoneId, roundId) => {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      if (userInfo?.roles?.[0] === 'USER') {
+        router.push({
           name: 'Contestants',
           params: { 
             milestoneId: milestoneId,
             roundId: roundId
           }
         })
+      } else if (userInfo?.roles?.[0] === 'ANNOUNCER') {
+        router.push({
+          name: 'ContestantsAnnouncer',
+          params: { 
+            milestoneId: milestoneId,
+            roundId: roundId
+          }
+        })
+      }
     }
 
     return {
         store,
         card,
-        navigateToContestants,
+        navigateTo,
     }
+  },
+
+  methods: {
+    getRole() {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      return userInfo?.roles?.[0];
+    }
+  },
+
+  computed: {
+    showStatus() {
+      return this.getRole() === 'USER';
+    },
   }
 }
 </script>

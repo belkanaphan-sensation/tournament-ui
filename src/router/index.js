@@ -12,6 +12,7 @@ import Rounds from '../components/round/Rounds.vue'
 import RoundDetail from '../components/round/RoundDetail.vue'
 import UserDetails from '../components/userinfo/UserDetails.vue'
 import Contestants from '../components/contestant/Contestants.vue'
+import ContestantsAnnouncer from '../components/contestant/ContestantsAnnouncer.vue'
 import Test from '../components/test/Test.vue'
 
 const routes = [
@@ -77,6 +78,11 @@ const routes = [
     name: 'Contestants',
     component: Contestants,
     props: true,
+  },{
+    path: '/contestantsAnnouncer/:milestoneId/:roundId',
+    name: 'ContestantsAnnouncer',
+    component: ContestantsAnnouncer,
+    props: true,
   }, {
     path: '/test',
     name: 'Test',
@@ -115,11 +121,6 @@ router.beforeEach((to, from, next) => {
                     })
     }
 
-
-
-    // // Если уже на странице логина и пользователь авторизован - редирект на главную
-
-
     const userRole = userInfo.roles[0];
 
     switch (userRole) {
@@ -135,35 +136,14 @@ router.beforeEach((to, from, next) => {
                     });
                 }
                 case 'Activities': {
-                    // return next({
-                    //     name: 'ActivitiesUser', // ДОЛЖЕН БЫТЬ ДРУГОЙ МАРШРУТ!
-                    //     params: to.params,
-                    //     query: to.query,
-                    //     meta: { ...to.meta, isRoleRedirect: true }
-                    // });
                     return next();
                 }
                 case 'Milestones': {
-                    // return next({
-                    //     name: 'MilestonesUser', // ДОЛЖЕН БЫТЬ ДРУГОЙ МАРШРУТ!
-                    //     params: to.params,
-                    //     query: to.query,
-                    //     meta: { ...to.meta, isRoleRedirect: true }
-                    // });
                     return next();
                 }
                 case 'Contestants': {
-                    // return next({
-                    //     name: 'ContestantsUser', // ДОЛЖЕН БЫТЬ ДРУГОЙ МАРШРУТ!
-                    //     params: to.params,
-                    //     query: to.query,
-                    //     meta: { ...to.meta, isRoleRedirect: true }
-                    // });
                     return next();
                 }
-                // Если маршрут уже для USER - пропускаем
-                // default:
-                //     return next();
             }
         }
         case 'SUPERADMIN': {
@@ -195,6 +175,28 @@ router.beforeEach((to, from, next) => {
                 }
                 default: {
                   return next();
+                }
+            }
+        }
+        case 'ANNOUNCER': {
+            const toName = to.name;
+            switch (toName) {
+                case 'Occasions': {
+                    return next({
+                        name: 'OccasionsForUser',
+                        params: to.params,
+                        query: to.query,
+                        meta: { ...to.meta, isRoleRedirect: true }
+                    });
+                }
+                case 'Activities': {
+                    return next();
+                }
+                case 'Milestones': {
+                    return next();
+                }
+                case 'Contestants': {
+                    return next();
                 }
             }
         }

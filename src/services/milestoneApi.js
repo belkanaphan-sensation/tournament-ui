@@ -42,6 +42,13 @@ export const milestoneApi = {
     });
   },
 
+  skipMilestone(id) {
+      const miletoneId = Number(id);
+      return api.post('/milestone/skip/' + miletoneId, [], {
+      'Content-Type': 'application/json',
+    });
+  },
+
   getMilestoneDetail(id) {
       const milestoneId = Number(id);
       return api.get('/milestone/' + milestoneId);

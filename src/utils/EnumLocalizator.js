@@ -19,7 +19,8 @@ export const milestoneStateEnum = {
     IN_PROGRESS: "В процессе",
     COMPLETED: "Завершено",
     PENDING: "Ожидает Старта",
-    SUMMARIZING: "Подсчет результатов"
+    SUMMARIZING: "Подсчет результатов",
+    SKIPPED: "Пропущен"
 }
 
 export const roundStateEnum = {
