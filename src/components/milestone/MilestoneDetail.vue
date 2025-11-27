@@ -1,7 +1,7 @@
 <template>
     <div class="milestone-detail-page">
         <div class="header-container control-panel-background-container">
-            <ControlPanel @back="handleBack"/>
+            <ControlPanel @back="handleBack" @refresh="handleRefresh"/>
             <UserIcon/>
         </div>
 
@@ -169,6 +169,17 @@ export default {
         })
     },
 
+    navigateToMilestoneResultDetail() {
+        const router = this.$router;
+
+        router.push({
+            name: 'MilestoneResultDetail',
+            params: { 
+                milestoneId: this.milestone.id
+            }
+        });
+    },
+
     getLocalizedMilestoneState() {
         return milestoneStateEnum[this.milestone.state];
     },
@@ -211,10 +222,16 @@ export default {
           visible: this.milestone.state === 'PENDING' && role === 'SUPERADMIN'
         },
         {
-          label: 'Подсчитать результаты (Проверь что можно начать подсчитывать )',
+          label: 'Подсчитать результаты',
           class: 'default-action-btn',
           onClick: () => this.sumUpMilestone(),
           visible: this.milestone.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
+        },
+        {
+          label: 'Результаты',
+          class: 'default-action-btn',
+          onClick: () => this.navigateToMilestoneResultDetail(),
+          visible: this.milestone.state === 'SUMMARIZING' && role === 'SUPERADMIN'
         },
         {
           label: 'Завершить Этап',
@@ -303,6 +320,10 @@ export default {
         'SKIPPED': 'status-closed',
       };
       return stateClasses[this.milestone.state] || 'status-unknown';
+    },
+
+    handleRefresh() {
+        window.location.reload();
     },
   },
 

@@ -65,7 +65,7 @@ export default {
 
       handleRefresh() {
         window.location.reload();
-    },
+      },
   },
 
   data() {

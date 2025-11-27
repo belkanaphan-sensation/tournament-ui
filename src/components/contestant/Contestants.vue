@@ -51,7 +51,6 @@
 <script>
 import ControlPanel from '../common/ControlPanel.vue';
 import Mask from '../common/Mask.vue';
-import Field from '../common/Field.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
 import ContestantCard from './ContestantCard.vue';
 import { useRouter } from 'vue-router'
@@ -71,7 +70,6 @@ export default {
   components: {
     ControlPanel,
     UserIcon,
-    Field,
     ContestantCard,
     Mask,
     LoadingOverlay

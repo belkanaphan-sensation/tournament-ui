@@ -2,7 +2,7 @@ import { api } from './api.js';
 
 export const assessmentApi = {
 
-  getmilestoneCriterionAssignmentByMilestoneId(id) {
+  getMilestoneCriterionAssignmentByMilestoneId(id) {
     try {
       const milestoneId = Number(id);
       return api.get('/milestone-criterion-assignment/milestone/' + milestoneId + '/currentUser');
@@ -12,6 +12,3 @@ export const assessmentApi = {
     }
   },
 }
-
-
-
