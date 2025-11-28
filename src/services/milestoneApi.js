@@ -18,9 +18,16 @@ export const milestoneApi = {
       return api.post('/milestone/draft/' + miletoneId);
   },
 
-  prepareRounds(id) {
+  prepareRounds(id, request) {
       const miletoneId = Number(id);
-      return api.post('/milestone/prepare-rounds/' + miletoneId, {}, {
+      return api.post('/milestone/prepare-rounds/' + miletoneId, request, {
+      'Content-Type': 'application/json',
+    });
+  },
+
+  regenerateRounds(id, request) {
+      const miletoneId = Number(id);
+      return api.post('/milestone/regenerate-rounds/' + miletoneId, request, {
       'Content-Type': 'application/json',
     });
   },

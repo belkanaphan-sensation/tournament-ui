@@ -2,19 +2,25 @@ import { api } from './api.js';
 
 export const roundApi = {
 
-  //Получить раунды по milestoneId
-  getRounds(id) {
-      const milestoneId = Number(id);
-      return api.get('/round/milestone/' + milestoneId);
-  },
+    //Получить раунды по milestoneId
+    getRounds(id) {
+        const milestoneId = Number(id);
+        return api.get('/round/milestone/' + milestoneId);
+    },
 
-  getRoundDetail(id) {
-      const roundId = Number(id);
-      return api.get('/round/' + roundId);
-  },
+    getRoundDetail(id) {
+        const roundId = Number(id);
+        return api.get('/round/' + roundId);
+    },
 
-  getByMilestoneIdInLifeStates(id) {
-      const milestoneId = Number(id);
-      return api.get('/round/milestone/' + milestoneId + '/life');
-  },
+    getByMilestoneIdInLifeStates(id) {
+        const milestoneId = Number(id);
+        return api.get('/round/milestone/' + milestoneId + '/life');
+    },
+
+    createExtraRound(createRoundRequest) {
+        return api.post('/round', createRoundRequest, {
+            'Content-Type': 'application/json',
+        });
+    }
 };

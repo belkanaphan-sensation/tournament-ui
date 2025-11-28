@@ -41,7 +41,10 @@
                             :contestants="coupleContestants"
                             :title="'Пары'"
                             :showPartnerSides="true"
+                            :selectedResults="selectedResults"
+                            :canEdit="canEditResults"
                             @final-decision-changed="handleFinalDecisionChange"
+                            @selection-changed="handleResultSelection"
                         />
                     </div>
 
@@ -51,13 +54,19 @@
                             :contestants="leaderContestants"
                             :title="'Партнеры'"
                             :showPartnerSides="false"
+                            :selectedResults="selectedResults"
+                            :canEdit="canEditResults"
                             @final-decision-changed="handleFinalDecisionChange"
+                            @selection-changed="handleResultSelection"
                         />
                         <ContestantTable 
                             :contestants="followerContestants"
                             :title="'Партнерши'"
                             :showPartnerSides="false"
+                            :selectedResults="selectedResults"
+                            :canEdit="canEditResults"
                             @final-decision-changed="handleFinalDecisionChange"
+                            @selection-changed="handleResultSelection"
                         />
                     </div>
                 </div>
@@ -85,6 +94,7 @@ import UserIcon from './../userinfo/UserIcon.vue';
 import { milestoneApi } from '@/services/milestoneApi.js';
 import { milestoneResultApi } from '@/services/milestoneResultApi.js';
 import { milestoneRuleApi } from '@/services/milestoneRuleApi.js';
+import { roundApi } from '@/services/roundApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import ContestantTable from '../contestant/ContestantTable.vue';
 import MilestoneRulesCard from './MilestoneRulesCard.vue';
@@ -120,6 +130,7 @@ export default {
             milestoneRule: null,
             nextMilestoneRule: null,
             modifiedResults: new Set(),
+            selectedResults: [],
         }
     },
 
@@ -128,6 +139,16 @@ export default {
     },
 
     computed: {
+        // Проверяем, можно ли редактировать результаты
+        canEditResults() {
+            return this.milestone?.state === 'SUMMARIZING';
+        },
+
+        // Проверяем, можно ли создать перетанцовку
+        canCreateExtraRound() {
+            return this.selectedResults.length > 0;
+        },
+
         // Определяем тип конкурсантов (COUPLE или SINGLE)
         isCoupleType() {
             if (!this.milestoneRule) return false;
@@ -213,8 +234,14 @@ export default {
                     label: this.modifiedResults.size > 0 ? `Сохранить (${this.modifiedResults.size})` : 'Сохранить',
                     class: 'default-action-btn',
                     onClick: () => this.saveResults(),
-                    visible: role === 'SUPERADMIN'
+                    visible: role === 'SUPERADMIN' && this.canEditResults // Добавляем проверку
                 },
+                {
+                    label: `Создать перетанцовку${this.selectedResults.length > 0 ? ` (${this.selectedResults.length})` : ''}`,
+                    class: this.selectedResults.length > 0 ? 'default-action-btn' : 'disabled-action-btn',
+                    onClick: () => this.handleCreateExtraRound(),
+                    visible: role === 'SUPERADMIN' && this.canEditResults // Добавляем проверку
+                }
             ];
 
             return actions.filter(action => action.visible);
@@ -244,7 +271,46 @@ export default {
             } finally {
                 this.isLoading = false;
             }
-        }
+        },
+
+        // Обработчик выделения/снятия выделения записи
+        handleResultSelection(selectionData) {
+                if (selectionData.isSelected) {
+                    if (!this.selectedResults.includes(selectionData.resultId)) {
+                        this.selectedResults.push(selectionData.resultId);
+                    }
+                } else {
+                    this.selectedResults = this.selectedResults.filter(id => id !== selectionData.resultId);
+                }
+            },
+
+        // Обработчик создания перетанцовки
+        async handleCreateExtraRound() {
+            if (!this.canCreateExtraRound) return;
+
+            this.isLoading = true;
+            try {
+                const selectedContestantIds = this.milestoneResult
+                    .filter(result => this.selectedResults.includes(result.id))
+                    .map(result => result.contestant?.id)
+                    .filter(id => id != null);
+
+                const createRequest = {
+                    milestoneId: this.milestone.id,
+                    contestantIds: selectedContestantIds,
+                }
+
+                await roundApi.createExtraRound(createRequest);
+                const selectedCount = this.selectedResults.length;
+                this.selectedResults = [];
+                await this.fillDetail(this.milestone.id);
+            } catch (error) {
+                console.error('Ошибка при сохранении изменений:', error);
+                alert('Произошла ошибка при сохранении изменений');
+            } finally {
+                this.isLoading = false;
+            }
+        },
     }
 }
 </script>
@@ -373,5 +439,27 @@ export default {
     .action-btn {
         flex: 1;
     }
+}
+
+.default-action-btn {
+    background: #17a2b8;
+    color: white;
+}
+
+.default-action-btn:hover {
+    background: #1abdd6;
+    color: white;
+}
+
+.disabled-action-btn {
+    background: #6c757d;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.disabled-action-btn:hover {
+    background: #6c757d;
+    color: white;
 }
 </style>

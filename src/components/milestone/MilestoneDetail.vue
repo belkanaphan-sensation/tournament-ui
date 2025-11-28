@@ -83,6 +83,16 @@
                 <p>{{ error }}</p>
                 <button class="retry-btn" @click="fetchMilestoneDetail">Попробовать снова</button>
             </div>
+
+            <!-- Модальное окно подготовки раундов -->
+            <PrepareRoundsModal 
+                v-if="showPrepareRoundsModal"
+                :show="showPrepareRoundsModal"
+                :milestoneName="milestone.name"
+                :milestoneRule="milestoneRule"
+                @close="handleClosePrepareRoundsModal"
+                @confirm="handleConfirmPrepareRounds"
+            />
         </div>
     </div>
 </template>
@@ -92,12 +102,14 @@ import RoundShortCard from '../round/RoundShortCard.vue';
 import ControlPanel from '../common/ControlPanel.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
 import { milestoneApi } from '@/services/milestoneApi.js';
+import { milestoneRuleApi } from '@/services/milestoneRuleApi.js';
 import { roundApi } from '@/services/roundApi.js';
 import { activityApi } from '@/services/activityApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import { milestoneStateEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
 import Field from '../common/Field.vue'
+import PrepareRoundsModal from './PrepareRoundsModal.vue'; // Добавляем импорт модального окна
 
 export default {
   name: 'MilestoneDetail',
@@ -106,7 +118,8 @@ export default {
     ControlPanel,
     UserIcon,
     LoadingOverlay,
-    Field
+    Field,
+    PrepareRoundsModal
   },
 
   setup(props) {
@@ -123,12 +136,15 @@ export default {
   data() {
     return {
       milestone: null,
+      milestoneRule: null,
       activity: null,
       rounds: [],
       isLoading: true,
       error: null,
       isScrollAtStart: true,
-      isScrollAtEnd: false
+      isScrollAtEnd: false,
+      showPrepareRoundsModal: false,
+      prepareRoundsAction: null
     }
   },
 
@@ -153,9 +169,15 @@ export default {
     },
 
     async fillDetail(milestoneId) {
-        this.milestone = await milestoneApi.getMilestoneDetail(milestoneId);
-        this.activity = await activityApi.getActivityDetail(this.milestone.activity.id);
-        this.rounds = await roundApi.getRounds(milestoneId);
+        const tempMilestone = await milestoneApi.getMilestoneDetail(milestoneId);
+        const tempMilestoneRule = await milestoneRuleApi.getMilestoneRuleByMilestoneId(milestoneId);
+        const tempRounds = await roundApi.getRounds(milestoneId);
+        const tempActivity = await activityApi.getActivityDetail(tempMilestone.activity.id);
+        
+        this.milestone = tempMilestone;
+        this.milestoneRule = tempMilestoneRule;
+        this.rounds = tempRounds;
+        this.activity = tempActivity;
     },
 
     navigateToRoundDetail(roundId) {
@@ -196,93 +218,214 @@ export default {
       const role = userInfo?.roles?.[0];
 
       const actions = [
-        {
-          label: 'Запланировать',
-          class: 'default-action-btn',
-          onClick: () => this.planMilestone(),
-          visible: this.milestone.state === 'DRAFT' && role === 'SUPERADMIN'
-        },
-        //не нужно пока показывать, нет функционала и проверок состояния активности
-        // {
-        //   label: 'Вернуть в редактирование',
-        //   class: 'default-action-btn',
-        //   onClick: () => this.backToDraft(),
-        //   visible: this.milestone.state === 'PLANNED'
-        // },
-        {
-          label: 'Подготовить раунды',
-          class: 'default-action-btn',
-          onClick: () => this.prepareRounds(),
-          visible: this.milestone.state === 'PLANNED' && this.activity.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
-        },
-        {
-          label: 'Старт',
-          class: 'default-action-btn',
-          onClick: () => this.startMilestone(),
-          visible: this.milestone.state === 'PENDING' && role === 'SUPERADMIN'
-        },
-        {
-          label: 'Подсчитать результаты',
-          class: 'default-action-btn',
-          onClick: () => this.sumUpMilestone(),
-          visible: this.milestone.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
-        },
-        {
-          label: 'Результаты',
-          class: 'default-action-btn',
-          onClick: () => this.navigateToMilestoneResultDetail(),
-          visible: this.milestone.state === 'SUMMARIZING' && role === 'SUPERADMIN'
-        },
-        {
-          label: 'Завершить Этап',
-          class: 'default-action-btn',
-          onClick: () => this.completeMilestone(),
-          visible: this.milestone.state === 'SUMMARIZING' && role === 'SUPERADMIN'
-        },
-        {
-          label: 'Пропустить этап',
-          class: 'default-action-btn',
-          onClick: () => this.skipMilestone(),
-          visible: (this.milestone.state === 'DRAFT' || this.milestone.state === 'PLANNED' || this.milestone.state === 'PENDING') && role === 'SUPERADMIN'
-        },
+          {
+              label: 'Запланировать',
+              class: 'default-action-btn',
+              onClick: () => this.planMilestone(),
+              visible: this.milestone.state === 'DRAFT' && role === 'SUPERADMIN'
+          },
+          {
+              label: 'Подготовить раунды',
+              class: 'default-action-btn',
+              onClick: () => this.openPrepareRoundsModal(),
+              visible: this.milestone.state === 'PLANNED' && this?.activity.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
+          },
+          {
+              label: 'Перегенерировать раунды',
+              class: 'default-action-btn',
+              onClick: () => this.openRegenerateRoundsModal(),
+              visible: this.milestone.state === 'PENDING' && this?.activity.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
+          },
+          {
+              label: 'Старт',
+              class: 'default-action-btn',
+              onClick: () => this.startMilestone(),
+              visible: this.milestone.state === 'PENDING' && role === 'SUPERADMIN'
+          },
+          {
+              label: 'Подсчитать результаты',
+              class: 'default-action-btn',
+              onClick: () => this.sumUpMilestone(),
+              visible: this.milestone.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
+          },
+          {
+              label: 'Результаты',
+              class: 'default-action-btn',
+              onClick: () => this.navigateToMilestoneResultDetail(),
+              visible: (this.milestone.state === 'SUMMARIZING' || this.milestone.state === 'COMPLETED') && role === 'SUPERADMIN'
+          },
+          {
+              label: 'Завершить Этап',
+              class: 'default-action-btn',
+              onClick: () => this.completeMilestone(),
+              visible: this.milestone.state === 'SUMMARIZING' && role === 'SUPERADMIN'
+          },
+          {
+              label: 'Пропустить этап',
+              class: 'default-action-btn',
+              onClick: () => this.skipMilestone(),
+              visible: (this.milestone.state === 'DRAFT' || this.milestone.state === 'PLANNED' || this.milestone.state === 'PENDING') && role === 'SUPERADMIN'
+          },
       ];
 
       return actions.filter(action => action.visible);
+  },
+
+    // Открытие модального окна подготовки раундов
+    openPrepareRoundsModal() {
+      this.prepareRoundsAction = 'prepare';
+      this.showPrepareRoundsModal = true;
+    },
+
+    // Открытие модального окна перегенерации раундов
+    openRegenerateRoundsModal() {
+      this.prepareRoundsAction = 'regenerate';
+      this.showPrepareRoundsModal = true;
+    },
+
+    // Закрытие модального окна
+    handleClosePrepareRoundsModal() {
+      this.showPrepareRoundsModal = false;
+      this.prepareRoundsAction = null;
+    },
+
+    // Подтверждение подготовки/перегенерации раундов с кастомным лимитом
+    async handleConfirmPrepareRounds(customRoundLimit) {
+      try {
+        if (this.prepareRoundsAction === 'prepare') {
+          await this.prepareRounds(customRoundLimit);
+        } else if (this.prepareRoundsAction === 'regenerate') {
+          await this.regenerateRounds(customRoundLimit);
+        }
+        this.showPrepareRoundsModal = false;
+        this.prepareRoundsAction = null;
+      } catch (error) {
+        console.error('Ошибка при работе с раундами:', error);
+      }
     },
 
     async planMilestone() {
+      this.isLoading = true;
+      this.error = null;
+      
+      try {
         await milestoneApi.planMilestone(this.milestone.id);
         this.fillDetail(this.milestone.id);
+      } catch (err) {
+        this.error = 'Не удалось загрузить данные этапа';
+        console.error('Error fetching milestone detail:', err);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     async backToDraft() {
+      this.isLoading = true;
+      this.error = null;
+      
+      try {
         await milestoneApi.backToDraft(this.milestone.id);
         this.fillDetail(this.milestone.id);
+      } catch (err) {
+        this.error = 'Не удалось загрузить данные этапа';
+        console.error('Error fetching milestone detail:', err);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
-    async prepareRounds() {
-        await milestoneApi.prepareRounds(this.milestone.id);
+    // Изменяем метод prepareRounds для принятия параметра
+    async prepareRounds(customRoundLimit = null) {
+      this.isLoading = true;
+      this.error = null;
+      
+      try {
+        const request = customRoundLimit ? { roundContestantLimit: customRoundLimit } : {};
+        await milestoneApi.prepareRounds(this.milestone.id, request);
         this.fillDetail(this.milestone.id);
+      } catch (err) {
+        this.error = 'Не удалось загрузить данные этапа';
+        console.error('Error fetching milestone detail:', err);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    // Новый метод для перегенерации раундов
+    async regenerateRounds(customRoundLimit = null) {
+      this.isLoading = true;
+      this.error = null;
+      
+      try {
+        const request = customRoundLimit ? { roundContestantLimit: customRoundLimit } : {};
+        await milestoneApi.regenerateRounds(this.milestone.id, request);
+        this.fillDetail(this.milestone.id);
+      } catch (err) {
+        this.error = 'Не удалось загрузить данные этапа';
+        console.error('Error fetching milestone detail:', err);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     async startMilestone() {
+      this.isLoading = true;
+      this.error = null;
+      
+      try {
         await milestoneApi.startMilestone(this.milestone.id);
         this.fillDetail(this.milestone.id);
+      } catch (err) {
+        this.error = 'Не удалось загрузить данные этапа';
+        console.error('Error fetching milestone detail:', err);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     async sumUpMilestone() {
+      this.isLoading = true;
+      this.error = null;
+      
+      try {
         await milestoneApi.sumUpMilestone(this.milestone.id);
         this.fillDetail(this.milestone.id);
+      } catch (err) {
+        this.error = 'Не удалось загрузить данные этапа';
+        console.error('Error fetching milestone detail:', err);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     async completeMilestone() {
+      this.isLoading = true;
+      this.error = null;
+      
+      try {
         await milestoneApi.completeMilestone(this.milestone.id);
         this.fillDetail(this.milestone.id);
+      } catch (err) {
+        this.error = 'Не удалось загрузить данные этапа';
+        console.error('Error fetching milestone detail:', err);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     async skipMilestone() {
+      this.isLoading = true;
+      this.error = null;
+      
+      try {
         await milestoneApi.skipMilestone(this.milestone.id);
         this.fillDetail(this.milestone.id);
+      } catch (err) {
+        this.error = 'Не удалось загрузить данные этапа';
+        console.error('Error fetching milestone detail:', err);
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     scrollRounds(direction) {

@@ -6,6 +6,7 @@
                 <thead>
                     <tr>
                         <th></th>
+                        <th></th>
                         <th>Номер</th>
                         <th v-if="showPartnerSides">Участники</th>
                         <th>Финальное решение</th>
@@ -16,11 +17,26 @@
                 </thead>
                 <tbody>
                     <template v-for="result in contestants" :key="result.id">
-                        <tr class="main-row" @click="toggleRowExpand(result.id)">
+                        <tr class="main-row" 
+                            @click="toggleRowExpand(result.id)"
+                            :class="{ 
+                                'selected': isResultSelected(result.id),
+                                'selectable': isResultSelectable(result)
+                            }">
                             <td class="expand-icon">
                                 <span class="icon" :class="{ expanded: expandedRows.has(result.id) }">
                                     ▶
                                 </span>
+                            </td>
+                            <td class="selection-cell">
+                                <input 
+                                    type="checkbox"
+                                    :checked="isResultSelected(result.id)"
+                                    @change="onSelectionChange(result.id, $event)"
+                                    @click.stop
+                                    :disabled="!isResultSelectable(result)"
+                                    class="selection-checkbox"
+                                />
                             </td>
                             <td>{{ result.contestant?.number }}</td>
                             <td v-if="showPartnerSides">
@@ -37,6 +53,7 @@
                                     @change="onFinalDecisionChange(result)"
                                     :class="['decision-select', getFinalStatusClass(result.finallyApproved)]"
                                     @click.stop
+                                    :disabled="!canEdit"
                                 >
                                     <option :value="true">Прошел</option>
                                     <option :value="false">Не прошел</option>
@@ -55,7 +72,7 @@
                             </td>
                         </tr>
                         <tr v-if="expandedRows.has(result.id)" class="detail-row">
-                            <td colspan="7" class="rounds-details">
+                            <td colspan="8" class="rounds-details">
                                 <div class="rounds-container">
                                     <table class="rounds-table">
                                         <thead>
@@ -115,6 +132,14 @@ export default {
         showPartnerSides: {
             type: Boolean,
             default: false
+        },
+        selectedResults: {
+            type: Array,
+            default: () => []
+        },
+        canEdit: {
+            type: Boolean,
+            default: true
         }
     },
     data() {
@@ -178,6 +203,30 @@ export default {
             return val === true ? '✓' : ''; // возвращаем галочку или пустую строку
         },
 
+        // Проверяем, можно ли выделить запись
+        isResultSelectable(result) {
+            return result.judgePassed === 'PENDING' || result.judgePassed === 'FAILED';
+        },
+
+        // Проверяем, выделена ли запись
+        isResultSelected(resultId) {
+            return this.selectedResults.includes(resultId);
+        },
+
+        // Обработчик изменения выделения
+        onSelectionChange(resultId, event) {
+            const isSelected = event.target.checked;
+            // Находим полный объект result чтобы получить contestantId
+            const result = this.contestants.find(r => r.id === resultId);
+            if (result) {
+                this.$emit('selection-changed', {
+                    resultId: resultId,
+                    contestantId: result.contestant?.id,
+                    isSelected: isSelected
+                });
+            }
+        },
+
         // Переключение развертывания строки
         toggleRowExpand(resultId) {
             if (this.expandedRows.has(resultId)) {
@@ -191,7 +240,16 @@ export default {
         onFinalDecisionChange(result) {
             this.$emit('final-decision-changed', result);
         }
-    }
+    },
+
+    watch: {
+        selectedResults: {
+            handler(newVal) {
+                this.$forceUpdate();
+            },
+            deep: true
+        }
+    },
 }
 </script>
 
@@ -323,6 +381,7 @@ export default {
 .expand-icon {
     width: 30px;
     text-align: center;
+    vertical-align: middle;
 }
 
 .expand-icon .icon {
@@ -330,6 +389,7 @@ export default {
     transition: transform 0.3s ease;
     font-size: 0.7rem;
     color: #666;
+    line-height: 1;
 }
 
 .expand-icon .icon.expanded {
@@ -426,5 +486,66 @@ export default {
     background: white;
     color: #333;
     padding: 8px;
+}
+
+.selection-cell {
+    width: 40px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.selection-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 0;
+    vertical-align: middle;
+}
+
+.selection-checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.main-row.selectable {
+    cursor: pointer;
+}
+
+.main-row.selectable:hover {
+    background-color: #f0f8ff;
+}
+
+.main-row.selected {
+    background-color: #e3f2fd !important;
+    border-left: 4px solid #2196f3;
+}
+
+.main-row.selected:hover {
+    background-color: #bbdefb !important;
+}
+
+/* Стили для кнопки перетанцовки */
+.extra-round-btn {
+    background: #28a745;
+    color: white;
+}
+
+.extra-round-btn:hover:not(.disabled) {
+    background: #34ce57;
+    color: white;
+}
+
+.extra-round-btn.disabled {
+    background: #6c757d;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.contestant-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
 }
 </style>
