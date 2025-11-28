@@ -13,4 +13,11 @@ export const judgeResultApi = {
       'Content-Type': 'application/json',
     });
   },
+
+  getJudgeMilestoneResultsByContestantId(ids, milestoneId) {
+      const longMilestoneId = Number(milestoneId);
+      return api.post('/judge-milestone-result/getByContestantIdAndMilestoneId?milestoneId=' + longMilestoneId, ids, {
+      'Content-Type': 'application/json',
+    });
+  }
 };

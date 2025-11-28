@@ -85,6 +85,15 @@
                 <button class="retry-btn" @click="fetchMilestoneResultDetail">Попробовать снова</button>
             </div>
         </div>
+
+        <CompareJudgeResultsModal 
+            v-if="showCompareJudgeResultsModal"
+            :show="showCompareJudgeResultsModal"
+            :contestantIds="selectedContestantIds"
+            :milestoneResult="milestoneResult"
+            :milestoneId="milestone.id"
+            @close="handleCloseCompareJudgeResultsModal"
+        />
     </div>
 </template>
 
@@ -99,6 +108,7 @@ import LoadingOverlay from '../common/LoadingOverlay.vue';
 import ContestantTable from '../contestant/ContestantTable.vue';
 import MilestoneRulesCard from './MilestoneRulesCard.vue';
 import { useRouter } from 'vue-router';
+import CompareJudgeResultsModal from './CompareJudgeResultsModal.vue';
 
 export default {
     name: 'MilestoneResultDetail',
@@ -108,6 +118,7 @@ export default {
         LoadingOverlay,
         ContestantTable,
         MilestoneRulesCard,
+        CompareJudgeResultsModal,
     },
 
     setup(props) {
@@ -131,6 +142,7 @@ export default {
             nextMilestoneRule: null,
             modifiedResults: new Set(),
             selectedResults: [],
+            showCompareJudgeResultsModal: false,
         }
     },
 
@@ -146,7 +158,37 @@ export default {
 
         // Проверяем, можно ли создать перетанцовку
         canCreateExtraRound() {
-            return this.selectedResults.length > 0;
+            // Проверяем, что есть выбранные записи И ВСЕ они подходят для перетанцовки
+            return this.selectedResults.length > 0 && this.allSelectedResultsEligible;
+        },
+
+        allSelectedResultsEligible() {
+            if (this.selectedResults.length === 0) return false;
+            
+            return this.selectedResults.every(resultId => {
+                const result = this.milestoneResult.find(r => r.id === resultId);
+                return result && (result.judgePassed === 'PENDING' || result.judgePassed === 'FAILED');
+            });
+        },
+
+        selectedContestantIds() {
+            return this.milestoneResult
+                .filter(result => this.selectedResults.includes(result.id))
+                .map(result => result.contestant?.id)
+                .filter(id => id != null);
+        },
+
+        // Проверяем, есть ли среди выбранных записей подходящие для перетанцовки
+        hasEligibleSelectedResults() {
+            return this.selectedResults.some(resultId => {
+                const result = this.milestoneResult.find(r => r.id === resultId);
+                return result && (result.judgePassed === 'PENDING' || result.judgePassed === 'FAILED');
+            });
+        },
+
+        // Получаем количество подходящих для перетанцовки выбранных записей
+        eligibleSelectedCount() {
+            return this.selectedResults.length;
         },
 
         // Определяем тип конкурсантов (COUPLE или SINGLE)
@@ -238,9 +280,15 @@ export default {
                 },
                 {
                     label: `Создать перетанцовку${this.selectedResults.length > 0 ? ` (${this.selectedResults.length})` : ''}`,
-                    class: this.selectedResults.length > 0 ? 'default-action-btn' : 'disabled-action-btn',
+                    class: this.canCreateExtraRound ? 'default-action-btn' : 'disabled-action-btn',
                     onClick: () => this.handleCreateExtraRound(),
-                    visible: role === 'SUPERADMIN' && this.canEditResults // Добавляем проверку
+                    visible: role === 'SUPERADMIN' && this.canEditResults
+                },
+                {
+                    label: this.eligibleSelectedCount <= 1 ? `Посмотреть результаты` : `Сравнить результаты`,
+                    class: this.eligibleSelectedCount > 0 ? 'default-action-btn' : 'disabled-action-btn',
+                    onClick: () => this.openComparingJudjeResult(),
+                    visible: role === 'SUPERADMIN'
                 }
             ];
 
@@ -284,12 +332,31 @@ export default {
                 }
             },
 
+        openComparingJudjeResult() {
+            if (this.selectedResults.length === 0) {
+                alert('Выберите хотя бы одного конкурсанта для сравнения');
+                return;
+            }
+
+            if (this.selectedContestantIds.length === 0) {
+                alert('Не удалось получить данные выбранных конкурсантов');
+                return;
+            }
+
+            this.showCompareJudgeResultsModal = true;
+        },
+
+        handleCloseCompareJudgeResultsModal() {
+            this.showCompareJudgeResultsModal = false;
+        },
+
         // Обработчик создания перетанцовки
         async handleCreateExtraRound() {
             if (!this.canCreateExtraRound) return;
 
             this.isLoading = true;
             try {
+                // Все выбранные записи уже проверены на eligibility в canCreateExtraRound
                 const selectedContestantIds = this.milestoneResult
                     .filter(result => this.selectedResults.includes(result.id))
                     .map(result => result.contestant?.id)
@@ -304,9 +371,11 @@ export default {
                 const selectedCount = this.selectedResults.length;
                 this.selectedResults = [];
                 await this.fillDetail(this.milestone.id);
+                
+                alert(`Успешно создана перетанцовка для ${selectedCount} участников`);
             } catch (error) {
-                console.error('Ошибка при сохранении изменений:', error);
-                alert('Произошла ошибка при сохранении изменений');
+                console.error('Ошибка при создании перетанцовки:', error);
+                alert('Произошла ошибка при создании перетанцовки');
             } finally {
                 this.isLoading = false;
             }

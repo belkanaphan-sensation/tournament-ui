@@ -21,7 +21,8 @@
                             @click="toggleRowExpand(result.id)"
                             :class="{ 
                                 'selected': isResultSelected(result.id),
-                                'selectable': isResultSelectable(result)
+                                'selectable': isResultSelectable(result),
+                                'eligible': isResultEligibleForExtraRound(result) // Добавляем класс для подходящих записей
                             }">
                             <td class="expand-icon">
                                 <span class="icon" :class="{ expanded: expandedRows.has(result.id) }">
@@ -205,6 +206,11 @@ export default {
 
         // Проверяем, можно ли выделить запись
         isResultSelectable(result) {
+            return true;
+        },
+
+        // Проверяем, можно ли выбрать запись для перетанцовки
+        isResultEligibleForExtraRound(result) {
             return result.judgePassed === 'PENDING' || result.judgePassed === 'FAILED';
         },
 
@@ -547,5 +553,18 @@ export default {
     text-align: left;
     border-bottom: 1px solid #e0e0e0;
     vertical-align: middle;
+}
+
+.main-row.eligible {
+    border-left: 3px solid #ffc107; /* Желтая полоса для подходящих записей */
+}
+
+.main-row.eligible.selectable:hover {
+    background-color: #fff3cd; /* Светло-желтый фон при наведении */
+}
+
+.main-row.eligible.selected {
+    background-color: #fff3cd !important; /* Желтый фон для выбранных подходящих записей */
+    border-left: 4px solid #ffc107;
 }
 </style>
