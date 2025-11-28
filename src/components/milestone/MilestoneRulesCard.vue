@@ -1,7 +1,7 @@
 <template>
     <div class="milestone-rules-card" v-if="milestoneRule">
         <div class="rules-header" @click="toggleCollapse">
-            <h3 class="rules-title">Правила следующего этапа (Нужно показывать не правила этого этапа, а следующего)</h3>
+            <h3 class="rules-title">Правила следующего этапа</h3>
             <button class="collapse-btn" :class="{ 'collapsed': isCollapsed }">
                 <span class="collapse-icon">{{ isCollapsed ? '▶' : '▼' }}</span>
             </button>
@@ -16,7 +16,10 @@
                     <Field label="Режим оценивания" :value="getAssessmentModeLabel(milestoneRule.assessmentMode)"/>
                 </div>
                 <div class="rule-item">
-                    <Field label="Лимит конкурсантов" :value="milestoneRule.contestantLimit || 'Не ограничено'"/>
+                    <Field 
+                        label="Лимит конкурсантов" 
+                        :value="getContestantLimitDisplayValue()"
+                    />
                 </div>
                 <div class="rule-item">
                     <Field label="Строгий режим отбора" :value="milestoneRule.strictPassMode ? 'Да' : 'Нет'"/>
@@ -40,6 +43,10 @@ export default {
         milestoneRule: {
             type: Object,
             default: null
+        },
+        passedContestantsCounts: {
+            type: Array,
+            default: () => []
         }
     },
 
@@ -69,7 +76,27 @@ export default {
                 // добавьте другие режимы оценивания по мере необходимости
             };
             return labels[mode] || mode;
-        }
+        },
+
+        // Получаем отображаемое значение для лимита конкурсантов
+        getContestantLimitDisplayValue() {
+            const limit = this.milestoneRule.contestantLimit;
+            if (!limit) return 'Не ограничено';
+            
+            if (this.milestoneRule.contestantType === 'SINGLE') {
+                // Для одиночных показываем два значения через слэш
+                if (this.passedContestantsCounts.length === 2) {
+                    return `${this.passedContestantsCounts[0]} / ${this.passedContestantsCounts[1]} / ${limit}`;
+                }
+            } else {
+                // Для пар показываем одно значение
+                if (this.passedContestantsCounts.length === 1) {
+                    return `${this.passedContestantsCounts[0]} / ${limit}`;
+                }
+            }
+            
+            return `${this.passedContestantsCounts.join(' / ')} / ${limit}`;
+        },
     }
 }
 </script>
@@ -137,6 +164,31 @@ export default {
     align-items: center;
     padding: 8px 0;
     border-bottom: 1px solid #f5f5f5;
+}
+
+/* Стили для подсветки лимита */
+.limit-exceeded {
+    color: #dc3545;
+    font-weight: bold;
+    background-color: #f8d7da;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.limit-reached {
+    color: #28a745;
+    font-weight: bold;
+    background-color: #d4edda;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.limit-available {
+    color: #ffc107;
+    font-weight: bold;
+    background-color: #fff3cd;
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
 /* Анимация для плавного сворачивания */

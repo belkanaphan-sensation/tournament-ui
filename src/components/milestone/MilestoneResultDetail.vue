@@ -27,7 +27,11 @@
                 </div>
 
                 <!-- Блок с правилами этапа -->
-                <MilestoneRulesCard :milestoneRule="milestoneRule" />
+                <MilestoneRulesCard 
+                    :milestoneRule="nextMilestoneRule" 
+                    :passedContestantsCounts="passedContestantsCounts"
+                    v-if="nextMilestoneRule"
+                />
 
                 <!-- Блок с таблицами конкурсантов -->
                 <div class="contestant-tables-container" v-if="milestoneRule && milestoneResult.length">
@@ -37,6 +41,7 @@
                             :contestants="coupleContestants"
                             :title="'Пары'"
                             :showPartnerSides="true"
+                            @final-decision-changed="handleFinalDecisionChange"
                         />
                     </div>
 
@@ -46,11 +51,13 @@
                             :contestants="leaderContestants"
                             :title="'Партнеры'"
                             :showPartnerSides="false"
+                            @final-decision-changed="handleFinalDecisionChange"
                         />
                         <ContestantTable 
                             :contestants="followerContestants"
                             :title="'Партнерши'"
                             :showPartnerSides="false"
+                            @final-decision-changed="handleFinalDecisionChange"
                         />
                     </div>
                 </div>
@@ -73,23 +80,15 @@
 </template>
 
 <script>
-
-import RoundShortCard from '../round/RoundShortCard.vue';
 import ControlPanel from '../common/ControlPanel.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
 import { milestoneApi } from '@/services/milestoneApi.js';
 import { milestoneResultApi } from '@/services/milestoneResultApi.js';
 import { milestoneRuleApi } from '@/services/milestoneRuleApi.js';
-
-
-import { roundApi } from '@/services/roundApi.js';
-import { activityApi } from '@/services/activityApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import ContestantTable from '../contestant/ContestantTable.vue';
 import MilestoneRulesCard from './MilestoneRulesCard.vue';
-import { milestoneStateEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
-import Field from '../common/Field.vue'
 
 export default {
     name: 'MilestoneResultDetail',
@@ -119,6 +118,8 @@ export default {
             isLoading: true,
             error: null,
             milestoneRule: null,
+            nextMilestoneRule: null,
+            modifiedResults: new Set(),
         }
     },
 
@@ -154,6 +155,20 @@ export default {
         // Все конкурсанты для COUPLE типа
         coupleContestants() {
             return this.milestoneResult;
+        },
+
+        // Количество прошедших конкурсантов по таблицам
+        passedContestantsCounts() {
+            if (this.isCoupleType) {
+                // Для пар - одна таблица
+                const passedCount = this.coupleContestants.filter(result => result.finallyApproved === true).length;
+                return [passedCount];
+            } else {
+                // Для одиночных - две таблицы
+                const passedLeaders = this.leaderContestants.filter(result => result.finallyApproved === true).length;
+                const passedFollowers = this.followerContestants.filter(result => result.finallyApproved === true).length;
+                return [passedLeaders, passedFollowers];
+            }
         }
     },
 
@@ -180,7 +195,12 @@ export default {
         async fillDetail(milestoneId) {
             this.milestone = await milestoneApi.getMilestoneDetail(milestoneId);
             this.milestoneRule = await milestoneRuleApi.getMilestoneRuleByMilestoneId(milestoneId);
+            this.nextMilestoneRule = await milestoneRuleApi.getNextMilestoneRuleByMilestoneId(milestoneId);
             this.milestoneResult = await milestoneResultApi.getMilestoneResultsByMilestoneId(milestoneId);
+        },
+
+        handleFinalDecisionChange(result) {
+            this.modifiedResults.add(result.id);
         },
 
         getHeaderActions() {
@@ -190,7 +210,7 @@ export default {
             const role = userInfo?.roles?.[0];
 
             const actions = [{
-                    label: 'Сохранить',
+                    label: this.modifiedResults.size > 0 ? `Сохранить (${this.modifiedResults.size})` : 'Сохранить',
                     class: 'default-action-btn',
                     onClick: () => this.saveResults(),
                     visible: role === 'SUPERADMIN'
@@ -200,13 +220,33 @@ export default {
             return actions.filter(action => action.visible);
         },
 
-        saveResults() {
+        async saveResults() {
+            if (this.modifiedResults.size === 0) {
+               alert('Нет изменений для сохранения');
+               return;
+            }
 
+            this.isLoading = true;
+            try {
+                // Получаем только измененные результаты
+                const resultsToUpdate = this.milestoneResult.filter(result => 
+                    this.modifiedResults.has(result.id)
+                ).map(result => ({
+                    id: result.id,
+                    finallyApproved: result.finallyApproved
+                }));
+
+                await milestoneResultApi.updateMilestoneResult(this.milestone.id, resultsToUpdate);
+                this.modifiedResults.clear();
+            } catch (error) {
+                console.error('Ошибка при сохранении изменений:', error);
+                alert('Произошла ошибка при сохранении изменений');
+            } finally {
+                this.isLoading = false;
+            }
         }
     }
 }
-
-
 </script>
 
 <style scoped>
@@ -227,7 +267,7 @@ export default {
 }
 
 .content-container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     position: relative;
 }

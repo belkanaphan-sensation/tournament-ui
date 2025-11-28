@@ -60,3 +60,9 @@ export const partnerSideEnum = {
     LEADER: 'Партнер',
     FOLLOWER: 'Партнерша'
 }
+
+export const passStatusEnum = {
+    PASSED: 'Прошел',
+    PENDING: 'Ожидает решения',
+    FAILED: 'Не прошел'
+}
