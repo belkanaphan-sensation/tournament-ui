@@ -12,7 +12,7 @@
             <div class="milestone-result-details" v-if="milestone">
                 <div class="milestone-result-header">
                     <div class="header-left">
-                        <h1 class="milestone-result-title">Результаты Этапа: {{ milestone.name }}</h1>
+                        <h1 class="milestone-result-title">Результаты Этапа: {{ milestone.name }} </h1>
                     </div>
                     <div class="header-actions">
                         <button 
