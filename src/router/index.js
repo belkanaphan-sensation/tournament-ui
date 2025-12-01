@@ -15,6 +15,7 @@ import UserDetails from '../components/userinfo/UserDetails.vue'
 import Contestants from '../components/contestant/Contestants.vue'
 import ContestantsAnnouncer from '../components/contestant/ContestantsAnnouncer.vue'
 import Test from '../components/test/Test.vue'
+import SnakeGame from '../components/userinfo/SnakeGame.vue'
 
 const routes = [
   {
@@ -92,6 +93,11 @@ const routes = [
     path: '/test',
     name: 'Test',
     component: Test
+  },
+  {
+    path: '/snake-game',
+    name: 'SnakeGame',
+    component: SnakeGame
   }
 ]
 

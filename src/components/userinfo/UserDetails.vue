@@ -9,9 +9,6 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <h2>Профиль пользователя</h2>
-                    <!-- <div class="user-avatar">
-                        {{ getUserInitials() }}
-                    </div> -->
                 </div>
                 
                 <div class="fields-grid">
@@ -27,15 +24,10 @@
                 </div>
 
                 <div class="snake-section">
-                    <a href="#" @click.prevent="showSnakeGame = true" class="snake-link">
+                    <router-link to="/snake-game" class="snake-link">
                         🐍 Сыграть в змейку
-                    </a>
+                    </router-link>
                 </div>
-
-                <SnakeGame 
-                    :showSnakeGame="showSnakeGame" 
-                    @close="showSnakeGame = false" 
-                />
             </div>
         </div>
     </div>
@@ -47,8 +39,6 @@
     import { useRouter } from 'vue-router'
     import { userStatusEnum, roleEnum } from '../../utils/EnumLocalizator.js'
     import LogoutIcon from './LogoutIcon.vue'
-    import SnakeGame from './SnakeGame.vue'
-    import { ref } from 'vue'
 
     export default {
         name: 'UserDetails',
@@ -56,10 +46,6 @@
             ControlPanel,
             Field,
             LogoutIcon,
-            SnakeGame,
-        },
-        props: {
-            
         },
         setup(props) {
             const router = useRouter()
@@ -78,12 +64,9 @@
             userInfo.statusDisplayValue = userStatusEnum[userInfo?.status];
             userInfo.roleDisplayValue = roleEnum[userInfo?.roles?.[0]];
 
-            const showSnakeGame = ref(false)
-
             return {
                 handleBack,
-                userInfo,
-                showSnakeGame
+                userInfo
             }
         },
 
@@ -306,5 +289,31 @@
     color: #333;
     font-size: 1rem;
     font-weight: 500;
+}
+
+.snake-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.snake-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    background: linear-gradient(135deg, #218838, #1e7e34);
+}
+
+.snake-link:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 }
 </style>
