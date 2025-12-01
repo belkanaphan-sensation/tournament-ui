@@ -6,7 +6,7 @@
         </div>
 
         <div class="title-container">
-            <span>Активности</span>
+            <span>Категории</span>
         </div>
 
         <div class="content-container">

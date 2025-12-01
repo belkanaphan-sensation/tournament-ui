@@ -54,14 +54,14 @@
                             :class="{ active: activeTab === 'leaders' }"
                             @click="switchTab('leaders')"
                         >
-                            Партнеры
+                            Партнеры ({{ leadersRegistrationStats }})
                         </button>
                         <button 
                             class="tab-button" 
                             :class="{ active: activeTab === 'followers' }"
                             @click="switchTab('followers')"
                         >
-                            Партнерши
+                            Партнерши ({{ followersRegistrationStats }})
                         </button>
                     </div>
 
@@ -227,6 +227,18 @@ export default {
 
     followers() {
         return this.participants.filter(p => p.partnerSide === 'FOLLOWER');
+    },
+
+    leadersRegistrationStats() {
+        const registeredCount = this.leaders.filter(p => p.isRegistered).length;
+        const totalCount = this.leaders.length;
+        return `Зарегистрировано ${registeredCount} из ${totalCount}`;
+    },
+
+    followersRegistrationStats() {
+        const registeredCount = this.followers.filter(p => p.isRegistered).length;
+        const totalCount = this.followers.length;
+        return `Зарегистрировано ${registeredCount} из ${totalCount}`;
     },
 
     showActionPanel() {
@@ -568,7 +580,7 @@ export default {
             this.selectAll = newVal.length === this.participants.length && this.participants.length > 0;
         }
     }
-  }
+  },
 }
 </script>
 
@@ -590,7 +602,7 @@ export default {
 }
 
 .content-container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     position: relative;
 }

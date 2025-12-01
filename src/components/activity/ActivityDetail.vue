@@ -205,7 +205,7 @@ export default {
           visible: this.activity.state === 'PLANNED' && role === 'SUPERADMIN'
         },
         // {
-        //   label: 'Вернуть в Запланирован (Нет реализации)',
+        //   label: 'Вернуть в Запланирован',
         //   class: 'default-action-btn',
         //   onClick: () => this.backToPlanned(),
         //   visible: this.activity.state === 'REGISTRATION_CLOSED' && role === 'SUPERADMIN'
@@ -336,7 +336,7 @@ export default {
 }
 
 .content-container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     position: relative;
 }

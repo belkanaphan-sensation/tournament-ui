@@ -1,7 +1,7 @@
 <template>
     <div class="occasion-detail-page">
         <div class="header-container control-panel-background-container">
-            <ControlPanel @back="handleBack"/>
+            <ControlPanel @back="handleBack" @refresh="handleRefresh"/>
             <UserIcon/>
         </div>
 
@@ -230,7 +230,8 @@ export default {
           label: 'Завершить',
           class: 'default-action-btn',
           onClick: () => this.completeOccasion(),
-          visible: this.occasion.state === 'IN_PROGRESS' && role === 'SUPERADMIN'
+          visible: this.occasion.state === 'IN_PROGRESS' && role === 'SUPERADMIN' 
+            && this.activities?.every(activity => activity.state === 'COMPLETED') === true
         }
       ];
 
@@ -274,7 +275,11 @@ export default {
 
     handleActivitiesScroll() {
       this.updateScrollButtons();
-    }
+    },
+
+    handleRefresh() {
+        window.location.reload();
+    },
   },
 
   watch: {
@@ -305,7 +310,7 @@ export default {
 }
 
 .content-container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     position: relative;
 }

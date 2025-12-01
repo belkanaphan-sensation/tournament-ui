@@ -6,7 +6,7 @@
         </div>
 
         <div class="title-container">
-            <span>Раунды</span>
+            <span>Заходы</span>
         </div>
 
         <div class="content-container">

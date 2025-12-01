@@ -28,13 +28,9 @@
 
                 <div class="milestone-content">
                     <div class="details-grid">
-                        <div class="detail-item">
-                            <Field label="Описание" :value= "milestone.description"/>
-                        </div>
-
-                        <div class="detail-item">
-                            <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedMilestoneState()"/>
-                        </div>
+                          <Field label="Описание" :value= "milestone.description"/>
+                          <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedMilestoneState()"/>
+                          <Field label="Участников" :value= "getContestantStatistic"/>
                     </div>
                 </div>
             </div>
@@ -477,6 +473,29 @@ export default {
       },
       immediate: false
     }
+  },
+
+  computed: {
+    getContestantStatistic() {
+      const counts = this.milestone?.contestantCount;
+        if (!counts) return '';
+
+        const parts = [];
+
+        if (counts.LEADER !== undefined && counts.LEADER !== null) {
+          parts.push(`Партнеров ${counts.LEADER}`);
+        }
+
+        if (counts.FOLLOWER !== undefined && counts.FOLLOWER !== null) {
+          parts.push(`Партнерш ${counts.FOLLOWER}`);
+        }
+
+        if (counts.COUPLE !== undefined && counts.COUPLE !== null) {
+          parts.push(`Пар ${counts.COUPLE}`);
+        }
+
+        return parts.join(', ');
+    }
   }
 }
 </script>
@@ -502,7 +521,7 @@ export default {
 }
 
 .content-container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     position: relative;
 }
