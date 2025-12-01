@@ -25,7 +25,7 @@
 
                 <div class="snake-section">
                     <router-link to="/snake-game" class="snake-link">
-                        🐍 Сыграть в змейку
+                        🐍 Покушать
                     </router-link>
                 </div>
             </div>

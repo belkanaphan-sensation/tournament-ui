@@ -128,7 +128,7 @@ export default {
   setup() {
     const router = useRouter()
     const boardSize = ref(13)
-    const initialSpeed = 150
+    const initialSpeed = 300
     
     // Состояние игры
     const snake = ref([{ x: 6, y: 6 }])
