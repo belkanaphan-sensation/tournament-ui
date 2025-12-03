@@ -35,55 +35,66 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue'
-    import { authApi } from '@/services/authApi.js';
-    import { userApi } from '@/services/userApi.js';
-    import { useRouter } from 'vue-router';
-    import { useJudgeResultStore } from '../store/JudgeResultStore.js';
+import { ref } from 'vue'
+import { authApi } from '@/services/authApi.js';
+import { userApi } from '@/services/userApi.js';
+import { useRouter } from 'vue-router';
+import { useJudgeResultStore } from '../store/JudgeResultStore.js';
 
-    const username = ref('')
-    const password = ref('')
-    const loading = ref(false)
-    const error = ref('')
+const username = ref('')
+const password = ref('')
+const loading = ref(false)
+const error = ref('')
 
-    const router = useRouter();
+const router = useRouter();
 
-    const handleLogin = async () => {
-        try {
-            const formData = new FormData()
-            formData.append('username', username.value)
-            formData.append('password', password.value)
+const handleLogin = async () => {
+  loading.value = true
+  error.value = ''
+  
+  try {
+    const formData = new FormData()
+    formData.append('username', username.value)
+    formData.append('password', password.value)
 
-            const response = await authApi.login(formData)
-            
-            if (response.status === 401) {
-                error.value = 'Неверный логин или пароль'
-            } else if (!response.ok) {
-            // Попробуем получить текст ошибки от сервера
-              try {
-                  const errorData = await response.text()
-                  error.value = errorData || `Ошибка сервера: ${response.status}`
-              } catch {
-                  error.value = `Ошибка сервера: ${response.status}`
-              }
-            } else {
-                console.log('Login successful!');
-                localStorage.setItem('userInfo', JSON.stringify(await userApi.getCurrentUser()));
-                // JSON.parse(localStorage.getItem('userInfo'))
-                router.push('/');
-            }
-
-            const resultStore = useJudgeResultStore();
-            resultStore.clear();
-
-        } catch (err) {
-            // Обработка сетевых ошибок или других исключений
-            error.value = 'Ошибка сети. Проверьте подключение к интернету.'
-            console.error('Login error:', err)
-        } finally {
-            loading.value = false
-        }
+    const response = await authApi.login(formData)
+    
+    if (response.status === 401) {
+      error.value = 'Неверный логин или пароль'
+    } else if (!response.ok) {
+      try {
+        const errorData = await response.text()
+        error.value = errorData || `Ошибка сервера: ${response.status}`
+      } catch {
+        error.value = `Ошибка сервера: ${response.status}`
+      }
+    } else {
+      console.log('Login successful!')
+      
+      // Сохраняем информацию о пользователе
+      const userInfo = await userApi.getCurrentUser()
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
+      
+      // Подключаем SSE после успешного логина
+      if (window.$sse && !window.$sse.connected) {
+        console.log('[Login] Connecting SSE after login...')
+        window.$sse.connect()
+      }
+      
+      // Редирект на главную
+      router.push('/')
     }
+
+    const resultStore = useJudgeResultStore()
+    resultStore.clear()
+
+  } catch (err) {
+    error.value = 'Ошибка сети. Проверьте подключение к интернету.'
+    console.error('Login error:', err)
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <style scoped>

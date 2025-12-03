@@ -11,6 +11,7 @@
 
         <div class="content-container">
             <LoadingOverlay :isLoading="isLoading" />
+            
             <div class="cards-grid">
                 <div v-for="(occasionCard, index) in occasions" :key="index" class="card-item">
                     <OccasionCard :occasionCard="occasionCard"/>
@@ -53,26 +54,66 @@ export default {
     try {
       await this.fetchOccasions()
     } finally {
-        this.isLoading = false;
+      this.isLoading = false;
     }
   },
 
   methods: {
-      async fetchOccasions() {
-          const response = await occasionApi.getOccasions();
-          this.occasions = response && response?.content || [];
-      },
+    async fetchOccasions() {
+      const response = await occasionApi.getOccasions();
+      this.occasions = response && response?.content || [];
+    },
 
-      handleRefresh() {
-        window.location.reload();
-      },
+    handleRefresh() {
+      window.location.reload();
+    },
+    
+    setupNotificationHandler() {
+      // Создаем обработчик для событий SSE
+      if (this.sseConnection) {
+        this.sseConnection.addEventListener('notification', (event) => {
+          console.log('SSE notification received:', event.data)
+          this.handleNotification(event.data)
+        })
+      }
+    },
+    
+    handleNotification(message) {
+      console.log('Processing notification:', message)
+      
+      // 1. Показываем toast уведомление
+      this.showNotification(message)
+      
+      // 2. Проигрываем звук
+      this.playSoundForNotification(message)
+    },
+    
+    // Оставлю метод на случай, если понадобится для отладки
+    // но не буду добавлять кнопку в UI
+    testNotification() {
+      const testMessage = `Тестовое уведомление ${new Date().toLocaleTimeString()}`
+      console.log('Sending test notification:', testMessage)
+      
+      // Показываем тестовое уведомление
+      const toastId = this.showNotification(testMessage)
+      
+      // Проигрываем звук
+      this.playTestSound()
+      
+      console.log('Test notification ID:', toastId)
+    },
+    
+    closeAllNotifications() {
+      this.closeAllToasts()
+      console.log('All notifications closed')
+    }
   },
 
   data() {
-      return {
-          occasions: [],
-          isLoading: true
-      }
+    return {
+      occasions: [],
+      isLoading: true
+    }
   },
 }
 </script>
@@ -128,11 +169,11 @@ export default {
 
 .empty-state {
     text-align: center;
-    /* padding: 60px 20px; */
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     margin-top: 40px;
+    padding: 40px 20px;
 }
 
 .empty-icon {

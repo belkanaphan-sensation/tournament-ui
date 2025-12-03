@@ -113,6 +113,10 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     if (to.name === 'LoginPage') {
+        // При переходе на логин отключаем SSE
+        if (window.$sse && window.$sse.connected) {
+          window.$sse.disconnect()
+        }
         return next();
     }
 
@@ -122,6 +126,13 @@ router.beforeEach((to, from, next) => {
     }
 
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+    if (userInfo && window.$sse && !window.$sse.connected) {
+      // Если пользователь авторизован, но SSE не подключен
+      setTimeout(() => {
+        window.$sse.connect()
+      }, 1000)
+    }
 
     if (!userInfo || !userInfo.roles || userInfo.roles.length < 1) {
         return next({

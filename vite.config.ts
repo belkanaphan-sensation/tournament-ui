@@ -1,61 +1,55 @@
 import { fileURLToPath, URL } from 'node:url'
-
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    // vueJsx(),
-  ],
+export default defineConfig(({ mode }) => {
+  // Загружаем переменные окружения
+  const env = loadEnv(mode, process.cwd(), '')
   
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true, // Очищает папку перед сборкой
-    rollupOptions: {
-      output: {
-        manualChunks: undefined
+  // Получаем URL из .env или используем значение по умолчанию
+  const apiTarget = env.VITE_API_BASE_URL
+  
+  console.log(`🎯 API Target: ${apiTarget}`)
+  console.log(`🌐 Mode: ${mode}`)
+
+  return {
+    plugins: [
+      vue(),
+      // vueJsx(),
+    ],
+    
+    build: {
+      outDir: 'dist',
+      emptyOutDir: true,
+      rollupOptions: {
+        output: {
+          manualChunks: undefined
+        }
       }
-    }
-  },
-
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
     },
-  },
 
-  // server: { это тоже рабочий конфиг
-  //   host: '0.0.0.0',
-  //   port: 5173,
-  //   strictPort: false ,
-  //   proxy: {
-  //     '/api': {
-  //       target: 'http://192.168.0.103:8080',
-  //       changeOrigin: true,
-  //       secure: false,
-  //     }
-  //   }
-  // }
-
-   server: {
-    host: '0.0.0.0', // правильно - разрешаем все подключения
-    port: 5173,
-    strictPort: false,
-    // Добавьте эту настройку для корректной работы с Hamachi
-    hmr: {
-      host: 'localhost', // для HMR оставляем localhost
-      protocol: 'ws'
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      },
     },
-    proxy: {
-      '/api': {
-        target: 'http://192.168.0.103:8080',
-        // target: 'http://192.168.31.60:5173',
-        changeOrigin: true,
-        secure: false,
+
+    server: {
+      host: '0.0.0.0',
+      port: 5173,
+      strictPort: false,
+      hmr: {
+        host: 'localhost',
+        protocol: 'ws'
+      },
+      proxy: {
+        '/api': {
+          target: apiTarget, // Используем переменную из .env
+          changeOrigin: true,
+          secure: false,
+        }
       }
     }
   }
