@@ -27,10 +27,21 @@
                                 <div class="contestant-card">
                                     <div class="contestant-number">{{ contestant.number }}</div>
                                     <div class="contestant-participants">
+                                        <!-- Основные участники -->
                                         <div v-for="participant in contestant.participants" 
                                             :key="participant.participantId"
                                             class="participant-info">
                                             <span class="participant-name">{{ participant.name }} {{ participant.surname }}</span>
+                                        </div>
+                                        
+                                        <!-- Ассистенты -->
+                                        <div v-for="assistant in getAssistants(contestant)" 
+                                            :key="assistant.key"
+                                            class="participant-info assistant">
+                                            <span class="participant-name">
+                                                {{ assistant.person.name }} {{ assistant.person.surname }}
+                                                <span class="assistant-label">(ассистент)</span>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -56,10 +67,21 @@
                                 <div class="contestant-card">
                                     <div class="contestant-number">{{ contestant.number }}</div>
                                     <div class="contestant-participants">
+                                        <!-- Основные участники -->
                                         <div v-for="participant in contestant.participants" 
                                             :key="participant.participantId"
                                             class="participant-info">
                                             <span class="participant-name">{{ participant.name }} {{ participant.surname }}</span>
+                                        </div>
+                                        
+                                        <!-- Ассистенты -->
+                                        <div v-for="assistant in getAssistants(contestant)" 
+                                            :key="assistant.key"
+                                            class="participant-info assistant">
+                                            <span class="participant-name">
+                                                {{ assistant.person.name }} {{ assistant.person.name }}
+                                                <span class="assistant-label">(ассистент)</span>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -81,6 +103,7 @@
                     <div class="contestant-card">
                         <div class="contestant-number">{{ contestant.number }}</div>
                         <div class="contestant-participants">
+                            <!-- Основные участники -->
                             <div v-for="participant in contestant.participants" 
                                 :key="participant.participantId"
                                 class="participant-info">
@@ -107,7 +130,7 @@ import { contestantApi } from '@/services/contestantApi.js';
 import { milestoneRuleApi } from '@/services/milestoneRuleApi.js';
 
 export default {
-  name: 'ContestantsAnnouncer ',
+  name: 'ContestantsAnnouncer',
 
   components: {
     ControlPanel,
@@ -165,6 +188,22 @@ export default {
     async fetchMilesoneRule() {
       return milestoneRuleApi.getMilestoneRuleByMilestoneId(this.milestoneId);
     },
+
+    getAssistants(contestant) {
+        if (!contestant || !contestant.participants) return [];
+        
+        const assistants = [];
+        contestant.participants.forEach((participant, index) => {
+            if (participant && participant.assistant) {
+                assistants.push({
+                    ...participant.assistant,
+                    key: `assistant_${participant.participantId || index}`
+                });
+            }
+        });
+        
+        return assistants;
+    }
   },
 
   computed: {
@@ -357,10 +396,22 @@ export default {
     border-left: 4px solid #28a745;
 }
 
+.participant-info.assistant {
+    border-left-color: #ffc107; /* Желтый для ассистентов */
+    background: #fff8e1; /* Светло-желтый фон */
+}
+
 .participant-name {
     font-weight: 500;
     color: #495057;
     font-size: 0.95rem;
+}
+
+.assistant-label {
+    font-size: 0.8rem;
+    color: #e65100;
+    font-style: italic;
+    margin-left: 5px;
 }
 
 .participant-side {
@@ -440,14 +491,18 @@ export default {
     .participant-name {
         font-size: 0.9rem;
     }
+    
+    .assistant-label {
+        font-size: 0.75rem;
+    }
 }
 
 /* Специфичные стили для разных сторон */
-.collapsible-section:first-child .participant-info {
+.collapsible-section:first-child .participant-info:not(.assistant) {
     border-left-color: #dc3545; /* Красный для LEAD */
 }
 
-.collapsible-section:last-child .participant-info {
+.collapsible-section:last-child .participant-info:not(.assistant) {
     border-left-color: #17a2b8; /* Бирюзовый для FOLLOW */
 }
 
