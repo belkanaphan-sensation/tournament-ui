@@ -79,7 +79,7 @@
                                             :key="assistant.key"
                                             class="participant-info assistant">
                                             <span class="participant-name">
-                                                {{ assistant.person.name }} {{ assistant.person.name }}
+                                                {{ assistant.person.name }} {{ assistant.person.surname }}
                                                 <span class="assistant-label">(ассистент)</span>
                                             </span>
                                         </div>
