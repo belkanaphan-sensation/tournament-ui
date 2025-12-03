@@ -58,25 +58,14 @@
                 </div>
 
                 <div class="activities-container">
-                    <div class="activities-scroll-wrapper">
-                        <div class="activities-horizontal-list">
-                            <div v-for="(activity, index) in activities" 
-                                 :key="activity.id" 
-                                 class="activity-item">
-                                <ActivityShortCard :activityCard="activity" @click="() => navigateToActivityDetail(activity.id)"/>
-                            </div>
+                    <div class="activities-grid">
+                        <div v-for="(activity, index) in activities" 
+                             :key="activity.id" 
+                             class="activity-item"
+                             :class="{ 'in-progress': activity.state === 'IN_PROGRESS' || activity.state === 'SUMMARIZING' }">
+                            <ActivityShortCard :activityCard="activity" @click="() => navigateToActivityDetail(activity.id)"/>
                         </div>
                     </div>
-                    
-                    <!-- Навигационные стрелки -->
-                    <button class="scroll-btn scroll-btn-prev" @click="scrollActivities(-1)" 
-                            :disabled="isScrollAtStart">
-                        ‹
-                    </button>
-                    <button class="scroll-btn scroll-btn-next" @click="scrollActivities(1)"
-                            :disabled="isScrollAtEnd">
-                        ›
-                    </button>
                 </div>
             </div>
 
@@ -92,7 +81,7 @@
                 <div class="error-icon">⚠️</div>
                 <h3>Ошибка загрузки</h3>
                 <p>{{ error }}</p>
-                <button class="retry-btn" @click="fetchOccasionDetail">Попробовать снова</button>
+                        <button class="retry-btn" @click="fetchOccasionDetail">Попробовать снова</button>
             </div>
         </div>
     </div>
@@ -133,9 +122,7 @@ export default {
       occasion: null,
       activities: [],
       isLoading: true,
-      error: null,
-      isScrollAtStart: true,
-      isScrollAtEnd: false
+      error: null
     }
   },
 
@@ -253,33 +240,9 @@ export default {
         this.fillDetail(this.occasion.id);
     },
 
-    scrollActivities(direction) {
-      const container = this.$el.querySelector('.activities-horizontal-list');
-      if (container) {
-        const scrollAmount = 300;
-        container.scrollLeft += direction * scrollAmount;
-        
-        setTimeout(() => {
-          this.updateScrollButtons();
-        }, 100);
-      }
-    },
-
-    updateScrollButtons() {
-      const container = this.$el.querySelector('.activities-horizontal-list');
-      if (container) {
-        this.isScrollAtStart = container.scrollLeft <= 0;
-        this.isScrollAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
-      }
-    },
-
-    handleActivitiesScroll() {
-      this.updateScrollButtons();
-    },
-
     handleRefresh() {
         window.location.reload();
-    },
+    }
   },
 
   watch: {
@@ -313,6 +276,7 @@ export default {
     max-width: 1600px;
     margin: 0 auto;
     position: relative;
+    padding: 20px;
 }
 
 /* Стили для деталей Occasion */
@@ -321,7 +285,7 @@ export default {
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     padding: 30px;
-    /* margin-bottom: 30px; */
+    margin-bottom: 30px;
 }
 
 .occasion-header {
@@ -429,7 +393,6 @@ export default {
 .activities-section {
     background: white;
     border-radius: 12px;
-    margin-top: 30px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     padding: 25px;
 }
@@ -460,92 +423,39 @@ export default {
     position: relative;
 }
 
-.activities-scroll-wrapper {
-    overflow: hidden;
-    border-radius: 8px;
-}
-
-.activities-horizontal-list {
-    display: flex;
+.activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 20px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 5px 5px;
-    padding-bottom: 25px;
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 transparent;
-}
-
-.activities-horizontal-list::-webkit-scrollbar {
-    height: 6px;
-}
-
-.activities-horizontal-list::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 3px;
-}
-
-.activities-horizontal-list::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.activities-horizontal-list::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    padding: 5px 0;
 }
 
 .activity-item {
-    flex: 0 0 350px;
-    min-width: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
 }
 
-/* Стили для кнопок скролла */
-.scroll-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #333;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    z-index: 10;
+/* Стили для активностей IN_PROGRESS */
+.activity-item.in-progress {
+    border: 3px solid #4caf50; /* Зеленая рамка */
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); /* Зеленая тень */
 }
 
-.scroll-btn:hover:not(:disabled) {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
-    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+.activity-item.in-progress:hover {
+    border-color: #388e3c; /* Более темная зеленая рамка при наведении */
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4); /* Усиленная тень при наведении */
 }
 
-.scroll-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.scroll-btn-prev {
-    left: -20px;
-}
-
-.scroll-btn-next {
-    right: -20px;
-}
+/* .activity-item:hover {
+    transform: translateY(-5px);
+} */
 
 /* Состояния пустого списка и ошибки */
 .empty-state,
 .error-state {
     text-align: center;
-    /* padding: 60px 20px; */
+    padding: 60px 20px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -582,5 +492,77 @@ export default {
     cursor: pointer;
     font-size: 0.95rem;
     transition: background 0.3s ease;
+}
+
+.retry-btn:hover {
+    background: #0056b3;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .activities-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+    
+    .details-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .occasion-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .header-actions {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .action-btn {
+        flex: 1;
+        min-width: auto;
+    }
+    
+    .activities-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .content-container {
+        padding: 15px;
+    }
+    
+    .occasion-details {
+        padding: 20px;
+    }
+    
+    .occasion-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .occasion-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+    }
+    
+    .activity-item.in-progress {
+        border-width: 2px; /* Более тонкая рамка на мобильных */
+    }
 }
 </style>

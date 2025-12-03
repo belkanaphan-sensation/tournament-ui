@@ -12,5 +12,10 @@ export const milestoneResultApi = {
     return api.post('/milestone-result/update/milestone/' + milestoneId, updateRequests, {
       'Content-Type': 'application/json',
     });
+  },
+
+  getMilestoneResultByActivityId(id) {
+    const activityId = Number(id);
+    return api.get('/milestone-result/activity/' + activityId);
   }
 }

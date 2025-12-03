@@ -6,6 +6,7 @@ import OccasionDetail from '../components/occasion/OccasionDetail.vue'
 import Activities from '../components/activity/Activities.vue'
 import ActivityDetail from '../components/activity/ActivityDetail.vue'
 import ActivityRegistrationDetail from '../components/activity/ActivityRegistrationDetail.vue'
+import ActivityResultDetail from '../components/activity/ActivityResultDetail.vue'
 import Milestones from '../components/milestone/Milestones.vue'
 import MilestoneDetail from '../components/milestone/MilestoneDetail.vue'
 import MilestoneResultDetail from '../components/milestone/MilestoneResultDetail.vue'
@@ -47,6 +48,10 @@ const routes = [
     path: '/activities/:occasionId',
     name: 'Activities',
     component: Activities,
+  }, {
+    path: '/activityResultDetail/:activityId',
+    name: 'ActivityResultDetail',
+    component: ActivityResultDetail,
   }, {
     path: '/milestones/:activityId',
     name: 'Milestones',

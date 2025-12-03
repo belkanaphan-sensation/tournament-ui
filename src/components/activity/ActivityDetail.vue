@@ -51,25 +51,14 @@
                 </div>
 
                 <div class="milestones-container">
-                    <div class="milestones-scroll-wrapper">
-                        <div class="milestones-horizontal-list">
-                            <div v-for="(milestone, index) in milestones" 
-                                 :key="milestone.id" 
-                                 class="milestone-item">
-                                <MilestoneShortCard :milestoneCard="milestone" @click="() => navigateToMilestoneDetail(milestone.id)"/>
-                            </div>
+                    <div class="milestones-grid">
+                        <div v-for="(milestone, index) in milestones" 
+                             :key="milestone.id" 
+                             class="milestone-item"
+                             :class="{ 'in-progress': milestone.state === 'PENDING' || milestone.state === 'IN_PROGRESS'|| milestone.state === 'SUMMARIZING' }">
+                            <MilestoneShortCard :milestoneCard="milestone" @click="() => navigateToMilestoneDetail(milestone.id)"/>
                         </div>
                     </div>
-                    
-                    <!-- Навигационные стрелки -->
-                    <button class="scroll-btn scroll-btn-prev" @click="scrollMilestones(-1)" 
-                            :disabled="isScrollAtStart">
-                        ‹
-                    </button>
-                    <button class="scroll-btn scroll-btn-next" @click="scrollMilestones(1)"
-                            :disabled="isScrollAtEnd">
-                        ›
-                    </button>
                 </div>
             </div>
 
@@ -128,9 +117,7 @@ export default {
       activity: null,
       milestones: [],
       isLoading: true,
-      error: null,
-      isScrollAtStart: true,
-      isScrollAtEnd: false
+      error: null
     }
   },
 
@@ -159,7 +146,7 @@ export default {
         this.milestones = await milestoneApi.getMilestones(activityId);
     },
 
-    navigateToMilestoneDetail(milestoneId, activityId) {
+    navigateToMilestoneDetail(milestoneId) {
         const router = this.$router;
 
         router.push({
@@ -219,7 +206,7 @@ export default {
         {
           label: 'Подсчитать результаты',
           class: 'default-action-btn',
-          onClick: () => this.sumUpActivity(),
+          onClick: () => this.navigateToActivityResult(),
           visible: this.activity.state === 'IN_PROGRESS' && this.milestones.every(milestone => 
                 ['COMPLETED', 'SKIPPED'].includes(milestone.state)) && role === 'SUPERADMIN'
         },
@@ -269,28 +256,15 @@ export default {
         this.fillDetail(this.activity.id);
     },
 
-    scrollMilestones(direction) {
-      const container = this.$el.querySelector('.milestones-horizontal-list');
-      if (container) {
-        const scrollAmount = 300;
-        container.scrollLeft += direction * scrollAmount;
-        
-        setTimeout(() => {
-          this.updateScrollButtons();
-        }, 100);
-      }
-    },
+    navigateToActivityResult() {
+        const router = this.$router;
 
-    updateScrollButtons() {
-      const container = this.$el.querySelector('.milestones-horizontal-list');
-      if (container) {
-        this.isScrollAtStart = container.scrollLeft <= 0;
-        this.isScrollAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
-      }
-    },
-
-    handleMilestonesScroll() {
-      this.updateScrollButtons();
+        router.push({
+            name: 'ActivityResultDetail',
+            params: { 
+                activityId: this.activity.id
+            }
+        });
     },
 
     getStateClass() {
@@ -339,6 +313,7 @@ export default {
     max-width: 1600px;
     margin: 0 auto;
     position: relative;
+    padding: 20px;
 }
 
 /* Стили для деталей Activity */
@@ -347,7 +322,7 @@ export default {
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     padding: 30px;
-    /* margin-bottom: 30px; */
+    margin-bottom: 30px;
 }
 
 .activity-header {
@@ -455,7 +430,6 @@ export default {
 .milestones-section {
     background: white;
     border-radius: 12px;
-    margin-top: 30px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     padding: 25px;
 }
@@ -486,92 +460,39 @@ export default {
     position: relative;
 }
 
-.milestones-scroll-wrapper {
-    overflow: hidden;
-    border-radius: 8px;
-}
-
-.milestones-horizontal-list {
-    display: flex;
+.milestones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 20px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 5px 5px;
-    padding-bottom: 25px;
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 transparent;
-}
-
-.milestones-horizontal-list::-webkit-scrollbar {
-    height: 6px;
-}
-
-.milestones-horizontal-list::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 3px;
-}
-
-.milestones-horizontal-list::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.milestones-horizontal-list::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    padding: 5px 0;
 }
 
 .milestone-item {
-    flex: 0 0 350px;
-    min-width: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
 }
 
-/* Стили для кнопок скролла */
-.scroll-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #333;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    z-index: 10;
+/* Стили для этапов IN_PROGRESS или SUMMARIZING */
+.milestone-item.in-progress {
+    border: 3px solid #4caf50; /* Зеленая рамка */
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); /* Зеленая тень */
 }
 
-.scroll-btn:hover:not(:disabled) {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
-    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+.milestone-item.in-progress:hover {
+    border-color: #388e3c; /* Более темная зеленая рамка при наведении */
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4); /* Усиленная тень при наведении */
 }
 
-.scroll-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.scroll-btn-prev {
-    left: -20px;
-}
-
-.scroll-btn-next {
-    right: -20px;
+.milestone-item:hover {
+    transform: translateY(-5px);
 }
 
 /* Состояния пустого списка и ошибки */
 .empty-state,
 .error-state {
     text-align: center;
-    /* padding: 60px 20px; */
+    padding: 60px 20px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -608,5 +529,73 @@ export default {
     cursor: pointer;
     font-size: 0.95rem;
     transition: background 0.3s ease;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .milestones-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+    
+    .details-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .activity-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .header-actions {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .action-btn {
+        flex: 1;
+        min-width: auto;
+    }
+    
+    .milestones-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .content-container {
+        padding: 15px;
+    }
+    
+    .activity-details {
+        padding: 20px;
+    }
+    
+    .activity-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .activity-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+    }
+    
+    .milestone-item.in-progress {
+        border-width: 2px; /* Более тонкая рамка на мобильных */
+    }
 }
 </style>
