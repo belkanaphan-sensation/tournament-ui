@@ -59,8 +59,6 @@ const SSEPlugin = {
           try {
             state.audioContext = new (window.AudioContext || window.webkitAudioContext)()
             console.log('[SSE] AudioContext created after user interaction')
-            // Тестовый звук для проверки
-            playTestSound()
           } catch (error) {
             console.log('[SSE] Failed to create AudioContext:', error)
           }
@@ -405,13 +403,6 @@ const SSEPlugin = {
       playNotificationSound(soundType)
     }
 
-    const playTestSound = () => {
-      if (state.soundEnabled) {
-        console.log('[SSE] Playing test sound...')
-        playNotificationSound('default')
-      }
-    }
-
     // ========== КОНЕЦ ЗВУКОВОЙ СИСТЕМЫ ==========
 
     // Система событий
@@ -442,7 +433,7 @@ const SSEPlugin = {
     const connect = (customEndpoint) => {
       disconnect()
       
-      const endpoint = customEndpoint || config.endpoint
+      const endpoint = customEndpoint || config.endpoint;
       const url = `${config.baseUrl}${endpoint}`
       
       console.log('[SSE] Connecting to:', url)
@@ -571,9 +562,6 @@ const SSEPlugin = {
       toggleSound: () => {
         state.soundEnabled = !state.soundEnabled
         saveSoundSettings()
-        if (state.soundEnabled) {
-          playTestSound()
-        }
         return state.soundEnabled
       },
       
@@ -585,16 +573,6 @@ const SSEPlugin = {
       setToastAutoCloseTime: (timeInMs) => {
         state.toastAutoCloseTime = timeInMs
       },
-      
-      // Для отладки
-      testNotification: () => {
-        const message = `Тестовое уведомление ${new Date().toLocaleTimeString()}`
-        const toastId = showNotification(message)
-        playTestSound()
-        return toastId
-      },
-      
-      playTestSound,
       
       // Информация о конфигурации
       getConfig: () => ({
