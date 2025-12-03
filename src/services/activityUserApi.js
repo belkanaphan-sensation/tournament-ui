@@ -7,4 +7,9 @@ export const activityUserApi = {
     const occasionId = Number(id);
     return api.get('/activity-user/occasion/' + occasionId + '/currentUser');
   },
+
+  getActivityUserByActivityId(id) {
+    const activityId = Number(id);
+    return api.get('/activity-user/activity/' + activityId);
+  },
 };
