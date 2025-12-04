@@ -92,17 +92,21 @@
                                             :key="result.id"
                                             :class="getResultRowClass(result)">
                                             
-                                            <!-- Место (ручной ввод) -->
-                                            <input 
-                                                type="number" 
-                                                v-model="manualPlaces[result.contestant?.id]" 
-                                                @change="saveManualPlace(result)"
-                                                class="place-input"
-                                                min="1"
-                                                :max="getSideResults(results, 'LEADER').length"
-                                                :title="`Введите место от 1 до ${getSideResults(results, 'LEADER').length}`"
-                                                placeholder="Введите место"
-                                            />
+                                            <td class="text-center place-input-cell">
+                                                <input 
+                                                    type="number" 
+                                                    v-model="manualPlaces[result.contestant?.id]" 
+                                                    @change="saveManualPlace(result)"
+                                                    class="place-input"
+                                                    min="1"
+                                                    :max="getMaxPlaceForSide(result)"
+                                                    :title="`Введите место от 1 до ${getMaxPlaceForSide(result)}`"
+                                                    placeholder="Введите место"
+                                                />
+                                                <div v-if="getSavedPlace(result.contestant?.id)" class="saved-place-hint">
+                                                    Сохранено: {{ getSavedPlace(result.contestant?.id) }}
+                                                </div>
+                                            </td>
                                             
                                             <!-- Автоматическое место -->
                                             <td class="text-center auto-place-cell">
@@ -213,7 +217,7 @@
                             </div>
 
                             <div class="table-container">
-                                <table class="results-table follower-table">
+                                <table class="results-table follower-table"> 
                                     <thead>
                                         <tr>
                                             <th>Место (ручное)</th>
@@ -233,16 +237,21 @@
                                             :class="getResultRowClass(result)">
                                             
                                             <!-- Место (ручной ввод) -->
-                                            <input 
-                                                type="number" 
-                                                v-model="manualPlaces[result.contestant?.id]" 
-                                                @change="saveManualPlace(result)"
-                                                class="place-input"
-                                                min="1"
-                                                :max="getSideResults(results, 'LEADER').length"
-                                                :title="`Введите место от 1 до ${getSideResults(results, 'LEADER').length}`"
-                                                placeholder="Введите место"
-                                            />
+                                            <td class="text-center place-input-cell">
+                                                <input 
+                                                    type="number" 
+                                                    v-model="manualPlaces[result.contestant?.id]" 
+                                                    @change="saveManualPlace(result)"
+                                                    class="place-input"
+                                                    min="1"
+                                                    :max="getMaxPlaceForSide(result)"
+                                                    :title="`Введите место от 1 до ${getMaxPlaceForSide(result)}`"
+                                                    placeholder="Введите место"
+                                                />
+                                                <div v-if="getSavedPlace(result.contestant?.id)" class="saved-place-hint">
+                                                    Сохранено: {{ getSavedPlace(result.contestant?.id) }}
+                                                </div>
+                                            </td>
                                             
                                             <!-- Автоматическое место -->
                                             <td class="text-center auto-place-cell">
@@ -373,16 +382,21 @@
                                             :class="getResultRowClass(result)">
                                             
                                             <!-- Место (ручной ввод) -->
-                                            <input 
-                                                type="number" 
-                                                v-model="manualPlaces[result.contestant?.id]" 
-                                                @change="saveManualPlace(result)"
-                                                class="place-input"
-                                                min="1"
-                                                :max="getSideResults(results, 'LEADER').length"
-                                                :title="`Введите место от 1 до ${getSideResults(results, 'LEADER').length}`"
-                                                placeholder="Введите место"
-                                            />
+                                            <td class="text-center place-input-cell">
+                                                <input 
+                                                    type="number" 
+                                                    v-model="manualPlaces[result.contestant?.id]" 
+                                                    @change="saveManualPlace(result)"
+                                                    class="place-input"
+                                                    min="1"
+                                                    :max="getMaxPlaceForSide(result)"
+                                                    :title="`Введите место от 1 до ${getMaxPlaceForSide(result)}`"
+                                                    placeholder="Введите место"
+                                                />
+                                                <div v-if="getSavedPlace(result.contestant?.id)" class="saved-place-hint">
+                                                    Сохранено: {{ getSavedPlace(result.contestant?.id) }}
+                                                </div>
+                                            </td>
                                             
                                             <!-- Автоматическое место -->
                                             <td class="text-center auto-place-cell">

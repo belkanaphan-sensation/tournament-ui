@@ -204,7 +204,7 @@ export default {
           visible: this.activity.state === 'REGISTRATION_CLOSED' && role === 'SUPERADMIN'
         },
         {
-          label: 'Подсчитать результаты',
+          label: 'Подвести итоги',
           class: 'default-action-btn',
           onClick: () => this.navigateToActivityResult(),
           visible: (this.activity.state === 'IN_PROGRESS' || this.activity.state === 'SUMMARIZING') && this.milestones.every(milestone => 
@@ -217,7 +217,7 @@ export default {
           visible: (this.activity.state === 'COMPLETED') && role === 'SUPERADMIN'
         },
         {
-          label: 'Заершить активность',
+          label: 'Завершить активность',
           class: 'default-action-btn',
           onClick: () => this.completeActivity(),
           visible: this.activity.state === 'SUMMARIZING' && role === 'SUPERADMIN'
