@@ -59,14 +59,21 @@ export const activityApi = {
       return api.post('/activity/start/' + activityId);
     },
 
-    async sumUpActivity(id) {
+    async sumUpActivity(id, results) {
       const activityId = Number(id);
-      return api.post('/activity/sum-up/' + activityId);
+      return api.post('/activity/sum-up/' + activityId, results, {
+        'Content-Type': 'application/json',
+      });
     },
 
     async completeActivity(id) {
       const activityId = Number(id);
       return api.post('/activity/complete/' + activityId);
+    },
+
+      async getActivityResultsByActivityId(id) {
+        const activityId = Number(id);
+        return api.get('/activity/results/' + activityId);
     },
 
 //   /**

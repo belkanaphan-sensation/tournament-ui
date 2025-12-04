@@ -191,12 +191,12 @@ export default {
           onClick: () => this.closeRegistration(),
           visible: this.activity.state === 'PLANNED' && role === 'SUPERADMIN'
         },
-        // {
-        //   label: 'Вернуть в Запланирован',
-        //   class: 'default-action-btn',
-        //   onClick: () => this.backToPlanned(),
-        //   visible: this.activity.state === 'REGISTRATION_CLOSED' && role === 'SUPERADMIN'
-        // },
+        {
+          label: 'Вернуть в Запланирован',
+          class: 'default-action-btn',
+          onClick: () => this.backToPlanned(),
+          visible: this.activity.state === 'REGISTRATION_CLOSED' && role === 'SUPERADMIN'
+        },
         {
           label: 'Старт',
           class: 'default-action-btn',
@@ -207,8 +207,14 @@ export default {
           label: 'Подсчитать результаты',
           class: 'default-action-btn',
           onClick: () => this.navigateToActivityResult(),
-          visible: this.activity.state === 'IN_PROGRESS' && this.milestones.every(milestone => 
+          visible: (this.activity.state === 'IN_PROGRESS' || this.activity.state === 'SUMMARIZING') && this.milestones.every(milestone => 
                 ['COMPLETED', 'SKIPPED'].includes(milestone.state)) && role === 'SUPERADMIN'
+        },
+        {
+          label: 'Результаты',
+          class: 'default-action-btn',
+          onClick: () => this.navigateToActivityResult(),
+          visible: (this.activity.state === 'COMPLETED') && role === 'SUPERADMIN'
         },
         {
           label: 'Заершить активность',
@@ -242,7 +248,7 @@ export default {
     },
 
     async backToPlanned() {
-        await activityApi.backToPlanned(this.activity.id);
+        await activityApi.planActivity(this.activity.id);
         this.fillDetail(this.activity.id);
     },
 

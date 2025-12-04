@@ -93,18 +93,16 @@
                                             :class="getResultRowClass(result)">
                                             
                                             <!-- Место (ручной ввод) -->
-                                            <td class="text-center place-input-cell">
-                                                <input 
-                                                    type="number" 
-                                                    v-model="manualPlaces[result.id]" 
-                                                    @change="saveManualPlace(result.id)"
-                                                    class="place-input"
-                                                    min="1"
-                                                    :max="getSideResults(results, 'LEADER').length"
-                                                    :title="`Введите место от 1 до ${getSideResults(results, 'LEADER').length}`"
-                                                    placeholder="Введите место"
-                                                />
-                                            </td>
+                                            <input 
+                                                type="number" 
+                                                v-model="manualPlaces[result.contestant?.id]" 
+                                                @change="saveManualPlace(result)"
+                                                class="place-input"
+                                                min="1"
+                                                :max="getSideResults(results, 'LEADER').length"
+                                                :title="`Введите место от 1 до ${getSideResults(results, 'LEADER').length}`"
+                                                placeholder="Введите место"
+                                            />
                                             
                                             <!-- Автоматическое место -->
                                             <td class="text-center auto-place-cell">
@@ -235,18 +233,16 @@
                                             :class="getResultRowClass(result)">
                                             
                                             <!-- Место (ручной ввод) -->
-                                            <td class="text-center place-input-cell">
-                                                <input 
-                                                    type="number" 
-                                                    v-model="manualPlaces[result.id]" 
-                                                    @change="saveManualPlace(result.id)"
-                                                    class="place-input"
-                                                    min="1"
-                                                    :max="getSideResults(results, 'FOLLOWER').length"
-                                                    :title="`Введите место от 1 до ${getSideResults(results, 'FOLLOWER').length}`"
-                                                    placeholder="Введите место"
-                                                />
-                                            </td>
+                                            <input 
+                                                type="number" 
+                                                v-model="manualPlaces[result.contestant?.id]" 
+                                                @change="saveManualPlace(result)"
+                                                class="place-input"
+                                                min="1"
+                                                :max="getSideResults(results, 'LEADER').length"
+                                                :title="`Введите место от 1 до ${getSideResults(results, 'LEADER').length}`"
+                                                placeholder="Введите место"
+                                            />
                                             
                                             <!-- Автоматическое место -->
                                             <td class="text-center auto-place-cell">
@@ -377,18 +373,16 @@
                                             :class="getResultRowClass(result)">
                                             
                                             <!-- Место (ручной ввод) -->
-                                            <td class="text-center place-input-cell">
-                                                <input 
-                                                    type="number" 
-                                                    v-model="manualPlaces[result.id]" 
-                                                    @change="saveManualPlace(result.id)"
-                                                    class="place-input"
-                                                    min="1"
-                                                    :max="getSideResults(results, 'UNKNOWN').length"
-                                                    :title="`Введите место от 1 до ${getSideResults(results, 'UNKNOWN').length}`"
-                                                    placeholder="Введите место"
-                                                />
-                                            </td>
+                                            <input 
+                                                type="number" 
+                                                v-model="manualPlaces[result.contestant?.id]" 
+                                                @change="saveManualPlace(result)"
+                                                class="place-input"
+                                                min="1"
+                                                :max="getSideResults(results, 'LEADER').length"
+                                                :title="`Введите место от 1 до ${getSideResults(results, 'LEADER').length}`"
+                                                placeholder="Введите место"
+                                            />
                                             
                                             <!-- Автоматическое место -->
                                             <td class="text-center auto-place-cell">
@@ -500,6 +494,7 @@ import UserIcon from './../userinfo/UserIcon.vue';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import { activityApi } from '@/services/activityApi.js';
 import { milestoneResultApi } from '@/services/milestoneResultApi.js';
+import { milestoneApi } from '@/services/milestoneApi.js';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -535,15 +530,16 @@ export default {
             isLoading: true,
             error: null,
             activity: null,
-            milestoneResults: {},  // Объект: ключ - порядковый номер этапа, значение - массив MilestoneResultDto
-            sortBy: 'score', // 'score', 'partnerSide', 'none'
-            manualPlaces: {} // Объект для хранения ручных мест: { resultId: place }
+            milestoneResults: {},
+            sortBy: 'score',
+            manualPlaces: {}, // { contestantId: place }
+            milestones: [],
+            activityResults: [] // Сохраненные результаты активности
         };
     },
 
     async mounted() {
         await this.fetchActivityResults();
-        this.loadManualPlaces();
     },
 
     methods: {
@@ -566,32 +562,92 @@ export default {
             this.activity = await activityApi.getActivityDetail(activityId);
             const results = await milestoneResultApi.getMilestoneResultByActivityId(activityId);
             this.milestoneResults = results;
+            this.milestones = await milestoneApi.getMilestones(activityId);
+            
+            // Получаем сохраненные результаты активности
+            this.activityResults = await activityApi.getActivityResultsByActivityId(activityId);
+            
+            // Инициализируем manualPlaces из сохраненных результатов
+            this.initManualPlacesFromResults();
+        },
+
+        // Инициализация manualPlaces из сохраненных результатов активности
+        initManualPlacesFromResults() {
+            this.manualPlaces = {};
+            
+            if (Array.isArray(this.activityResults)) {
+                this.activityResults.forEach(result => {
+                    if (result.contestant && result.contestant.id && result.place !== undefined) {
+                        this.manualPlaces[result.contestant.id] = result.place;
+                    }
+                });
+            }
+            
+            console.log('Manual places initialized from saved results:', this.manualPlaces);
         },
 
         getHeaderActions() {
-            // Здесь будут действия для страницы результатов активности
             if (!this.activity) return [];
 
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const role = userInfo?.roles?.[0];
 
             const actions = [
-                // Примеры возможных действий:
-                // {
-                //     label: 'Экспорт в Excel',
-                //     class: 'default-action-btn',
-                //     onClick: () => this.exportToExcel(),
-                //     visible: role === 'SUPERADMIN'
-                // },
-                // {
-                //     label: 'Скачать отчет',
-                //     class: 'default-action-btn',
-                //     onClick: () => this.downloadReport(),
-                //     visible: role === 'SUPERADMIN'
-                // }
+                {
+                    label: 'Сохранить',
+                    class: 'default-action-btn',
+                    onClick: () => this.saveActivityResult(),
+                    visible: (this.activity.state === 'IN_PROGRESS' || this.activity.state === 'SUMMARIZING') && 
+                            this.milestones.every(milestone => 
+                                ['COMPLETED', 'SKIPPED'].includes(milestone.state)) && 
+                            role === 'SUPERADMIN'
+                },
             ];
 
             return actions.filter(action => action.visible);
+        },
+
+        async saveActivityResult() {
+            const activityResultForSave = [];
+            
+            // Проходим по всем записям в manualPlaces
+            for (const contestantId in this.manualPlaces) {
+                const place = this.manualPlaces[contestantId];
+                
+                // Проверяем, что место указано
+                if (place !== undefined && place !== null) {
+                    activityResultForSave.push({
+                        contestantId: Number(contestantId),
+                        place: Number(place)
+                    });
+                }
+            }
+
+            this.isLoading = true;
+            this.error = null;
+            
+            try {
+                await activityApi.sumUpActivity(this.activity.id, activityResultForSave);
+                // После сохранения обновляем данные
+                await this.fillDetail(this.activity.id);
+            } catch (err) {
+                this.error = 'Не удалось сохранить результаты';
+                console.error('Error saving activity results:', err);
+                alert('Ошибка при сохранении результатов');
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        // Получение сохраненного места для конкурсанта
+        getSavedPlace(contestantId) {
+            if (!Array.isArray(this.activityResults)) return null;
+            
+            const savedResult = this.activityResults.find(
+                result => result.contestant && result.contestant.id === contestantId
+            );
+            
+            return savedResult ? savedResult.place : null;
         },
 
         // Получение результатов по стороне
@@ -608,32 +664,42 @@ export default {
             });
         },
 
-        // Загрузка ручных мест из localStorage
-        loadManualPlaces() {
-            const savedPlaces = localStorage.getItem(`manualPlaces_${this.activityId}`);
-            if (savedPlaces) {
-                try {
-                    this.manualPlaces = JSON.parse(savedPlaces);
-                } catch (e) {
-                    console.error('Error loading manual places:', e);
-                    this.manualPlaces = {};
-                }
+        // Сохранение ручного места (локальное состояние)
+        saveManualPlace(result) {
+            const contestantId = result.contestant?.id;
+            if (!contestantId) {
+                console.error('No contestantId found for result:', result);
+                return;
             }
-        },
-
-        // Сохранение ручного места
-        saveManualPlace(resultId) {
-            const place = this.manualPlaces[resultId];
+            
+            const place = this.manualPlaces[contestantId];
             
             // Валидация ввода
             if (place < 1) {
-                this.manualPlaces[resultId] = 1;
+                this.manualPlaces[contestantId] = undefined;
+            } else if (place > this.getMaxPlaceForSide(result)) {
+                this.manualPlaces[contestantId] = this.getMaxPlaceForSide(result);
             }
             
-            // Сохранение в localStorage
-            localStorage.setItem(`manualPlaces_${this.activityId}`, JSON.stringify(this.manualPlaces));
+            console.log(`Saved manual place for contestant ${contestantId}: ${this.manualPlaces[contestantId]}`);
+        },
+
+        // Вспомогательный метод для определения максимального места
+        getMaxPlaceForSide(result) {
+            if (!this.milestoneResults || !result.milestone?.order) {
+                return 100;
+            }
             
-            console.log(`Saved manual place for result ${resultId}: ${this.manualPlaces[resultId]}`);
+            const milestoneOrder = result.milestone.order;
+            const milestoneResults = this.milestoneResults[milestoneOrder];
+            
+            if (!Array.isArray(milestoneResults)) {
+                return 100;
+            }
+            
+            const side = this.getPrimaryPartnerSide(result);
+            const sideResults = this.getSideResults(milestoneResults, side);
+            return sideResults.length;
         },
 
         getSortedResults(results) {
@@ -652,12 +718,10 @@ export default {
         getPrimaryPartnerSide(result) {
             if (!result.contestant?.participants?.length) return null;
             
-            // Для одиночных участников берем сторону первого участника
             if (result.contestant.contestantType === 'SINGLE') {
                 return result.contestant.participants[0]?.partnerSide || null;
             }
             
-            // Для пар - можно показать первую найденную сторону
             for (const participant of result.contestant.participants) {
                 if (participant.partnerSide) {
                     return participant.partnerSide;
@@ -695,28 +759,6 @@ export default {
             if (place === 2) return 'auto-place-second';
             if (place === 3) return 'auto-place-third';
             return 'auto-place-other';
-        },
-
-        getActivityStatusText(state) {
-            const statusMap = {
-                'DRAFT': 'Черновик',
-                'PLANNED': 'Запланирована',
-                'IN_PROGRESS': 'В процессе',
-                'SUMMARIZING': 'Подведение итогов',
-                'COMPLETED': 'Завершена'
-            };
-            return statusMap[state] || state;
-        },
-
-        getStatusClass(state) {
-            const classMap = {
-                'DRAFT': 'status-draft',
-                'PLANNED': 'status-planned',
-                'IN_PROGRESS': 'status-in-progress',
-                'SUMMARIZING': 'status-summarizing',
-                'COMPLETED': 'status-completed'
-            };
-            return classMap[state] || 'status-unknown';
         },
 
         formatContestantType(type) {
@@ -768,7 +810,6 @@ export default {
         activityId: {
             handler() {
                 this.fetchActivityResults();
-                this.loadManualPlaces();
             },
             immediate: false
         }

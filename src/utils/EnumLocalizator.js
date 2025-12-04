@@ -10,7 +10,8 @@ export const activityStateEnum = {
     PLANNED: "Запланирован",
     IN_PROGRESS: "В процессе",
     COMPLETED: "Завершено",
-    REGISTRATION_CLOSED: "Завершена регистрация"
+    REGISTRATION_CLOSED: "Завершена регистрация",
+    SUMMARIZING: "Подсчет результатов",
 }
 
 export const milestoneStateEnum = {
