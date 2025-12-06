@@ -123,7 +123,7 @@ export default {
 
   async mounted() {
     await this.fetchRoundDetail();
-    this.startAutoRefresh();
+    // this.startAutoRefresh();
   },
 
   beforeUnmount() {
