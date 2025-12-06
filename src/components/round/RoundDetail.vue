@@ -1,7 +1,7 @@
 <template>
     <div class="round-detail-page">
         <div class="header-container control-panel-background-container">
-            <ControlPanel @back="handleBack"/>
+            <ControlPanel @back="handleBack" @refresh="handleRefresh"/>
             <UserIcon/>
         </div>
 
@@ -251,6 +251,10 @@ export default {
         'CLOSED': 'status-closed',
       };
       return stateClasses[this.round.state] || 'status-unknown';
+    },
+
+    handleRefresh() {
+        window.location.reload();
     },
   },
 
