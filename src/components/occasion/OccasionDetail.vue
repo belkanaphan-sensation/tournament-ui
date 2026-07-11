@@ -173,7 +173,7 @@ export default {
                     activityId: activityId
                 }
             })
-        } else if (role === 'ADMINISTRATOR') {
+        } else if (role === 'REGISTRATOR') {
             router.push({
                 name: 'ActivityRegistrationDetail',
                 params: {
@@ -434,6 +434,7 @@ export default {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 15px;
     overflow: hidden;
+    padding: 10px 10px 30px 10px;
 }
 
 /* Стили для активностей IN_PROGRESS */

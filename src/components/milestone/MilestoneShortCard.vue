@@ -2,10 +2,12 @@
   <div class="milestone-card">
     <div class="card-header">
       <h4>{{ milestoneCard.name }}</h4>
+      <CardMenu :actions="getMilestoneCardMenuActions()" />
     </div>
     <div class="card-content">
         <Field label="Описание" :value= "milestoneCard.description"/>
         <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedMilestoneState()"/>
+        <DisplayBar label="Отображенные раунды" :displayRoundStates="milestoneCard.displayRoundStates || {}"/>
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -16,12 +18,17 @@
 <script>
 
 import Field from '../common/Field.vue'
+import CardMenu from '../common/CardMenu.vue'
+import DisplayBar from '../DisplayBar.vue'
 import { milestoneStateEnum } from '../../utils/EnumLocalizator.js'
+import { tournamentDisplayApi } from '@/services/tournamentDisplayApi.js';
 
 export default {
   name: 'MilestoneCardComponent',
   components: {
-    Field
+    Field,
+    CardMenu,
+    DisplayBar
   },
   props: {
     milestoneCard: {
@@ -48,11 +55,51 @@ export default {
   },
 
   methods: {
+    getMilestoneCardMenuActions() {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const role = userInfo?.roles?.[0];
+
+      const actions = [
+          {
+              label: 'Показать участников на экране',
+              onClick: () => this.showContestantToDisplay(),
+              visible: (this.milestoneCard.state === 'PLANNED' || this.milestoneCard.state === 'IN_PROGRESS' || 
+                          this.milestoneCard.state === 'PENDING') && role === 'SUPERADMIN'
+                        
+          },
+          {
+              label: 'Скрыть участников с экрана',
+              onClick: () => this.showContestantFromDisplay(),
+              visible: (this.milestoneCard.state === 'PLANNED' || this.milestoneCard.state === 'IN_PROGRESS' || 
+                          this.milestoneCard.state === 'PENDING') && role === 'SUPERADMIN'
+                        
+          },
+      ];
+
+      return actions.filter(action => action.visible);
+    },
+
+    async showContestantToDisplay() {
+      const request = {
+        milestoneId: this.milestoneCard.id,
+        toShow: true
+      }
+      await tournamentDisplayApi.updateDisplay(request);
+    },
+
+    async showContestantFromDisplay() {
+      const request = {
+        milestoneId: this.milestoneCard.id,
+        toShow: false
+      }
+      await tournamentDisplayApi.updateDisplay(request);
+    },
+
     getLocalizedMilestoneState() {
         return milestoneStateEnum[this.milestoneCard.state];
     },
 
-        getStateClass() {
+    getStateClass() {
       const stateClasses = {
         'DRAFT': 'status-opened',
         'PLANNED': 'status-opened',
@@ -100,6 +147,10 @@ export default {
 }
 
 .card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 15px;
   padding-bottom: 15px;
   border-bottom: 2px solid #f0f0f0;
@@ -111,6 +162,7 @@ export default {
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.3;
+  flex: 1;
 }
 
 .card-content {

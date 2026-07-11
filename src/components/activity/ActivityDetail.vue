@@ -65,8 +65,8 @@
             <!-- Состояние пустого списка майлстоунов -->
             <div v-if="activity && milestones.length === 0 && !isLoading" class="empty-state">
                 <div class="empty-icon">📋</div>
-                <h3>Нет майлстоунов</h3>
-                <p>Для этой активности еще не добавлены майлстоуны</p>
+                <h3>Нет этапов</h3>
+                <p>Для этой активности еще не добавлены этапы</p>
             </div>
 
             <!-- Состояние загрузки ошибки -->
@@ -477,6 +477,7 @@ export default {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 15px;
     overflow: hidden;
+    padding: 10px 10px 30px 10px;
 }
 
 /* Стили для этапов IN_PROGRESS или SUMMARIZING */

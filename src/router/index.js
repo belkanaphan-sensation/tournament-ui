@@ -189,7 +189,7 @@ router.beforeEach((to, from, next) => {
                 }
             }
         }
-        case 'ADMINISTRATOR': {
+        case 'REGISTRATOR': {
             const toName = to.name;
             switch (toName) {
                 case 'Occasions': {
