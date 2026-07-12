@@ -137,7 +137,7 @@ export default {
       
       try {
         const occasionId = this.$route.params.occasionId;
-        this.fillDetail(occasionId);
+        await this.fillDetail(occasionId);
       } catch (err) {
         this.error = 'Не удалось загрузить данные мероприятия';
         console.error('Error fetching occasion detail:', err);

@@ -136,7 +136,7 @@ export default {
       
       try {
         const activityId = this.$route.params.activityId;
-        this.fillDetail(activityId);
+        await this.fillDetail(activityId);
       } catch (err) {
         this.error = 'Не удалось загрузить данные активности';
         console.error('Error fetching activity detail:', err);

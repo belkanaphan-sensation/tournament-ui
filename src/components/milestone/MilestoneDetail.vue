@@ -145,7 +145,7 @@ export default {
       
       try {
         const milestoneId = this.$route.params.milestoneId;
-        this.fillDetail(milestoneId);
+        await this.fillDetail(milestoneId);
       } catch (err) {
         this.error = 'Не удалось загрузить данные этапа';
         console.error('Error fetching milestone detail:', err);
