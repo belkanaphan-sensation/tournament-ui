@@ -24,6 +24,8 @@ alwaysApply: true
 
 Если задача требует понимания API библиотеки — опирайся на типы/документацию или на то, как библиотека уже используется в `src/`, а не на разбор исходников в `node_modules`.
 
+**Связанный backend:** `D:\sensation_old\tournament-ss`. Трогать только если пользователь явно указал файлы/задачу по backend.
+
 ## Как работать с проектом
 
 - Сначала ищи решение в `src/` и корневых конфигах; не расширяй поиск за пределы scope.
@@ -31,6 +33,44 @@ alwaysApply: true
 - Меняй только то, что нужно для задачи; не делай попутный рефакторинг.
 - Этот файл — живой документ: дополняй его по мере согласования новых подходов и каталогов.
 
-## Дальнейшее наполнение
+## Согласованные подходы
 
-Ниже будут добавляться согласованные подходы (архитектура, API, UI, именование и т.д.). Пока зафиксирован только доступ к файлам.
+### Обновление списка карточек после display-экшена
+
+После `tournamentDisplayApi.updateDisplay` **не** делать `Object.assign` одной карточки и **не** `window.location.reload()`.
+
+Паттерн:
+1. Дочерняя карточка эмитит **`display-updated`**.
+2. Родитель перезапрашивает **весь список** карточек.
+
+Примеры:
+- `RoundShortCard` → `MilestoneDetail.refreshRounds()`
+- `MilestoneShortCard` → `ActivityDetail.refreshMilestones()`
+
+Имя события общее: `display-updated`. Имена методов родителя могут отличаться (`refreshRounds` / `refreshMilestones`).
+
+### Экран Display (`src/components/display/Display.vue`)
+
+- Экран для LED/зала: минимум цветов, без вертикального скролла (`position: fixed`), плитки с `border-radius: 12px` как в проекте.
+- Данные: `tournamentDisplayApi.getDisplayRounds()` + `getPrimaryDisplayConfig()`.
+- Конфиг управляет режимом (`ALL` / `SLIDESHOW`), `roundsPerSlide`, шрифтами, схемой, показом имени/фамилии (фамилия первой).
+- Скрытый logout: невидимая кнопка 48×48 в левом верхнем углу.
+
+### SSE и обновление Display
+
+- Глобальный клиент: `window.$sse` (`src/plugins/ssePlugin.js`).
+- Служебное сообщение **`DISPLAY_UPDATED`**: без toast и звука; `Display.vue` тихо перезапрашивает данные.
+- При refresh защищаться от гонок (id запроса; применять и пустой массив).
+- Backend (`tournament-ss`): после `updateDisplay` / `saveAll` уведомлять пользователей с ролью `TOURNAMENT_DISPLAY` **после commit** (`TransactionSynchronization.afterCommit`), текст события `DISPLAY_UPDATED`.
+
+### Карточки и меню
+
+- Общее меню «⋯»: `src/components/common/CardMenu.vue` (Teleport, закрытие по клику снаружи).
+- Индикатор показа на экране у этапа: `DisplayBar` + `displayRoundStates` (порядок раунда → boolean).
+- У раунда на карточке/в детали — поле «Отображен на экране» (`toShow`).
+
+### UI-детали Display (не ломать без просьбы)
+
+- Не делать «неон / 2000s»; мало цветов, читаемость важнее декора.
+- Имя/фамилия: отдельные размеры шрифта (`participantFontSize` — номер, `nameFontSize` — ФИО).
+- Без имён номер по центру; с именами — номер слева, ellipsis при переполнении, без переноса строк.
