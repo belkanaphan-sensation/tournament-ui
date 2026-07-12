@@ -17,6 +17,7 @@ import Contestants from '../components/contestant/Contestants.vue'
 import ContestantsAnnouncer from '../components/contestant/ContestantsAnnouncer.vue'
 import Test from '../components/test/Test.vue'
 import SnakeGame from '../components/userinfo/SnakeGame.vue'
+import Display from '../components/display/Display.vue'
 
 const routes = [
   {
@@ -26,7 +27,20 @@ const routes = [
     meta: {}
   }, {
     path: '/',
-    redirect: '/occasions',
+    // redirect: '/occasions',
+    redirect: () => {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        const role = userInfo?.roles?.[0];
+
+        switch (role) {
+            case 'TOURNAMENT_DISPLAY': {
+              return { name: 'Display' };
+            }
+            default: {
+              return { name: 'Occasions' };
+            }
+        }
+    },
     meta: {}
   }, {
     path: '/occasions',
@@ -103,6 +117,11 @@ const routes = [
     path: '/snake-game',
     name: 'SnakeGame',
     component: SnakeGame
+  },
+  {
+    path: '/display',
+    name: 'Display',
+    component: Display
   }
 ]
 
