@@ -170,7 +170,7 @@ router.beforeEach((to, from, next) => {
     const userRole = userInfo.roles[0];
 
     switch (userRole) {
-        case 'USER': {
+        case 'JUDGE': {
             const toName = to.name;
             switch (toName) {
                 case 'Occasions': {

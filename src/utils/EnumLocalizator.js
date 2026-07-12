@@ -40,7 +40,7 @@ export const roleEnum = {
     SUPERADMIN: 'Супер админ',
     ADMIN: 'Админ',
     OCCASION_ADMIN: 'Админ мероприятия',
-    USER: 'Пользователь',
+    JUDGE: 'Пользователь',
     READER: 'Шпион'
 }
 

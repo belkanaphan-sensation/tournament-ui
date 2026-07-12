@@ -50,7 +50,7 @@ export default {
 
     const navigateTo = (milestoneId, roundId) => {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-      if (userInfo?.roles?.[0] === 'USER') {
+      if (userInfo?.roles?.[0] === 'JUDGE') {
         router.push({
           name: 'Contestants',
           params: { 
@@ -85,7 +85,7 @@ export default {
 
   computed: {
     showStatus() {
-      return this.getRole() === 'USER';
+      return this.getRole() === 'JUDGE';
     },
   }
 }

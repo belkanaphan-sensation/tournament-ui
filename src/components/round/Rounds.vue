@@ -78,7 +78,7 @@ export default {
         const role = userInfo?.roles?.[0];
 
         let rounds;
-        if (role === 'USER') {
+        if (role === 'JUDGE') {
             rounds = await roundApi.getByMilestoneIdInLifeStates(this.milestoneId) || [];
             const judgeRoundStatuses = await this.fetchJudgeRoundStatusesByMilestoneId();
             for (let i = 0; i < rounds.length; i++) {

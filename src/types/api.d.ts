@@ -1163,7 +1163,7 @@ export interface components {
             /** @description Список организаций пользователя */
             organizations?: components["schemas"]["EntityLinkDto"][];
             /** @description Список ролей пользователя */
-            roles?: ("SUPERADMIN" | "ADMIN" | "OCCASION_ADMIN" | "USER" | "READER")[];
+            roles?: ("SUPERADMIN" | "ADMIN" | "OCCASION_ADMIN" | "JUDGE" | "READER")[];
         };
         /** @description Запрос на обновление назначения пользователя на активность */
         UpdateUserActivityAssignmentRequest: {
@@ -1808,7 +1808,7 @@ export interface components {
             /** @description ID организации */
             organizationIds?: number[];
             /** @description Список ролей */
-            roles?: ("SUPERADMIN" | "ADMIN" | "OCCASION_ADMIN" | "USER" | "READER")[];
+            roles?: ("SUPERADMIN" | "ADMIN" | "OCCASION_ADMIN" | "JUDGE" | "READER")[];
         };
         /** @description Запрос на создание назначения пользователя на активность */
         CreateUserActivityAssignmentRequest: {
