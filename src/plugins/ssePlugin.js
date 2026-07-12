@@ -470,6 +470,11 @@ const SSEPlugin = {
       // Обработчик уведомлений
       const notificationHandler = (event) => {
         console.log('[SSE] Notification received:', event.data)
+        // Служебные события (например, обновление экрана Display) — без toast/звука
+        if (event.data === 'DISPLAY_UPDATED') {
+          emitEvent('notification', { message: event.data, toastId: null })
+          return
+        }
         const toastId = showNotification(event.data)
         // Используем функцию для определения типа звука по сообщению
         playSoundForNotification(event.data)

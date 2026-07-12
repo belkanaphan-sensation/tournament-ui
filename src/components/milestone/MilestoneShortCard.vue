@@ -22,7 +22,6 @@ import CardMenu from '../common/CardMenu.vue'
 import DisplayBar from '../DisplayBar.vue'
 import { milestoneStateEnum } from '../../utils/EnumLocalizator.js'
 import { tournamentDisplayApi } from '@/services/tournamentDisplayApi.js';
-import { milestoneApi } from '@/services/milestoneApi.js';
 
 export default {
   name: 'MilestoneCardComponent',
@@ -37,6 +36,8 @@ export default {
       default: () => ({})
     }
   },
+
+  emits: ['display-updated'],
 
   setup(props) {
     // const router = useRouter();
@@ -86,10 +87,7 @@ export default {
         toShow: true
       }
       await tournamentDisplayApi.updateDisplay(request);
-      const updated = await milestoneApi.getMilestoneDetail(this.milestoneCard.id);
-      if (updated) {
-        Object.assign(this.milestoneCard, updated);
-      }
+      this.$emit('display-updated');
     },
 
     async hideContestantFromDisplay() {
@@ -98,10 +96,7 @@ export default {
         toShow: false
       }
       await tournamentDisplayApi.updateDisplay(request);
-      const updated = await milestoneApi.getMilestoneDetail(this.milestoneCard.id);
-      if (updated) {
-        Object.assign(this.milestoneCard, updated);
-      }
+      this.$emit('display-updated');
     },
 
     getLocalizedMilestoneState() {

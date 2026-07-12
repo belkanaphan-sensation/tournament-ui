@@ -141,7 +141,8 @@ export default {
       config: { ...DEFAULT_CONFIG },
       isLoading: true,
       slideIndex: 0,
-      slideTimer: null
+      slideTimer: null,
+      _displayFetchId: 0
     }
   },
 
@@ -207,26 +208,63 @@ export default {
   async mounted() {
     await this.loadDisplay()
     this.startSlideshowIfNeeded()
+    this.bindDisplayUpdatedListener()
   },
 
   beforeUnmount() {
+    this.unbindDisplayUpdatedListener()
     this.stopSlideshow()
   },
 
   methods: {
+    bindDisplayUpdatedListener() {
+      if (!window.$sse) return
+      this._onDisplayNotification = ({ message }) => {
+        if (message === 'DISPLAY_UPDATED') {
+          this.refreshDisplay()
+        }
+      }
+      window.$sse.on('notification', this._onDisplayNotification)
+    },
+
+    unbindDisplayUpdatedListener() {
+      if (!window.$sse || !this._onDisplayNotification) return
+      window.$sse.off('notification', this._onDisplayNotification)
+      this._onDisplayNotification = null
+    },
+
     async loadDisplay() {
       this.isLoading = true
       try {
-        const [rounds, config] = await Promise.all([
-          tournamentDisplayApi.getDisplayRounds(),
-          tournamentDisplayApi.getPrimaryDisplayConfig()
-        ])
-        this.displayRounds = Array.isArray(rounds) ? rounds : []
-        this.config = { ...DEFAULT_CONFIG, ...(config || {}) }
-        this.slideIndex = 0
+        await this.fetchDisplayData()
       } finally {
         this.isLoading = false
       }
+    },
+
+    async refreshDisplay() {
+      try {
+        await this.fetchDisplayData()
+        this.startSlideshowIfNeeded()
+      } catch (error) {
+        console.error('Failed to refresh display after SSE event:', error)
+      }
+    },
+
+    async fetchDisplayData() {
+      const requestId = ++this._displayFetchId
+      const [rounds, config] = await Promise.all([
+        tournamentDisplayApi.getDisplayRounds(),
+        tournamentDisplayApi.getPrimaryDisplayConfig()
+      ])
+      // Игнорируем устаревший ответ, если уже ушёл более новый запрос
+      if (requestId !== this._displayFetchId) {
+        return
+      }
+      // Пустой массив тоже применяем — иначе на экране останутся старые раунды
+      this.displayRounds = Array.isArray(rounds) ? rounds : []
+      this.config = { ...DEFAULT_CONFIG, ...(config && typeof config === 'object' ? config : {}) }
+      this.slideIndex = 0
     },
 
     resolveFont(role, size) {

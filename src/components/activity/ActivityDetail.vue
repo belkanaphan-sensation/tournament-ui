@@ -56,7 +56,11 @@
                              :key="milestone.id" 
                              class="milestone-item"
                              :class="{ 'in-progress': milestone.state === 'PENDING' || milestone.state === 'IN_PROGRESS'|| milestone.state === 'SUMMARIZING' }">
-                            <MilestoneShortCard :milestoneCard="milestone" @click="() => navigateToMilestoneDetail(milestone.id)"/>
+                            <MilestoneShortCard
+                              :milestoneCard="milestone"
+                              @click="() => navigateToMilestoneDetail(milestone.id)"
+                              @display-updated="refreshMilestones"
+                            />
                         </div>
                     </div>
                 </div>
@@ -144,6 +148,14 @@ export default {
     async fillDetail(activityId) {
         this.activity = await activityApi.getActivityDetail(activityId);
         this.milestones = await milestoneApi.getMilestones(activityId);
+    },
+
+    async refreshMilestones() {
+      if (!this.activity?.id) return;
+      const milestones = await milestoneApi.getMilestones(this.activity.id);
+      if (milestones) {
+        this.milestones = milestones;
+      }
     },
 
     navigateToMilestoneDetail(milestoneId) {
