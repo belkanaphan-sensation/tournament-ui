@@ -22,6 +22,7 @@ import CardMenu from '../common/CardMenu.vue'
 import DisplayBar from '../DisplayBar.vue'
 import { milestoneStateEnum } from '../../utils/EnumLocalizator.js'
 import { tournamentDisplayApi } from '@/services/tournamentDisplayApi.js';
+import { milestoneApi } from '@/services/milestoneApi.js';
 
 export default {
   name: 'MilestoneCardComponent',
@@ -69,7 +70,7 @@ export default {
           },
           {
               label: 'Скрыть участников с экрана',
-              onClick: () => this.showContestantFromDisplay(),
+              onClick: () => this.hideContestantFromDisplay(),
               visible: (this.milestoneCard.state === 'PLANNED' || this.milestoneCard.state === 'IN_PROGRESS' || 
                           this.milestoneCard.state === 'PENDING') && role === 'SUPERADMIN'
                         
@@ -85,14 +86,22 @@ export default {
         toShow: true
       }
       await tournamentDisplayApi.updateDisplay(request);
+      const updated = await milestoneApi.getMilestoneDetail(this.milestoneCard.id);
+      if (updated) {
+        Object.assign(this.milestoneCard, updated);
+      }
     },
 
-    async showContestantFromDisplay() {
+    async hideContestantFromDisplay() {
       const request = {
         milestoneId: this.milestoneCard.id,
         toShow: false
       }
       await tournamentDisplayApi.updateDisplay(request);
+      const updated = await milestoneApi.getMilestoneDetail(this.milestoneCard.id);
+      if (updated) {
+        Object.assign(this.milestoneCard, updated);
+      }
     },
 
     getLocalizedMilestoneState() {

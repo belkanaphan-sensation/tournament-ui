@@ -7,8 +7,9 @@
         :key="item.orderNumber"
         class="display-square"
         :class="item.value ? 'is-active' : 'is-inactive'"
-        :title="String(item.orderNumber)"
+        :title="`Порядковый номер раунда: ${item.orderNumber}`"
       ></span>
+      <span v-if="sortedItems.length === 0" class="display-empty">Нет данных</span>
     </div>
   </div>
 </template>
@@ -87,6 +88,13 @@ export default {
 
 .display-square.is-active {
   background: #4caf50;
+}
+
+.display-empty {
+  color: #6c757d;
+  font-size: 1.1rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 @keyframes fieldAppear {

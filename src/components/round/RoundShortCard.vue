@@ -2,9 +2,15 @@
   <div class="round-card">
     <div class="card-header">
       <h4>{{ roundCard.name }}</h4>
+      <CardMenu :actions="getRoundCardMenuActions()" />
     </div>
     <div class="card-content">
         <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedMilestoneState()"/>
+        <Field
+          label="Отображен на экране"
+          :class="getToShowClass()"
+          :value="roundCard.toShow ? 'Да' : 'Нет'"
+        />
     </div>
     <div class="card-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
@@ -15,12 +21,15 @@
 <script>
 
 import Field from '../common/Field.vue'
+import CardMenu from '../common/CardMenu.vue'
 import { roundStateEnum } from '../../utils/EnumLocalizator.js'
+import { tournamentDisplayApi } from '@/services/tournamentDisplayApi.js'
 
 export default {
   name: 'RoundShortCard',
   components: {
-    Field
+    Field,
+    CardMenu
   },
   props: {
     roundCard: {
@@ -29,7 +38,47 @@ export default {
     },
   },
 
+  emits: ['display-updated'],
+
   methods: {
+    getRoundCardMenuActions() {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const role = userInfo?.roles?.[0];
+
+      const actions = [
+          {
+              label: 'Показать участников на экране',
+              onClick: () => this.showContestantToDisplay(),
+              visible: role === 'SUPERADMIN' && this.roundCard.toShow != true
+          },
+          {
+              label: 'Скрыть участников с экрана',
+              onClick: () => this.showContestantFromDisplay(),
+              visible: role === 'SUPERADMIN' && this.roundCard.toShow === true
+          },
+      ];
+
+      return actions.filter(action => action.visible);
+    },
+
+    async showContestantToDisplay() {
+      const request = {
+        roundId: this.roundCard.id,
+        toShow: true
+      }
+      await tournamentDisplayApi.updateDisplay(request);
+      this.$emit('display-updated');
+    },
+
+    async showContestantFromDisplay() {
+      const request = {
+        roundId: this.roundCard.id,
+        toShow: false
+      }
+      await tournamentDisplayApi.updateDisplay(request);
+      this.$emit('display-updated');
+    },
+
     getLocalizedMilestoneState() {
         return roundStateEnum[this.roundCard.state];
     },
@@ -40,6 +89,10 @@ export default {
         'CLOSED': 'status-closed',
       };
       return stateClasses[this.roundCard.state] || 'status-unknown';
+    },
+
+    getToShowClass() {
+      return this.roundCard.toShow ? 'status-closed' : 'status-unknown';
     },
   }
 }
@@ -87,6 +140,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 8px;
 }
 
 .card-header h4 {

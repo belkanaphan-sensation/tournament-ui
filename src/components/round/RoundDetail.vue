@@ -29,6 +29,11 @@
                 <div class="round-content">
                     <div class="details-grid">
                         <Field label="Состояние" :class="getStateClass()" :value= "getLocalizedRoundState()"/>
+                        <Field
+                          label="Отображен на экране"
+                          :class="getToShowClass()"
+                          :value="round.toShow ? 'Да' : 'Нет'"
+                        />
                     </div>
                 </div>
             </div>
@@ -91,6 +96,7 @@ import LoadingOverlay from '../common/LoadingOverlay.vue';
 import { roundStateEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
 import Field from '../common/Field.vue'
+import { tournamentDisplayApi } from '@/services/tournamentDisplayApi.js'
 
 export default {
   name: 'RoundDetail',
@@ -195,54 +201,43 @@ export default {
     getHeaderActions() {
       if (!this.round) return [];
 
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const role = userInfo?.roles?.[0];
+
       const actions = [
-        {
-          label: 'Начать раунд',
-          class: 'default-action-btn',
-          onClick: () => this.startRound(),
-          visible: this.round.state === 'PLANNED'
-        },
-        {
-          label: 'Завершить оценку',
-          class: 'default-action-btn',
-          onClick: () => this.finishEvaluation(),
-          visible: this.round.state === 'IN_PROGRESS'
-        },
-        {
-          label: 'Подвести итоги',
-          class: 'default-action-btn',
-          onClick: () => this.summarizeRound(),
-          visible: this.round.state === 'EVALUATION_COMPLETED'
-        },
-        {
-          label: 'Завершить раунд',
-          class: 'default-action-btn',
-          onClick: () => this.completeRound(),
-          visible: this.round.state === 'SUMMARIZED'
-        }
+          {
+              label: 'Показать участников на экране',
+              class: 'default-action-btn',
+              onClick: () => this.showContestantToDisplay(),
+              visible: role === 'SUPERADMIN' && this.round.toShow != true
+          },
+          {
+              label: 'Скрыть участников с экрана',
+              class: 'default-action-btn',
+              onClick: () => this.showContestantFromDisplay(),
+              visible: role === 'SUPERADMIN' && this.round.toShow === true
+          },
       ];
 
       return actions.filter(action => action.visible);
     },
 
-    async startRound() {
-        await roundApi.startRound(this.round.id);
-        this.fillDetail(this.round.id);
+    async showContestantToDisplay() {
+      const request = {
+        roundId: this.round.id,
+        toShow: true
+      }
+      await tournamentDisplayApi.updateDisplay(request);
+      this.fillDetail(this.round.id);
     },
 
-    async finishEvaluation() {
-        await roundApi.finishEvaluation(this.round.id);
-        this.fillDetail(this.round.id);
-    },
-
-    async summarizeRound() {
-        await roundApi.summarizeRound(this.round.id);
-        this.fillDetail(this.round.id);
-    },
-
-    async completeRound() {
-        await roundApi.completeRound(this.round.id);
-        this.fillDetail(this.round.id);
+    async showContestantFromDisplay() {
+      const request = {
+        roundId: this.round.id,
+        toShow: false
+      }
+      await tournamentDisplayApi.updateDisplay(request);
+      this.fillDetail(this.round.id);
     },
 
     getStateClass() {
@@ -251,6 +246,10 @@ export default {
         'CLOSED': 'status-closed',
       };
       return stateClasses[this.round.state] || 'status-unknown';
+    },
+
+    getToShowClass() {
+      return this.round.toShow ? 'status-closed' : 'status-unknown';
     },
 
     handleRefresh() {

@@ -47,7 +47,11 @@
                         <div v-for="(round, index) in rounds" 
                              :key="round.id" 
                              class="round-item">
-                            <RoundShortCard :roundCard="round" @click="() => navigateToRoundDetail(round.id)"/>
+                            <RoundShortCard
+                              :roundCard="round"
+                              @click="() => navigateToRoundDetail(round.id)"
+                              @display-updated="refreshRounds"
+                            />
                         </div>
                     </div>
                 </div>
@@ -160,6 +164,14 @@ export default {
         this.milestoneRule = tempMilestoneRule;
         this.rounds = tempRounds;
         this.activity = tempActivity;
+    },
+
+    async refreshRounds() {
+      if (!this.milestone?.id) return;
+      const tempRounds = await roundApi.getRounds(this.milestone.id);
+      if (tempRounds) {
+        this.rounds = tempRounds;
+      }
     },
 
     navigateToRoundDetail(roundId) {

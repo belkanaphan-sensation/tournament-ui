@@ -41,7 +41,7 @@
 .field-container {
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border-radius: 12px;
-    padding: 20px;
+    padding: 15px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
     position: relative;
