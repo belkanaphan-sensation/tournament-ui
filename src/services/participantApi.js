@@ -32,6 +32,12 @@ export const participantApi = {
     const participantLongId = Number(participantId);
     const activityLongId = Number(newActivityId);
     return api.post('/participant/' + participantLongId + '/activity/' + activityLongId);
+  },
+
+  searchRegisteredNotInMilestoneRounds(request) {
+    return api.post('/participant/search', request, {
+      'Content-Type': 'application/json',
+    });
   }
 }
 

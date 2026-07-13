@@ -45,6 +45,20 @@
             >Редактировать</button>
           </div>
         </div>
+
+        <div v-if="showRefreshConfirm" class="confirm-overlay">
+          <div class="confirm-backdrop" @click="closeRefreshConfirm"></div>
+          <div class="confirm-dialog" role="dialog" aria-modal="true">
+            <p class="confirm-text">
+              Несохраненные результаты будут очищены.<br>
+              Вы уверены?
+            </p>
+            <div class="confirm-actions">
+              <button type="button" class="confirm-btn confirm-yes" @click="confirmRefresh">Да</button>
+              <button type="button" class="confirm-btn confirm-cancel" @click="closeRefreshConfirm">Отмена</button>
+            </div>
+          </div>
+        </div>
     </div>
 </template>
 
@@ -186,7 +200,16 @@ export default {
       }
     },
 
-    async handleRefresh() {
+    handleRefresh() {
+      this.showRefreshConfirm = true;
+    },
+
+    closeRefreshConfirm() {
+      this.showRefreshConfirm = false;
+    },
+
+    async confirmRefresh() {
+      this.showRefreshConfirm = false;
       const resultStore = useJudgeResultStore();
       resultStore.clear();
       this.roundResults = await this.fetchJudgeRoundResults() || [];
@@ -203,6 +226,7 @@ export default {
         roundResult: [],
         roundResultStatus: undefined,
         round: undefined,
+        showRefreshConfirm: false,
     }
   },
 }
@@ -348,6 +372,78 @@ export default {
 
 .edit-button:hover {
     box-shadow: 0 6px 20px rgba(108,117,125,0.4);
+}
+
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.confirm-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.confirm-dialog {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 360px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    padding: 24px 20px 20px;
+}
+
+.confirm-text {
+    margin: 0 0 24px;
+    text-align: center;
+    font-size: 1.15rem;
+    line-height: 1.45;
+    color: #333;
+    font-weight: 500;
+}
+
+.confirm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.confirm-btn {
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.confirm-yes {
+    background: #007bff;
+    color: white;
+}
+
+.confirm-yes:active {
+    background: #0056b3;
+}
+
+.confirm-cancel {
+    background: #e9ecef;
+    color: #333;
+}
+
+.confirm-cancel:active {
+    background: #dee2e6;
 }
 
 @media (max-width: 768px) {

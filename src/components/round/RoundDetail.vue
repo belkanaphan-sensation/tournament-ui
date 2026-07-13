@@ -45,24 +45,17 @@
                     <div class="judges-count">{{ judgeRoundStatuses.length }} судей</div>
                 </div>
 
-                <div class="judges-section" v-if="judgeRoundStatuses.length > 0">
-                    <div class="section-header">
-                        <h2 class="section-title">Статусы оценок судей</h2>
-                        <div class="judges-count">{{ judgeRoundStatuses.length }} судей</div>
-                    </div>
-
-                    <div class="judges-container">
-                        <div class="judges-grid">
-                            <div v-for="judgeRoundStatus in judgeRoundStatuses" 
-                                :key="judgeRoundStatus.id" 
-                                class="judge-item">
-                                <div class="judge-info">
-                                    <span class="judge-name">{{ judgeRoundStatus.judge.value }}</span>
-                                </div>
-                                <div class="judge-status" :class="getStatusClass(judgeRoundStatus.status)">
-                                    <span v-if="judgeRoundStatus.status == 'READY'" class="status-icon">✓</span>
-                                    <span v-else class="status-icon pending">⏳</span>
-                                </div>
+                <div class="judges-container">
+                    <div class="judges-grid">
+                        <div v-for="judgeRoundStatus in judgeRoundStatuses" 
+                            :key="judgeRoundStatus.id" 
+                            class="judge-item">
+                            <div class="judge-info">
+                                <span class="judge-name">{{ judgeRoundStatus.judge.value }}</span>
+                            </div>
+                            <div class="judge-status" :class="getStatusClass(judgeRoundStatus.status)">
+                                <span v-if="judgeRoundStatus.status == 'READY'" class="status-icon">✓</span>
+                                <span v-else class="status-icon pending">⏳</span>
                             </div>
                         </div>
                     </div>
@@ -74,6 +67,78 @@
                 <div class="empty-icon">👨‍⚖️</div>
                 <h3>Нет назначенных судей</h3>
                 <p>Для этого раунда еще не назначены судьи</p>
+            </div>
+
+            <!-- Участники раунда -->
+            <div class="participants-section" v-if="round && !isLoading">
+                <div class="section-header collapsible-header" @click="toggleParticipantsSection">
+                    <h2 class="section-title">Участники</h2>
+                    <div class="section-header-right">
+                        <div class="participants-count">{{ contestants.length }}</div>
+                        <span class="section-arrow">{{ participantsSectionOpen ? '▼' : '▶' }}</span>
+                    </div>
+                </div>
+
+                <div v-if="participantsSectionOpen" class="section-content">
+                    <div v-if="contestants.length === 0" class="empty-side">
+                        Нет участников в этом раунде
+                    </div>
+                    <div v-else class="sides-grid">
+                        <div class="side-column">
+                            <div class="side-header">Партнеры</div>
+                            <div class="contestants-list">
+                                <div
+                                    v-for="contestant in getLeaders(contestants)"
+                                    :key="contestant.id"
+                                    class="contestant-item"
+                                >
+                                    <span class="contestant-number">{{ contestant.number }}</span>
+                                    <div class="contestant-participants">
+                                        <span class="contestant-name">{{ formatParticipantName(contestant, 'LEADER') }}</span>
+                                        <span
+                                            v-for="assistant in getAssistants(contestant, 'LEADER')"
+                                            :key="assistant.key"
+                                            class="contestant-name assistant"
+                                        >
+                                            {{ formatAssistantName(assistant) }}
+                                            <span class="assistant-label">(ассистент)</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div v-if="getLeaders(contestants).length === 0" class="empty-side">
+                                    Нет партнеров
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="side-column">
+                            <div class="side-header">Партнерши</div>
+                            <div class="contestants-list">
+                                <div
+                                    v-for="contestant in getFollowers(contestants)"
+                                    :key="contestant.id"
+                                    class="contestant-item"
+                                >
+                                    <span class="contestant-number">{{ contestant.number }}</span>
+                                    <div class="contestant-participants">
+                                        <span class="contestant-name">{{ formatParticipantName(contestant, 'FOLLOWER') }}</span>
+                                        <span
+                                            v-for="assistant in getAssistants(contestant, 'FOLLOWER')"
+                                            :key="assistant.key"
+                                            class="contestant-name assistant"
+                                        >
+                                            {{ formatAssistantName(assistant) }}
+                                            <span class="assistant-label">(ассистент)</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div v-if="getFollowers(contestants).length === 0" class="empty-side">
+                                    Нет партнерш
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Состояние загрузки ошибки -->
@@ -92,6 +157,7 @@ import ControlPanel from '../common/ControlPanel.vue';
 import UserIcon from './../userinfo/UserIcon.vue';
 import { roundApi } from '@/services/roundApi.js';
 import { judgeRoundStatusApi } from '@/services/judgeRoundStatusApi.js';
+import { contestantApi } from '@/services/contestantApi.js';
 import LoadingOverlay from '../common/LoadingOverlay.vue';
 import { roundStateEnum } from '../../utils/EnumLocalizator.js';
 import { useRouter } from 'vue-router';
@@ -122,6 +188,8 @@ export default {
     return {
       round: null,
       judgeRoundStatuses: [],
+      contestants: [],
+      participantsSectionOpen: false,
       isLoading: true,
       error: null
     }
@@ -154,7 +222,55 @@ export default {
 
     async fillDetail(roundId) {
         this.round = await roundApi.getRoundDetail(roundId);
-        this.judgeRoundStatuses = await judgeRoundStatusApi.getJudgeRoundStatusesByRound(roundId);
+        const [judgeRoundStatuses, contestants] = await Promise.all([
+          judgeRoundStatusApi.getJudgeRoundStatusesByRound(roundId),
+          contestantApi.getByRoundByRoundId(roundId)
+        ]);
+        this.judgeRoundStatuses = judgeRoundStatuses || [];
+        this.contestants = Array.isArray(contestants) ? contestants : [];
+    },
+
+    toggleParticipantsSection() {
+      this.participantsSectionOpen = !this.participantsSectionOpen;
+    },
+
+    getLeaders(contestants) {
+      return (contestants || []).filter((contestant) =>
+        contestant.participants?.some((p) => p.partnerSide === 'LEADER')
+      );
+    },
+
+    getFollowers(contestants) {
+      return (contestants || []).filter((contestant) =>
+        contestant.participants?.some((p) => p.partnerSide === 'FOLLOWER')
+      );
+    },
+
+    formatParticipantName(contestant, partnerSide) {
+      const participant = contestant.participants?.find((p) => p.partnerSide === partnerSide)
+        || contestant.participants?.[0];
+      if (!participant) return '';
+      return [participant.surname, participant.name].filter(Boolean).join(' ');
+    },
+
+    getAssistants(contestant, partnerSide) {
+      if (!contestant?.participants) return [];
+
+      return contestant.participants
+        .filter((participant) => {
+          if (!participant?.assistant) return false;
+          if (!partnerSide) return true;
+          return participant.partnerSide === partnerSide;
+        })
+        .map((participant, index) => ({
+          ...participant.assistant,
+          key: `assistant_${participant.participantId || index}`
+        }));
+    },
+
+    formatAssistantName(assistant) {
+      const person = assistant?.person || assistant;
+      return [person?.surname, person?.name].filter(Boolean).join(' ');
     },
 
     async refreshJudgeStatuses() {
@@ -480,6 +596,115 @@ export default {
     font-size: 0.9rem;
 }
 
+/* Участники раунда */
+.participants-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 25px;
+    margin-top: 30px;
+}
+
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 0;
+}
+
+.collapsible-header:hover {
+    background: #fafafa;
+    border-radius: 8px;
+    margin: -8px -8px 0;
+    padding: 8px 8px 15px;
+}
+
+.section-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.participants-count {
+    color: #666;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.section-arrow {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.section-content {
+    margin-top: 20px;
+}
+
+.sides-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.side-header {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.contestants-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.contestant-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+}
+
+.contestant-number {
+    font-weight: 700;
+    color: #17a2b8;
+    min-width: 2.5em;
+    padding-top: 1px;
+}
+
+.contestant-participants {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+}
+
+.contestant-name {
+    color: #333;
+}
+
+.contestant-name.assistant {
+    color: #666;
+    font-size: 0.92em;
+}
+
+.assistant-label {
+    color: #999;
+    font-size: 0.9em;
+}
+
+.empty-side {
+    color: #999;
+    font-size: 0.95rem;
+    padding: 8px 0;
+}
+
 /* Состояния пустого списка и ошибки */
 .empty-state,
 .error-state {
@@ -525,5 +750,11 @@ export default {
 
 .retry-btn:hover {
     background: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .sides-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>

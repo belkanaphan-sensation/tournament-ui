@@ -11,6 +11,17 @@
       @click="handleLogout"
     ></button>
 
+    <img
+      class="festival-emblem festival-emblem-left"
+      :src="emblemSrc"
+      alt="Эмблема фестиваля"
+    />
+    <img
+      class="festival-emblem festival-emblem-right"
+      :src="emblemSrc"
+      alt="Эмблема фестиваля"
+    />
+
     <div class="display-header">
       <h1 class="activity-title">{{ activityName }}</h1>
       <h2 class="milestone-title">{{ milestoneName }}</h2>
@@ -77,6 +88,8 @@
 <script>
 import { tournamentDisplayApi } from '@/services/tournamentDisplayApi.js'
 import { authApi } from '@/services/authApi.js'
+import emblemLight from '@/assets/emblems/emblem-light.png'
+import emblemDark from '@/assets/emblems/emblem-dark.png'
 
 const FONT_SIZES = {
   activity: {
@@ -161,6 +174,10 @@ export default {
 
     schemeClass() {
       return this.config.colorScheme === 'LIGHT' ? 'scheme-light' : 'scheme-dark'
+    },
+
+    emblemSrc() {
+      return this.config.colorScheme === 'LIGHT' ? emblemLight : emblemDark
     },
 
     fontStyleVars() {
@@ -351,6 +368,24 @@ export default {
   background: transparent;
   cursor: default;
   z-index: 10;
+}
+
+.festival-emblem {
+  position: absolute;
+  top: 1.5vh;
+  height: clamp(72px, 12vh, 140px);
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.festival-emblem-left {
+  left: 1.5vw;
+}
+
+.festival-emblem-right {
+  right: 1.5vw;
 }
 
 .scheme-dark {

@@ -33,6 +33,9 @@
 </template>
 
 <script>
+const CARD_MENU_OPEN_EVENT = 'card-menu-opening'
+let menuIdSeq = 0
+
 export default {
   name: 'CardMenu',
   props: {
@@ -45,7 +48,8 @@ export default {
   data() {
     return {
       menuOpen: false,
-      dropdownStyle: {}
+      dropdownStyle: {},
+      menuId: ++menuIdSeq
     }
   },
 
@@ -53,6 +57,15 @@ export default {
     visibleActions() {
       return this.actions.filter(action => action.visible);
     }
+  },
+
+  mounted() {
+    window.addEventListener(CARD_MENU_OPEN_EVENT, this.onOtherMenuOpening)
+  },
+
+  beforeUnmount() {
+    window.removeEventListener(CARD_MENU_OPEN_EVENT, this.onOtherMenuOpening)
+    this.removeListeners()
   },
 
   methods: {
@@ -68,40 +81,50 @@ export default {
     },
 
     toggleMenu() {
-      this.menuOpen = !this.menuOpen;
       if (this.menuOpen) {
-        this.updateDropdownPosition();
-        this.$nextTick(() => {
-          document.addEventListener('click', this.closeMenu);
-          window.addEventListener('scroll', this.closeMenu, true);
-          window.addEventListener('resize', this.closeMenu);
-        });
-      } else {
-        this.removeListeners();
+        this.closeMenu()
+        return
+      }
+      this.openMenu()
+    },
+
+    openMenu() {
+      window.dispatchEvent(new CustomEvent(CARD_MENU_OPEN_EVENT, {
+        detail: { menuId: this.menuId }
+      }))
+      this.menuOpen = true
+      this.updateDropdownPosition()
+      this.$nextTick(() => {
+        document.addEventListener('click', this.closeMenu)
+        window.addEventListener('scroll', this.closeMenu, true)
+        window.addEventListener('resize', this.closeMenu)
+      })
+    },
+
+    onOtherMenuOpening(event) {
+      if (event.detail?.menuId !== this.menuId) {
+        this.closeMenu()
       }
     },
 
     closeMenu() {
-      this.menuOpen = false;
-      this.removeListeners();
+      if (!this.menuOpen) return
+      this.menuOpen = false
+      this.removeListeners()
     },
 
     removeListeners() {
-      document.removeEventListener('click', this.closeMenu);
-      window.removeEventListener('scroll', this.closeMenu, true);
-      window.removeEventListener('resize', this.closeMenu);
+      document.removeEventListener('click', this.closeMenu)
+      window.removeEventListener('scroll', this.closeMenu, true)
+      window.removeEventListener('resize', this.closeMenu)
     },
 
     handleActionClick(action) {
-      this.closeMenu();
+      this.closeMenu()
       if (typeof action.onClick === 'function') {
-        action.onClick();
+        action.onClick()
       }
     }
-  },
-
-  beforeUnmount() {
-    this.removeListeners();
   }
 }
 </script>

@@ -65,15 +65,13 @@ export default {
           {
               label: 'Показать участников на экране',
               onClick: () => this.showContestantToDisplay(),
-              visible: (this.milestoneCard.state === 'PLANNED' || this.milestoneCard.state === 'IN_PROGRESS' || 
-                          this.milestoneCard.state === 'PENDING') && role === 'SUPERADMIN'
+              visible: role === 'SUPERADMIN'
                         
           },
           {
               label: 'Скрыть участников с экрана',
               onClick: () => this.hideContestantFromDisplay(),
-              visible: (this.milestoneCard.state === 'PLANNED' || this.milestoneCard.state === 'IN_PROGRESS' || 
-                          this.milestoneCard.state === 'PENDING') && role === 'SUPERADMIN'
+              visible: role === 'SUPERADMIN'
                         
           },
       ];

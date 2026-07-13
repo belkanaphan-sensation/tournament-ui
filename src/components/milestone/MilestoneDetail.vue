@@ -39,7 +39,16 @@
             <div class="rounds-section" v-if="rounds.length > 0">
                 <div class="section-header">
                     <h2 class="section-title">Раунды</h2>
-                    <div class="rounds-count">{{ rounds.length }} раундов</div>
+                    <div class="header-actions">
+                        <button
+                            v-for="(action, index) in getRoundsSectionActions()"
+                            :key="index"
+                            :class="['action-btn', action.class]"
+                            @click="action.onClick"
+                        >
+                            {{ action.label }}
+                        </button>
+                    </div>
                 </div>
 
                 <div class="rounds-container">
@@ -264,6 +273,33 @@ export default {
 
       return actions.filter(action => action.visible);
   },
+
+    getRoundsSectionActions() {
+      if (!this.milestone) return [];
+
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const role = userInfo?.roles?.[0];
+
+      const actions = [
+          {
+              label: 'Настроить участников',
+              class: 'default-action-btn',
+              onClick: () => this.navigateToMilestoneRoundConfig(),
+              visible: this.milestone.state === 'PENDING' && role === 'SUPERADMIN'
+          }
+      ];
+
+      return actions.filter(action => action.visible);
+    },
+
+    navigateToMilestoneRoundConfig() {
+      this.$router.push({
+        name: 'MilestoneRoundConfig',
+        params: {
+          milestoneId: this.milestone.id
+        }
+      });
+    },
 
     openPrepareRoundsModal() {
       this.prepareRoundsAction = 'prepare';
