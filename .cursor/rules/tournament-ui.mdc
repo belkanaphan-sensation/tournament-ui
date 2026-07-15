@@ -59,9 +59,11 @@ alwaysApply: true
 ### SSE и обновление Display
 
 - Глобальный клиент: `window.$sse` (`src/plugins/ssePlugin.js`).
-- Служебное сообщение **`DISPLAY_UPDATED`**: без toast и звука; `Display.vue` тихо перезапрашивает данные.
-- При refresh защищаться от гонок (id запроса; применять и пустой массив).
-- Backend (`tournament-ss`): после `updateDisplay` / `saveAll` уведомлять пользователей с ролью `TOURNAMENT_DISPLAY` **после commit** (`TransactionSynchronization.afterCommit`), текст события `DISPLAY_UPDATED`.
+- Служебные сообщения **без toast/звука**:
+  - `DISPLAY_UPDATED` — `Display.vue` тихо перезапрашивает данные;
+  - JSON `{"type":"JUDGE_ROUND_READY","roundId":…,"judgeId":…,"status":"READY"}` — `RoundDetail` локально обновляет статус судьи (`judge.id` = ActivityUser id).
+- При refresh Display защищаться от гонок (id запроса; применять и пустой массив).
+- Backend (`tournament-ss`): после `updateDisplay` / `saveAll` уведомлять пользователей с ролью `TOURNAMENT_DISPLAY` **после commit**; после завершения оценки судьёй — `JUDGE_ROUND_READY` ролям SUPERADMIN/ADMIN/MANAGER/OCCASION_ADMIN.
 
 ### Карточки и меню
 

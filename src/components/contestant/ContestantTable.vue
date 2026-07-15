@@ -11,7 +11,7 @@
                         <th v-if="showPartnerSides">Участники</th>
                         <th>Финальное решение</th>
                         <th>Судейское решение</th>
-                        <th>Баллы</th>
+                        <th>{{ scoreColumnTitle }}</th>
                         <th>Перетанцовка</th>
                     </tr>
                 </thead>
@@ -65,7 +65,7 @@
                                     {{ getJudjeStatusDisplayValue(result) }}
                                 </span>
                             </td>
-                            <td>{{ getTotalScore(result) }}</td>
+                            <td>{{ getDisplayScore(result) }}</td>
                             <td>
                                 <span :class="['extra-round-icon', getHasExtraRoundStatusClass(result)]">
                                     {{ hasExtraRoundDisplayValue(result) }}
@@ -80,7 +80,7 @@
                                             <tr>
                                                 <th>Название раунда</th>
                                                 <th>Тип раунда</th>
-                                                <th>Баллы</th>
+                                                <th>{{ scoreColumnTitle }}</th>
                                                 <th>Статус</th>
                                             </tr>
                                         </thead>
@@ -141,11 +141,25 @@ export default {
         canEdit: {
             type: Boolean,
             default: true
+        },
+        assessmentMode: {
+            type: String,
+            default: null
         }
     },
     data() {
         return {
             expandedRows: new Set() // Храним ID развернутых строк
+        }
+    },
+    computed: {
+        isPlaceMode() {
+            return this.assessmentMode === 'PLACE'
+                || this.contestants?.[0]?.assessmentMode === 'PLACE';
+        },
+
+        scoreColumnTitle() {
+            return this.isPlaceMode ? 'Место' : 'Баллы';
         }
     },
     methods: {
@@ -193,6 +207,24 @@ export default {
                 }
                 return total + (round.totalScore || 0);
             }, 0) || 0;
+        },
+
+        getDisplayScore(result) {
+            if (!this.isPlaceMode) {
+                return this.getTotalScore(result);
+            }
+
+            const rounds = result?.milestoneRoundResults;
+            if (!Array.isArray(rounds) || rounds.length === 0) {
+                return 0;
+            }
+
+            const mainRounds = rounds.filter((round) => round.fromExtraRound !== true);
+            const source = mainRounds.length ? mainRounds : rounds;
+            const lastRound = [...source].sort(
+                (a, b) => (a.roundOrder ?? 0) - (b.roundOrder ?? 0)
+            ).at(-1);
+            return lastRound?.totalScore || 0;
         },
 
         hasExtraRound(result) {

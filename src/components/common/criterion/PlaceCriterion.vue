@@ -4,55 +4,21 @@
         class="buttons-row"
         :style="rowStyle"
     >
-        <button v-for="number in milestoneCriterion.scale" :key="number" :class="['button', 'scale-button', { 
-                  'pressed': number <= initialResult?.score,
+        <button v-for="number in maxPlace" :key="number" :class="['button', 'place-button', { 
+                  'pressed': number === initialResult?.score,
                   'no-pressed': number === initialResult?.score 
                 }]"
                 :style="getButtonStyle(number)"
                 @click="setScore(number)">
-            {{ number }}
+            <span class="place-content">
+                <span v-if="medalIcon(number)" class="medal-icon" aria-hidden="true">{{ medalIcon(number) }}</span>
+                <span class="place-number">{{ number }}</span>
+            </span>
         </button>
     </div>
 </template>
 
 <script>
-const RED = { r: 220, g: 53, b: 69 }     // #dc3545
-const YELLOW = { r: 255, g: 193, b: 7 }  // #ffc107
-const GREEN = { r: 40, g: 167, b: 69 }   // #28a745
-
-function lerp(a, b, t) {
-    return Math.round(a + (b - a) * t)
-}
-
-function mix(from, to, t) {
-    return {
-        r: lerp(from.r, to.r, t),
-        g: lerp(from.g, to.g, t),
-        b: lerp(from.b, to.b, t)
-    }
-}
-
-function darken(color, amount = 0.12) {
-    return {
-        r: Math.round(color.r * (1 - amount)),
-        g: Math.round(color.g * (1 - amount)),
-        b: Math.round(color.b * (1 - amount))
-    }
-}
-
-function toCss({ r, g, b }) {
-    return `rgb(${r}, ${g}, ${b})`
-}
-
-/** t: 0 = red, 0.5 = yellow, 1 = green */
-function colorAt(t) {
-    const clamped = Math.min(1, Math.max(0, t))
-    if (clamped <= 0.5) {
-        return mix(RED, YELLOW, clamped / 0.5)
-    }
-    return mix(YELLOW, GREEN, (clamped - 0.5) / 0.5)
-}
-
 /**
  * Подбираем число колонок ≤ maxFit.
  * 1) минимизируем число строк;
@@ -68,7 +34,6 @@ function chooseColumns(total, maxFit) {
         const rows = Math.ceil(total / columns)
         const lastRow = total - (rows - 1) * columns
 
-        // Главный приоритет — меньше строк (для 9 при maxFit≥5 → 5+4, не 3+3+3)
         let score = -rows * 1000
         score += (lastRow / columns) * 100
         if (lastRow === columns) score += 20
@@ -100,6 +65,8 @@ function currentGap() {
 }
 
 export default {
+    name: 'PlaceCriterion',
+
     props: {
         initialResult: {
             type: Object
@@ -107,6 +74,9 @@ export default {
         milestoneCriterion: {
             type: Object,
         },
+        maxPlace: {
+            type: Number
+        }
     },
 
     data() {
@@ -119,8 +89,8 @@ export default {
     },
 
     computed: {
-        scaleTotal() {
-            return Number(this.milestoneCriterion?.scale) || 0
+        maxPlace() {
+            return this.maxPlace || 0
         },
 
         rowStyle() {
@@ -131,7 +101,7 @@ export default {
     },
 
     watch: {
-        scaleTotal() {
+        maxPlace() {
             this.$nextTick(() => this.updateColumns())
         }
     },
@@ -159,6 +129,13 @@ export default {
     },
 
     methods: {
+        medalIcon(number) {
+            if (number === 1) return '🥇'
+            if (number === 2) return '🥈'
+            if (number === 3) return '🥉'
+            return ''
+        },
+
         setScore(score) {
             this.score = score;
             this.$emit("valueChange", {
@@ -169,7 +146,7 @@ export default {
 
         updateColumns() {
             const row = this.$refs.buttonsRow
-            const total = this.scaleTotal
+            const total = this.maxPlace
             if (!row || total <= 0) {
                 this.columnsCount = 1
                 return
@@ -192,30 +169,7 @@ export default {
             const basis = `calc((100% - ${(cols - 1) * gap}px) / ${cols})`
 
             return {
-                flex: `1 1 ${basis}`,
-                ...this.getPressedStyle(number)
-            }
-        },
-
-        getPressedStyle(number) {
-            const isPressed = number <= this.initialResult?.score
-            if (!isPressed) return {}
-
-            const max = this.scaleTotal || 1
-            const t = max <= 1 ? 0.5 : (number - 1) / (max - 1)
-            const color = colorAt(t)
-            const edge = darken(color)
-            const isSelected = number === this.initialResult?.score
-            const from = toCss(color)
-            const to = toCss(edge)
-
-            return {
-                background: `linear-gradient(135deg, ${from}, ${to})`,
-                borderColor: to,
-                color: '#fff',
-                boxShadow: isSelected
-                    ? `0 6px 20px rgba(${color.r}, ${color.g}, ${color.b}, 0.4)`
-                    : `0 4px 15px rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`
+                flex: `1 1 ${basis}`
             }
         }
     }
@@ -245,23 +199,45 @@ export default {
     text-align: center;
 }
 
+.place-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.medal-icon {
+    font-size: 1.05em;
+    line-height: 1;
+}
+
+.place-number {
+    line-height: 1;
+}
+
 .button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,123,255,0.15);
     background-color: #f8f9fa;
 }
 
-/* Стили для нажатых кнопок шкалы (цвет задаётся inline по алгоритму) */
-.scale-button.pressed {
+.place-button.pressed,
+.place-button.pressed:hover {
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
+    border-color: #0056b3;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
 }
 
-/* Особый стиль для текущего выбранного значения */
-.scale-button.no-pressed {
+.place-button.no-pressed,
+.place-button.no-pressed:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    color: white;
+    border-color: #004085;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
     transform: scale(1.05);
 }
 
-/* Анимация нажатия */
 .button {
     animation: buttonAppear 0.5s ease-out;
 }
@@ -277,7 +253,7 @@ export default {
     }
 }
 
-.scale-button.pressed {
+.place-button.pressed {
     animation: pressAnimation 0.3s ease;
 }
 
@@ -293,7 +269,6 @@ export default {
     }
 }
 
-/* Адаптивность */
 @media (max-width: 480px) {
     .buttons-row {
         gap: 6px;

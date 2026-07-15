@@ -43,6 +43,7 @@
                             :showPartnerSides="true"
                             :selectedResults="selectedResults"
                             :canEdit="canEditResults"
+                            :assessment-mode="milestoneRule.assessmentMode"
                             @final-decision-changed="handleFinalDecisionChange"
                             @selection-changed="handleResultSelection"
                         />
@@ -56,6 +57,7 @@
                             :showPartnerSides="false"
                             :selectedResults="selectedResults"
                             :canEdit="canEditResults"
+                            :assessment-mode="milestoneRule.assessmentMode"
                             @final-decision-changed="handleFinalDecisionChange"
                             @selection-changed="handleResultSelection"
                         />
@@ -65,6 +67,7 @@
                             :showPartnerSides="false"
                             :selectedResults="selectedResults"
                             :canEdit="canEditResults"
+                            :assessment-mode="milestoneRule.assessmentMode"
                             @final-decision-changed="handleFinalDecisionChange"
                             @selection-changed="handleResultSelection"
                         />
@@ -200,24 +203,24 @@ export default {
 
         // Фильтруем конкурсантов для SINGLE типа
         leaderContestants() {
-            return this.milestoneResult.filter(result => 
+            return this.sortResults(this.milestoneResult.filter(result => 
                 result.contestant?.participants?.some(participant => 
                     participant.partnerSide === 'LEADER'
                 )
-            );
+            ));
         },
 
         followerContestants() {
-            return this.milestoneResult.filter(result => 
+            return this.sortResults(this.milestoneResult.filter(result => 
                 result.contestant?.participants?.some(participant => 
                     participant.partnerSide === 'FOLLOWER'
                 )
-            );
+            ));
         },
 
         // Все конкурсанты для COUPLE типа
         coupleContestants() {
-            return this.milestoneResult;
+            return this.sortResults(this.milestoneResult);
         },
 
         // Количество прошедших конкурсантов по таблицам
@@ -238,6 +241,44 @@ export default {
     methods: {
         handleRefresh() {
             window.location.reload();
+        },
+
+        isPlaceAssessment() {
+            return this.milestoneRule?.assessmentMode === 'PLACE'
+                || this.milestoneResult?.[0]?.assessmentMode === 'PLACE';
+        },
+
+        getDisplayScore(result) {
+            const rounds = result?.milestoneRoundResults;
+            if (!Array.isArray(rounds) || rounds.length === 0) {
+                return 0;
+            }
+
+            if (this.isPlaceAssessment()) {
+                const mainRounds = rounds.filter((round) => round.fromExtraRound !== true);
+                const source = mainRounds.length ? mainRounds : rounds;
+                const lastRound = [...source].sort(
+                    (a, b) => (a.roundOrder ?? 0) - (b.roundOrder ?? 0)
+                ).at(-1);
+                return lastRound?.totalScore || 0;
+            }
+
+            return rounds.reduce((total, round) => {
+                if (round.fromExtraRound === true) {
+                    return total;
+                }
+                return total + (round.totalScore || 0);
+            }, 0);
+        },
+
+        sortResults(results) {
+            if (!Array.isArray(results)) return [];
+            const placeMode = this.isPlaceAssessment();
+            return [...results].sort((a, b) => {
+                const scoreA = this.getDisplayScore(a);
+                const scoreB = this.getDisplayScore(b);
+                return placeMode ? scoreA - scoreB : scoreB - scoreA;
+            });
         },
 
         async fetchMilestoneResultDetail() {

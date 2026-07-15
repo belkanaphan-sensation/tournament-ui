@@ -25,7 +25,8 @@
                             :contestantId="contestant.id"
                             :contestantNumber="contestant.number"
                             :criterion="criterion" 
-                            :roundId="Number(this.roundId)"/>
+                            :roundId="Number(this.roundId)"
+                            :milestoneRule="this.milestoneRule"/>
                         <Mask v-if="roundResultStatus === 'READY'" />
                     </div> 
                 </div>

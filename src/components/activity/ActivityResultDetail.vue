@@ -173,8 +173,8 @@
                                                 <div v-if="result.milestoneRoundResults?.length > 0" class="rounds-cell">
                                                     <!-- Общий суммарный балл -->
                                                     <div class="total-score-summary leader-score">
-                                                        <span class="total-score-label">Суммарный балл:</span>
-                                                        <span class="total-score-value">{{ calculateTotalScore(result) }}</span>
+                                                        <span class="total-score-label">{{ getTotalScoreLabel(result) }}</span>
+                                                        <span class="total-score-value">{{ getDisplayScore(result) }}</span>
                                                     </div>
                                                     
                                                     <!-- Детали по раундам -->
@@ -194,7 +194,7 @@
                                                             <span class="round-status" :class="getPassStatusClass(roundResult.judgePassed)">
                                                                 {{ formatPassStatus(roundResult.judgePassed) }}
                                                             </span>
-                                                            <span class="round-score">Баллы: {{ roundResult.totalScore || 0 }}</span>
+                                                            <span class="round-score">{{ getRoundScoreLabel(roundResult, result) }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -318,8 +318,8 @@
                                                 <div v-if="result.milestoneRoundResults?.length > 0" class="rounds-cell">
                                                     <!-- Общий суммарный балл -->
                                                     <div class="total-score-summary follower-score">
-                                                        <span class="total-score-label">Суммарный балл:</span>
-                                                        <span class="total-score-value">{{ calculateTotalScore(result) }}</span>
+                                                        <span class="total-score-label">{{ getTotalScoreLabel(result) }}</span>
+                                                        <span class="total-score-value">{{ getDisplayScore(result) }}</span>
                                                     </div>
                                                     
                                                     <!-- Детали по раундам -->
@@ -339,7 +339,7 @@
                                                             <span class="round-status" :class="getPassStatusClass(roundResult.judgePassed)">
                                                                 {{ formatPassStatus(roundResult.judgePassed) }}
                                                             </span>
-                                                            <span class="round-score">Баллы: {{ roundResult.totalScore || 0 }}</span>
+                                                            <span class="round-score">{{ getRoundScoreLabel(roundResult, result) }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -463,8 +463,8 @@
                                                 <div v-if="result.milestoneRoundResults?.length > 0" class="rounds-cell">
                                                     <!-- Общий суммарный балл -->
                                                     <div class="total-score-summary unknown-score">
-                                                        <span class="total-score-label">Суммарный балл:</span>
-                                                        <span class="total-score-value">{{ calculateTotalScore(result) }}</span>
+                                                        <span class="total-score-label">{{ getTotalScoreLabel(result) }}</span>
+                                                        <span class="total-score-value">{{ getDisplayScore(result) }}</span>
                                                     </div>
                                                     
                                                     <!-- Детали по раундам -->
@@ -484,7 +484,7 @@
                                                             <span class="round-status" :class="getPassStatusClass(roundResult.judgePassed)">
                                                                 {{ formatPassStatus(roundResult.judgePassed) }}
                                                             </span>
-                                                            <span class="round-score">Баллы: {{ roundResult.totalScore || 0 }}</span>
+                                                            <span class="round-score">{{ getRoundScoreLabel(roundResult, result) }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -574,8 +574,7 @@ export default {
 
         async fillDetail(activityId) {
             this.activity = await activityApi.getActivityDetail(activityId);
-            const results = await milestoneResultApi.getMilestoneResultByActivityId(activityId);
-            this.milestoneResults = results;
+            this.milestoneResults = await milestoneResultApi.getMilestoneResultByActivityId(activityId);
             this.milestones = await milestoneApi.getMilestones(activityId);
             
             // Получаем сохраненные результаты активности
@@ -720,12 +719,41 @@ export default {
             if (!Array.isArray(results)) return [];
             
             let sortedResults = [...results];
+            const placeMode = this.isPlaceAssessment(results[0]);
             
             return sortedResults.sort((a, b) => {
-                const scoreA = this.calculateTotalScore(a);
-                const scoreB = this.calculateTotalScore(b);
-                return scoreB - scoreA; // Убывание
+                const scoreA = this.getDisplayScore(a);
+                const scoreB = this.getDisplayScore(b);
+                return placeMode ? scoreA - scoreB : scoreB - scoreA;
             });
+        },
+
+        isPlaceAssessment(result) {
+            return result?.assessmentMode === 'PLACE';
+        },
+
+        getTotalScoreLabel(result) {
+            return this.isPlaceAssessment(result) ? 'Итоговое место:' : 'Суммарный балл:';
+        },
+
+        getRoundScoreLabel(roundResult, result) {
+            const value = roundResult?.totalScore || 0;
+            return this.isPlaceAssessment(result) ? `Место: ${value}` : `Баллы: ${value}`;
+        },
+
+        /** Для PLACE — место из последнего раунда; для SCORE/PASS — сумма баллов. */
+        getDisplayScore(result) {
+            if (!this.isPlaceAssessment(result)) {
+                return this.calculateTotalScore(result);
+            }
+            const rounds = result?.milestoneRoundResults;
+            if (!Array.isArray(rounds) || rounds.length === 0) {
+                return 0;
+            }
+            const lastRound = [...rounds].sort(
+                (a, b) => (a.roundOrder ?? 0) - (b.roundOrder ?? 0)
+            ).at(-1);
+            return lastRound?.totalScore || 0;
         },
 
         // Получение основной стороны участника

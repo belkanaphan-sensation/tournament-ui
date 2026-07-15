@@ -468,10 +468,21 @@ const SSEPlugin = {
       }
       
       // Обработчик уведомлений
+      const isSilentNotification = (rawMessage) => {
+        if (rawMessage === 'DISPLAY_UPDATED') return true
+        if (typeof rawMessage !== 'string' || !rawMessage.startsWith('{')) return false
+        try {
+          const payload = JSON.parse(rawMessage)
+          return payload?.type === 'JUDGE_ROUND_READY'
+        } catch {
+          return false
+        }
+      }
+
       const notificationHandler = (event) => {
         console.log('[SSE] Notification received:', event.data)
-        // Служебные события (например, обновление экрана Display) — без toast/звука
-        if (event.data === 'DISPLAY_UPDATED') {
+        // Служебные события — без toast/звука
+        if (isSilentNotification(event.data)) {
           emitEvent('notification', { message: event.data, toastId: null })
           return
         }

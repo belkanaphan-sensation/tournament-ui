@@ -76,6 +76,14 @@ export const activityApi = {
         return api.get('/activity/results/' + activityId);
     },
 
+    async downloadReport(id) {
+        const activityId = Number(id);
+        return api.download(
+            `/activity/${activityId}/report`,
+            `activity-${activityId}-report.xlsx`
+        );
+    },
+
 //   /**
 //    * Получить пользователя по ID
 //    * @param {number|string} id - ID пользователя

@@ -10,33 +10,32 @@
             </div>
         </div>
         
-        <div v-if="isOneCriterion()">
-            <div v-if="criterion[0].scale == 1">
-                <PassCriterion 
+        <div v-if="isPlaceMilestoneRule()">
+            <PlaceCriterion 
                     @valueChange="handleCriterionValueChange"
-                    :milestoneCriterionId="criterion[0].id"
-                    :initialResult="resultStore.getResult(roundId, criterion[0].id, contestantId)"/>
-            </div>
-            <div v-if="criterion[0].scale > 1">
+                    :milestoneCriterion="criterion[0]"
+                    :initialResult="resultStore.getResult(roundId, criterion[0].id, contestantId)"
+                    :maxPlace="getMaxPlace()"/>
+        </div>
+
+        <div v-if="isPassMilestoneRule()">
+            <PassCriterion 
+                @valueChange="handleCriterionValueChange"
+                :milestoneCriterionId="criterion[0].id"
+                :initialResult="resultStore.getResult(roundId, criterion[0].id, contestantId)"/>
+        </div>
+
+        <div v-if="isScoreMilestoneRule()">
+            <div v-if="isOneCriterion()">
                 <ScaleCriterion 
                     @valueChange="handleCriterionValueChange"
                     :milestoneCriterion="criterion[0]" 
                     :initialResult="resultStore.getResult(roundId, criterion[0].id, contestantId)"/>
             </div>
-        </div>
-
-        <div v-if="!isCollapsed">
-            <div v-if="isMultiCriterion()">
-                <div v-for="currentCriterion in criterion" :key="currentCriterion">
+            <div v-else-if="!isCollapsed">
+                <div v-for="currentCriterion in criterion" :key="currentCriterion.id">
                     <div class="criterion-label">
                         {{ currentCriterion.criterion.value }}
-                    </div>
-
-                    <div v-if="currentCriterion.scale == 1">
-                        <PassCriterion 
-                            @valueChange="handleCriterionValueChange"
-                            :milestoneCriterionId="criterion[0].id"
-                            :initialResult="resultStore.getResult(roundId, currentCriterion.id, contestantId)"/>
                     </div>
                     <div v-if="currentCriterion.scale > 1">
                         <ScaleCriterion 
@@ -55,6 +54,7 @@
 import '../../assets/likeButton.css'
 import PassCriterion from '../common/criterion/PassCriterion.vue';
 import ScaleCriterion from '../common/criterion/ScaleCriterion.vue';
+import PlaceCriterion from '../common/criterion/PlaceCriterion.vue';
 import Mask from '../common/Mask.vue';
 import { useJudgeResultStore } from '../../store/JudgeResultStore.js';
 
@@ -62,6 +62,7 @@ export default {
     components: {
         PassCriterion,
         ScaleCriterion,
+        PlaceCriterion,
         Mask
     },
 
@@ -77,6 +78,9 @@ export default {
         },
         roundId: {
             type: Number,
+        },
+        milestoneRule: {
+            type: Object
         }
     },
 
@@ -106,6 +110,18 @@ export default {
             }
         },
 
+        isPlaceMilestoneRule() {
+            return this.milestoneRule && this.milestoneRule.assessmentMode === 'PLACE';
+        },
+
+        isPassMilestoneRule() {
+            return this.milestoneRule && this.milestoneRule.assessmentMode === 'PASS';
+        },
+
+        isScoreMilestoneRule() {
+            return this.milestoneRule && this.milestoneRule.assessmentMode === 'SCORE';
+        },
+
         isOneCriterion() {
             return this.criterion.length === 1;
         },
@@ -114,14 +130,12 @@ export default {
             return this.criterion.length > 1;
         },
 
+        getMaxPlace() {
+            return this.criterion.length > 0 ? this.criterion[0].scale : 0;
+        },
+
         handleCriterionValueChange(data) {
             this.resultStore.setResult(this.roundId, data.milestoneCriterionId, this.contestantId, data.score);
-        }
-    },
-
-    data() {
-        return {
-            isCollapsed: true,
         }
     }
 }

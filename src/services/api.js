@@ -113,6 +113,57 @@ class ApiService {
   }
 
   /**
+   * Скачать файл (blob) и сохранить через браузер
+   * @param {string} url - endpoint URL
+   * @param {string} fallbackFilename - имя файла, если сервер не прислал Content-Disposition
+   * @returns {Promise<boolean>}
+   */
+  async download(url, fallbackFilename = 'download') {
+    const fullUrl = `${this.baseURL}${url}`;
+
+    try {
+      const response = await fetch(fullUrl, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          router.push({ name: 'LoginPage' });
+          return false;
+        }
+
+        const errorMessage = await response.text();
+        const error = new Error(errorMessage || 'Не удалось скачать файл');
+        error.status = response.status;
+        throw error;
+      }
+
+      const blob = await response.blob();
+      const disposition = response.headers.get('Content-Disposition');
+      let filename = fallbackFilename;
+      const match = disposition && /filename\*?=(?:UTF-8''|")?([^\";]+)/i.exec(disposition);
+      if (match?.[1]) {
+        filename = decodeURIComponent(match[1].replace(/"/g, '').trim());
+      }
+
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+      return true;
+    } catch (error) {
+      console.log('Error: ' + error.stack);
+      showGlobalError(error.message);
+      return false;
+    }
+  }
+
+  /**
    * Загрузка файла
    * @param {string} url - endpoint URL
    * @param {FormData} formData - данные формы

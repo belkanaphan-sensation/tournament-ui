@@ -233,6 +233,12 @@ export default {
           class: 'default-action-btn',
           onClick: () => this.completeActivity(),
           visible: this.activity.state === 'SUMMARIZING' && role === 'SUPERADMIN'
+        }, 
+        {
+          label: 'Скачать отчет',
+          class: 'default-action-btn',
+          onClick: () => this.downloadReport(),
+          visible: (this.activity.state === 'COMPLETED') && role === 'SUPERADMIN'
         }
       ];
 
@@ -272,6 +278,10 @@ export default {
     async completeActivity() {
         await activityApi.completeActivity(this.activity.id);
         this.fillDetail(this.activity.id);
+    },
+
+    async downloadReport() {
+        await activityApi.downloadReport(this.activity.id);
     },
 
     navigateToActivityResult() {

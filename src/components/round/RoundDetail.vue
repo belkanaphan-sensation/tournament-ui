@@ -197,14 +197,57 @@ export default {
 
   async mounted() {
     await this.fetchRoundDetail();
+    this.bindJudgeRoundReadyListener();
     // this.startAutoRefresh();
   },
 
   beforeUnmount() {
+    this.unbindJudgeRoundReadyListener();
     this.stopAutoRefresh();
   },
 
   methods: {
+    bindJudgeRoundReadyListener() {
+      if (!window.$sse) return;
+      this._onJudgeRoundNotification = ({ message }) => {
+        this.handleJudgeRoundReadyNotification(message);
+      };
+      window.$sse.on('notification', this._onJudgeRoundNotification);
+    },
+
+    unbindJudgeRoundReadyListener() {
+      if (!window.$sse || !this._onJudgeRoundNotification) return;
+      window.$sse.off('notification', this._onJudgeRoundNotification);
+      this._onJudgeRoundNotification = null;
+    },
+
+    handleJudgeRoundReadyNotification(message) {
+      if (typeof message !== 'string' || !message.startsWith('{')) return;
+
+      let payload;
+      try {
+        payload = JSON.parse(message);
+      } catch {
+        return;
+      }
+
+      if (payload?.type !== 'JUDGE_ROUND_READY') return;
+
+      const currentRoundId = Number(this.round?.id || this.$route.params.roundId);
+      const eventRoundId = Number(payload.roundId);
+      const judgeId = Number(payload.judgeId);
+      const status = payload.status;
+
+      if (!currentRoundId || eventRoundId !== currentRoundId || !judgeId || !status) return;
+
+      const target = this.judgeRoundStatuses.find(
+        (item) => Number(item.judge?.id) === judgeId
+      );
+      if (target && target.status !== status) {
+        target.status = status;
+      }
+    },
+
     async fetchRoundDetail() {
       this.isLoading = true;
       this.error = null;
