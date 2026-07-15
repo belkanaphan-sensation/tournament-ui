@@ -1,7 +1,7 @@
 <template>
   <div
     class="display-page"
-    :class="schemeClass"
+    :class="[schemeClass, { 'is-empty': isEmptyDisplay }]"
     :style="fontStyleVars"
   >
     <button
@@ -11,76 +11,102 @@
       @click="handleLogout"
     ></button>
 
-    <img
-      class="festival-emblem festival-emblem-left"
-      :src="emblemSrc"
-      alt="Эмблема фестиваля"
-    />
-    <img
-      class="festival-emblem festival-emblem-right"
-      :src="emblemSrc"
-      alt="Эмблема фестиваля"
-    />
+    <div class="display-body">
+      <Transition name="display-fade" mode="out-in">
+        <div v-if="isEmptyDisplay" key="empty" class="empty-fullscreen">
+          <img
+            class="empty-fullscreen-image"
+            :src="emblemSrc"
+            alt=""
+          />
+        </div>
 
-    <div class="display-header">
-      <h1 class="activity-title">{{ activityName }}</h1>
-      <h2 class="milestone-title">{{ milestoneName }}</h2>
-    </div>
+        <div v-else :key="contentTransitionKey" class="display-content">
+          <img
+            class="festival-emblem festival-emblem-left"
+            :src="emblemSrc"
+            alt="Эмблема фестиваля"
+          />
+          <img
+            class="festival-emblem festival-emblem-right"
+            :src="emblemSrc"
+            alt="Эмблема фестиваля"
+          />
 
-    <div v-if="!isLoading && visibleRounds.length === 0" class="empty-state">
-      Нет раундов для отображения
-    </div>
-
-    <div
-      v-else
-      class="rounds-grid"
-      :style="{ gridTemplateColumns: `repeat(${columnCount}, 1fr)` }"
-    >
-      <div
-        v-for="displayRound in visibleRounds"
-        :key="displayRound.round?.id"
-        class="round-column"
-      >
-        <h3 class="round-title">{{ displayRound.round?.value }}</h3>
-
-        <div class="sides-grid">
-          <div class="side-column leaders">
-            <div class="side-header">Партнеры</div>
-            <div class="numbers-list">
-              <div
-                v-for="contestant in getLeaders(displayRound)"
-                :key="contestant.id"
-                class="number-item"
-                :class="{ 'number-only': !showParticipantName }"
-              >
-                <span class="contestant-number">{{ contestant.number }}</span>
-                <span v-if="formatName(contestant, 'LEADER')" class="contestant-name">
-                  {{ formatName(contestant, 'LEADER') }}
-                </span>
-              </div>
-              <div v-if="getLeaders(displayRound).length === 0" class="empty-side">—</div>
-            </div>
+          <div class="display-header">
+            <h1 class="activity-title">{{ activityName }}</h1>
+            <h2 class="milestone-title">{{ milestoneName }}</h2>
           </div>
 
-          <div class="side-column followers">
-            <div class="side-header">Партнерши</div>
-            <div class="numbers-list">
+          <div
+            class="rounds-grid"
+            :style="{ gridTemplateColumns: `repeat(${columnCount}, 1fr)` }"
+          >
+            <div
+              v-for="displayRound in visibleRounds"
+              :key="displayRound.round?.id"
+              class="round-column"
+            >
+              <h3 class="round-title">{{ displayRound.round?.value }}</h3>
+
               <div
-                v-for="contestant in getFollowers(displayRound)"
-                :key="contestant.id"
-                class="number-item"
-                :class="{ 'number-only': !showParticipantName }"
+                class="sides-grid"
+                :class="{
+                  'single-side': getLeaders(displayRound).length === 0 || getFollowers(displayRound).length === 0
+                }"
               >
-                <span class="contestant-number">{{ contestant.number }}</span>
-                <span v-if="formatName(contestant, 'FOLLOWER')" class="contestant-name">
-                  {{ formatName(contestant, 'FOLLOWER') }}
-                </span>
+                <div
+                  v-if="getLeaders(displayRound).length"
+                  class="side-column leaders"
+                >
+                  <div class="side-header">Партнеры</div>
+                  <div
+                    class="numbers-list"
+                    :ref="(el) => bindNumbersList(el, displayRound.round?.id, 'leaders')"
+                    :style="getNumbersListStyle(displayRound.round?.id)"
+                  >
+                    <div
+                      v-for="contestant in getLeaders(displayRound)"
+                      :key="contestant.id"
+                      class="number-item"
+                      :class="{ 'number-only': !showParticipantName }"
+                    >
+                      <span class="contestant-number">{{ contestant.number }}</span>
+                      <span v-if="formatName(contestant, 'LEADER')" class="contestant-name">
+                        {{ formatName(contestant, 'LEADER') }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  v-if="getFollowers(displayRound).length"
+                  class="side-column followers"
+                >
+                  <div class="side-header">Партнерши</div>
+                  <div
+                    class="numbers-list"
+                    :ref="(el) => bindNumbersList(el, displayRound.round?.id, 'followers')"
+                    :style="getNumbersListStyle(displayRound.round?.id)"
+                  >
+                    <div
+                      v-for="contestant in getFollowers(displayRound)"
+                      :key="contestant.id"
+                      class="number-item"
+                      :class="{ 'number-only': !showParticipantName }"
+                    >
+                      <span class="contestant-number">{{ contestant.number }}</span>
+                      <span v-if="formatName(contestant, 'FOLLOWER')" class="contestant-name">
+                        {{ formatName(contestant, 'FOLLOWER') }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div v-if="getFollowers(displayRound).length === 0" class="empty-side">—</div>
             </div>
           </div>
         </div>
-      </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -155,7 +181,10 @@ export default {
       isLoading: true,
       slideIndex: 0,
       slideTimer: null,
-      _displayFetchId: 0
+      _displayFetchId: 0,
+      contentViewKey: 0,
+      /** roundId -> число колонок для списков сторон */
+      roundColumns: {},
     }
   },
 
@@ -219,6 +248,19 @@ export default {
 
     columnCount() {
       return Math.max(1, this.visibleRounds.length)
+    },
+
+    isEmptyDisplay() {
+      // Пока нет раундов (в т.ч. во время первой загрузки) — заставка,
+      // чтобы появление данных анимировалось плавно
+      return this.displayRounds.length === 0
+    },
+
+    /** Ключ для fade: смена данных (SSE) и смена слайда в SLIDESHOW */
+    contentTransitionKey() {
+      return this.isSlideshow
+        ? `${this.contentViewKey}-${this.slideIndex}`
+        : String(this.contentViewKey)
     }
   },
 
@@ -229,11 +271,126 @@ export default {
   },
 
   beforeUnmount() {
+    this.unbindAllNumbersLists()
     this.unbindDisplayUpdatedListener()
     this.stopSlideshow()
   },
 
   methods: {
+    /**
+     * Колонки = ceil(макс. число людей на стороне / сколько рядов реально влезает в высоту списка).
+     * Высоту берём из DOM (ResizeObserver), а не из эвристики по окну —
+     * иначе при крупных шрифтах/других отступах один экран влезает, другой вылезает.
+     */
+    bindNumbersList(el, roundId, side) {
+      if (!this._numbersObservers) {
+        this._numbersObservers = new Map()
+      }
+      const key = `${roundId}:${side}`
+
+      if (!el || roundId == null) {
+        const prev = this._numbersObservers.get(key)
+        if (prev) {
+          prev.observer.disconnect()
+          this._numbersObservers.delete(key)
+        }
+        return
+      }
+
+      const prev = this._numbersObservers.get(key)
+      if (prev?.el === el) {
+        this.updateRoundColumns(roundId)
+        return
+      }
+      if (prev) {
+        prev.observer.disconnect()
+      }
+
+      const observer = new ResizeObserver(() => {
+        this.updateRoundColumns(roundId)
+      })
+      observer.observe(el)
+      this._numbersObservers.set(key, { el, observer, roundId, side })
+      this.$nextTick(() => this.updateRoundColumns(roundId))
+    },
+
+    unbindAllNumbersLists() {
+      if (!this._numbersObservers) return
+      for (const entry of this._numbersObservers.values()) {
+        entry.observer.disconnect()
+      }
+      this._numbersObservers.clear()
+    },
+
+    estimateRowHeightPx() {
+      const size = this.config?.participantFontSize || 'L'
+      const numberRow = { S: 34, M: 42, L: 54, XL: 66 }[size] || 54
+      const nameExtra = this.showParticipantName
+        ? ({ S: 6, M: 8, L: 10, XL: 12 }[size] || 10)
+        : 0
+      const paddingAndGap = 10
+      return numberRow + nameExtra + paddingAndGap
+    },
+
+    getDisplayRoundById(roundId) {
+      return this.visibleRounds.find((r) => r.round?.id === roundId)
+        || this.displayRounds.find((r) => r.round?.id === roundId)
+    },
+
+    getSideMaxCount(displayRound) {
+      if (!displayRound) return 0
+      return Math.max(
+        this.getLeaders(displayRound).length,
+        this.getFollowers(displayRound).length
+      )
+    },
+
+    updateRoundColumns(roundId) {
+      if (roundId == null || !this._numbersObservers) return
+
+      const displayRound = this.getDisplayRoundById(roundId)
+      const count = this.getSideMaxCount(displayRound)
+      if (!count) {
+        if (this.roundColumns[roundId] !== 1) {
+          this.roundColumns = { ...this.roundColumns, [roundId]: 1 }
+        }
+        return
+      }
+
+      let availableHeight = 0
+      let measuredRowHeight = 0
+      for (const entry of this._numbersObservers.values()) {
+        if (entry.roundId !== roundId || !entry.el) continue
+        availableHeight = availableHeight
+          ? Math.min(availableHeight, entry.el.clientHeight)
+          : entry.el.clientHeight
+
+        const item = entry.el.querySelector('.number-item')
+        if (item?.offsetHeight) {
+          measuredRowHeight = Math.max(measuredRowHeight, item.offsetHeight)
+        }
+      }
+      if (availableHeight <= 0) return
+
+      // Реальная высота строки (+ gap), иначе fallback по размеру шрифта из конфига
+      const rowHeight = measuredRowHeight > 0
+        ? measuredRowHeight + 6
+        : this.estimateRowHeightPx()
+      const maxRows = Math.max(1, Math.floor(availableHeight / rowHeight))
+      const columns = Math.min(6, Math.max(1, Math.ceil(count / maxRows)))
+
+      if (this.roundColumns[roundId] !== columns) {
+        this.roundColumns = { ...this.roundColumns, [roundId]: columns }
+      }
+    },
+
+    getNumbersListStyle(roundId) {
+      const columns = this.roundColumns[roundId] || 1
+      return {
+        gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`
+      }
+    },
+
     bindDisplayUpdatedListener() {
       if (!window.$sse) return
       this._onDisplayNotification = ({ message }) => {
@@ -279,9 +436,20 @@ export default {
         return
       }
       // Пустой массив тоже применяем — иначе на экране останутся старые раунды
+      const hadRounds = this.displayRounds.length > 0
       this.displayRounds = Array.isArray(rounds) ? rounds : []
       this.config = { ...DEFAULT_CONFIG, ...(config && typeof config === 'object' ? config : {}) }
       this.slideIndex = 0
+      this.roundColumns = {}
+      // Плавная смена при обновлении по SSE/refresh, если контент уже был на экране
+      if (hadRounds && this.displayRounds.length > 0) {
+        this.contentViewKey += 1
+      }
+      this.$nextTick(() => {
+        for (const r of this.visibleRounds) {
+          if (r.round?.id != null) this.updateRoundColumns(r.round.id)
+        }
+      })
     },
 
     resolveFont(role, size) {
@@ -352,7 +520,7 @@ export default {
   display: flex;
   flex-direction: column;
   font-family: Arial, Helvetica, sans-serif;
-  padding: 2vh 2vw;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -439,14 +607,51 @@ export default {
   line-height: 1.2;
 }
 
-.empty-state {
+.display-body {
   flex: 1;
+  min-height: 0;
+  position: relative;
+  width: 100%;
+}
+
+.display-content {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 2vh 2vw;
+  box-sizing: border-box;
+}
+
+.display-fade-enter-active,
+.display-fade-leave-active {
+  transition: opacity 0.7s ease;
+}
+
+.display-fade-enter-from,
+.display-fade-leave-to {
+  opacity: 0;
+}
+
+.empty-fullscreen {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  color: var(--muted-color);
-  font-size: var(--font-round);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.empty-fullscreen-image {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
 }
 
 .rounds-grid {
@@ -491,6 +696,10 @@ export default {
   overflow: hidden;
 }
 
+.sides-grid.single-side {
+  grid-template-columns: 1fr;
+}
+
 .side-column {
   min-height: 0;
   display: flex;
@@ -514,15 +723,14 @@ export default {
 .numbers-list {
   flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 0.5vh;
+  display: grid;
+  grid-auto-rows: min-content;
+  align-content: start;
+  gap: 0.5vh 0.5vw;
   overflow: hidden;
 }
 
 .number-item {
-  flex: 0 0 auto;
   display: flex;
   align-items: baseline;
   justify-content: flex-start;
@@ -538,6 +746,7 @@ export default {
   letter-spacing: 0.03em;
   overflow: hidden;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .number-item.number-only {
