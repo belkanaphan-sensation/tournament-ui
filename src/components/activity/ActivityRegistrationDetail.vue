@@ -147,6 +147,7 @@
         <AddParticipantModal
             :show="showAddParticipantModal"
             :activityId="activity?.id"
+            :withAssistant="!!activity?.withAssistant"
             @close="closeAddParticipantModal"
             @add="addNewParticipant"
         />

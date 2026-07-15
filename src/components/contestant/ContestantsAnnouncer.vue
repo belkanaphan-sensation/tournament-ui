@@ -14,7 +14,7 @@
             <!-- Сворачиваемые блоки для участников по сторонам -->
             <div class="collapsible-sections">
                 <!-- Блок для LEAD -->
-                <div class="collapsible-section">
+                <div v-if="leaderContestants.length" class="collapsible-section">
                     <div class="section-header" @click="toggleSection('leader')">
                         <span class="section-title">Партнеры: {{leaderContestants.length}}</span>
                         <span class="section-arrow">{{ isLeadOpen ? '▼' : '▶' }}</span>
@@ -46,15 +46,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div v-if="leaderContestants.length === 0" class="empty-section">
-                                Нет учавствующих партнеров
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Блок для FOLLOW -->
-                <div class="collapsible-section">
+                <div v-if="followerContestants.length" class="collapsible-section">
                     <div class="section-header" @click="toggleSection('follower')">
                         <span class="section-title">Партнерши: {{followerContestants.length}}</span>
                         <span class="section-arrow">{{ isFollowOpen ? '▼' : '▶' }}</span>
@@ -85,9 +82,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div v-if="followerContestants.length === 0" class="empty-section">
-                                Нет учавствующих партнерш
                             </div>
                         </div>
                     </div>

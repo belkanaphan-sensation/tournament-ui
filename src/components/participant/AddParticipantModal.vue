@@ -93,6 +93,17 @@
                     </select>
                     <div v-if="errors.partnerSide" class="error-message">{{ errors.partnerSide }}</div>
                 </div>
+
+                <div v-if="withAssistant" class="form-group">
+                    <Picker
+                        v-model="formData.assistant"
+                        label="Ассистент"
+                        required
+                        placeholder="Фамилия или имя ассистента..."
+                        :search="searchAssistants"
+                        :error="errors.assistant"
+                    />
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="modal-btn cancel-btn" @click="handleClose">Отменить</button>
@@ -109,8 +120,28 @@
 </template>
 
 <script>
+import Picker from '../common/Picker.vue';
+import { assistantApi } from '@/services/assistantApi.js';
+
+function formatAssistantLabel(assistant) {
+    const person = assistant?.person || {};
+    const parts = [person.surname, person.name, person.secondName].filter(Boolean);
+    return parts.join(' ') || String(assistant?.id ?? '');
+}
+
+function toAssistantOption(assistant) {
+    return {
+        id: assistant.id,
+        value: formatAssistantLabel(assistant),
+        partnerSide: assistant.partnerSide,
+    };
+}
+
 export default {
     name: 'AddParticipantModal',
+    components: {
+        Picker,
+    },
     props: {
         show: {
             type: Boolean,
@@ -119,6 +150,10 @@ export default {
         activityId: {
             type: [String, Number],
             required: true
+        },
+        withAssistant: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -130,21 +165,27 @@ export default {
                 email: '',
                 phoneNumber: '',
                 school: '',
-                partnerSide: ''
+                partnerSide: '',
+                assistant: null,
             },
             errors: {
                 surname: '',
                 name: '',
                 email: '',
-                partnerSide: ''
-            }
+                partnerSide: '',
+                assistant: ''
+            },
         }
     },
     computed: {
         isFormValid() {
-            return this.formData.surname.trim() && 
-                   this.formData.name.trim() && 
+            const baseValid = this.formData.surname.trim() &&
+                   this.formData.name.trim() &&
                    this.formData.partnerSide;
+            if (!this.withAssistant) {
+                return !!baseValid;
+            }
+            return !!baseValid && !!this.formData.assistant?.id;
         }
     },
     watch: {
@@ -152,16 +193,45 @@ export default {
             if (newVal) {
                 this.resetForm();
             }
+        },
+        'formData.partnerSide'() {
+            // при смене стороны сбрасываем ассистента, если сторона не совпадает
+            if (
+                this.formData.assistant?.partnerSide &&
+                this.formData.partnerSide &&
+                this.formData.assistant.partnerSide !== this.formData.partnerSide
+            ) {
+                this.formData.assistant = null;
+            }
         }
     },
     methods: {
+        async searchAssistants(query) {
+            const list = await assistantApi.getAll() || [];
+            const all = Array.isArray(list) ? list.map(toAssistantOption) : [];
+            const q = (query || '').trim().toLowerCase();
+            return all.filter((item) => {
+                if (
+                    this.formData.partnerSide &&
+                    item.partnerSide &&
+                    item.partnerSide !== this.formData.partnerSide
+                ) {
+                    return false;
+                }
+                if (!q) {
+                    return true;
+                }
+                return String(item.value || '').toLowerCase().includes(q);
+            });
+        },
+
         handleClose() {
             this.$emit('close');
         },
 
         handleAdd() {
             if (this.validateForm()) {
-                this.$emit('add', {
+                const payload = {
                     surname: this.formData.surname.trim(),
                     name: this.formData.name.trim(),
                     secondName: this.formData.secondName.trim(),
@@ -170,7 +240,11 @@ export default {
                     school: this.formData.school.trim(),
                     partnerSide: this.formData.partnerSide,
                     activityId: Number(this.activityId),
-                });
+                };
+                if (this.withAssistant && this.formData.assistant?.id) {
+                    payload.assistantId = this.formData.assistant.id;
+                }
+                this.$emit('add', payload);
             }
         },
 
@@ -179,7 +253,8 @@ export default {
                 surname: '',
                 name: '',
                 email: '',
-                partnerSide: ''
+                partnerSide: '',
+                assistant: ''
             };
 
             let isValid = true;
@@ -206,6 +281,11 @@ export default {
                 isValid = false;
             }
 
+            if (this.withAssistant && !this.formData.assistant?.id) {
+                this.errors.assistant = 'Выберите ассистента';
+                isValid = false;
+            }
+
             return isValid;
         },
 
@@ -222,13 +302,15 @@ export default {
                 email: '',
                 phoneNumber: '',
                 school: '',
-                partnerSide: ''
+                partnerSide: '',
+                assistant: null,
             };
             this.errors = {
                 surname: '',
                 name: '',
                 email: '',
-                partnerSide: ''
+                partnerSide: '',
+                assistant: ''
             };
         }
     }
