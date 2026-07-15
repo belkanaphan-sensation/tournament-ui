@@ -1,17 +1,22 @@
 <template>
-    <div
-        ref="buttonsRow"
-        class="buttons-row"
-        :style="rowStyle"
-    >
-        <button v-for="number in milestoneCriterion.scale" :key="number" :class="['button', 'scale-button', { 
-                  'pressed': number <= initialResult?.score,
-                  'no-pressed': number === initialResult?.score 
-                }]"
-                :style="getButtonStyle(number)"
-                @click="setScore(number)">
-            {{ number }}
-        </button>
+    <div class="scale-criterion">
+        <div v-if="forceCriteriaDisplayName && criterionDisplayName" class="criterion-label">
+            {{ criterionDisplayName }}
+        </div>
+        <div
+            ref="buttonsRow"
+            class="buttons-row"
+            :style="rowStyle"
+        >
+            <button v-for="number in milestoneCriterion.scale" :key="number" :class="['button', 'scale-button', { 
+                      'pressed': number <= initialResult?.score,
+                      'no-pressed': number === initialResult?.score 
+                    }]"
+                    :style="getButtonStyle(number)"
+                    @click="setScore(number)">
+                {{ number }}
+            </button>
+        </div>
     </div>
 </template>
 
@@ -107,18 +112,17 @@ export default {
         milestoneCriterion: {
             type: Object,
         },
-    },
-
-    data() {
-        return {
-            score: undefined,
-            columnsCount: 1,
-            rowGapPx: 8,
-            resizeObserver: null,
-        }
+        forceCriteriaDisplayName: {
+            type: Boolean,
+            default: false,
+        },
     },
 
     computed: {
+        criterionDisplayName() {
+            return this.milestoneCriterion?.criterion?.value || '';
+        },
+
         scaleTotal() {
             return Number(this.milestoneCriterion?.scale) || 0
         },
@@ -127,6 +131,15 @@ export default {
             return {
                 gap: `${this.rowGapPx}px`
             }
+        }
+    },
+
+    data() {
+        return {
+            score: undefined,
+            columnsCount: 1,
+            rowGapPx: 8,
+            resizeObserver: null,
         }
     },
 
@@ -223,6 +236,15 @@ export default {
 </script>
 
 <style scoped>
+.criterion-label {
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 1.1rem;
+}
+
 .buttons-row {
     display: flex;
     flex-wrap: wrap;

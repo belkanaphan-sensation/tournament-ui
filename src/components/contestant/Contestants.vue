@@ -18,17 +18,73 @@
                 <p>Здесь появятся участники на оценку, когда они будут добавлены</p>
             </div>
 
-            <div class="cards-grid">
-                <div v-for="(contestant, index) in contestants" :key="index" class="contestant-item">
+            <!-- SINGLE: группы только если есть и LEADER, и FOLLOWER -->
+            <div v-else-if="shouldSplitByPartnerSide" class="contestant-groups">
+                <section v-if="leaderContestants.length" class="contestant-group">
+                    <h2 class="group-header">Партнеры</h2>
+                    <div class="cards-grid">
+                        <div
+                            v-for="contestant in leaderContestants"
+                            :key="contestant.id"
+                            class="contestant-item"
+                        >
+                            <div class="test-mask">
+                                <ContestantCard
+                                    :contestantId="contestant.id"
+                                    :contestantNumber="contestant.number"
+                                    :criterion="getCriterionForContestant(contestant)"
+                                    :roundId="Number(roundId)"
+                                    :milestoneRule="milestoneRule"
+                                    :forceCriteriaDisplayName="true"
+                                />
+                                <Mask v-if="roundResultStatus === 'READY'" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section v-if="followerContestants.length" class="contestant-group">
+                    <h2 class="group-header">Партнерши</h2>
+                    <div class="cards-grid">
+                        <div
+                            v-for="contestant in followerContestants"
+                            :key="contestant.id"
+                            class="contestant-item"
+                        >
+                            <div class="test-mask">
+                                <ContestantCard
+                                    :contestantId="contestant.id"
+                                    :contestantNumber="contestant.number"
+                                    :criterion="getCriterionForContestant(contestant)"
+                                    :roundId="Number(roundId)"
+                                    :milestoneRule="milestoneRule"
+                                    :forceCriteriaDisplayName="true"
+                                />
+                                <Mask v-if="roundResultStatus === 'READY'" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Пары / общий список -->
+            <div v-else class="cards-grid">
+                <div
+                    v-for="contestant in contestants"
+                    :key="contestant.id"
+                    class="contestant-item"
+                >
                     <div class="test-mask">
-                        <ContestantCard 
+                        <ContestantCard
                             :contestantId="contestant.id"
                             :contestantNumber="contestant.number"
-                            :criterion="criterion" 
-                            :roundId="Number(this.roundId)"
-                            :milestoneRule="this.milestoneRule"/>
+                            :criterion="getCriterionForContestant(contestant)"
+                            :roundId="Number(roundId)"
+                            :milestoneRule="milestoneRule"
+                            :forceCriteriaDisplayName="true"
+                        />
                         <Mask v-if="roundResultStatus === 'READY'" />
-                    </div> 
+                    </div>
                 </div>
             </div>
         </div>
@@ -128,7 +184,54 @@ export default {
     }
   },
 
+  computed: {
+    isSingleMode() {
+      return this.milestoneRule?.contestantType === 'SINGLE';
+    },
+
+    /** Разделять только если есть и LEADER, и FOLLOWER */
+    shouldSplitByPartnerSide() {
+      return this.isSingleMode
+        && this.leaderContestants.length > 0
+        && this.followerContestants.length > 0;
+    },
+
+    leaderContestants() {
+      return this.contestants.filter((contestant) =>
+        this.getContestantPartnerSide(contestant) === 'LEADER'
+      );
+    },
+
+    followerContestants() {
+      return this.contestants.filter((contestant) =>
+        this.getContestantPartnerSide(contestant) === 'FOLLOWER'
+      );
+    }
+  },
+
   methods: {
+    getContestantPartnerSide(contestant) {
+      const participants = contestant?.participants;
+      if (!Array.isArray(participants) || participants.length === 0) {
+        return null;
+      }
+      // SINGLE: один participant; если вдруг несколько — берём первого с partnerSide
+      return participants.find((p) => p.partnerSide)?.partnerSide
+        || participants[0]?.partnerSide
+        || null;
+    },
+
+    /** Критерии, у которых targetPartnerSide совпадает со стороной конкурсанта */
+    getCriterionForContestant(contestant) {
+      const partnerSide = this.getContestantPartnerSide(contestant);
+      if (!partnerSide) {
+        return this.criterion || [];
+      }
+      return (this.criterion || []).filter(
+        (c) => !c.targetPartnerSide || c.targetPartnerSide === partnerSide
+      );
+    },
+
     async backToNotReadyRoundResultStatus() {
       this.isLoading = true;
       try {
@@ -227,6 +330,7 @@ export default {
         roundResult: [],
         roundResultStatus: undefined,
         round: undefined,
+        milestoneRule: undefined,
         showRefreshConfirm: false,
     }
   },
@@ -305,6 +409,28 @@ export default {
     gap: 20px;
     margin-top: 20px;
     margin-bottom: 30px;
+}
+
+.contestant-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.contestant-group .cards-grid {
+    margin-top: 12px;
+    margin-bottom: 0;
+}
+
+.group-header {
+    margin: 0;
+    padding: 12px 4px 10px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #333;
+    border-bottom: 2px solid #dee2e6;
 }
 
 .contestant-item {

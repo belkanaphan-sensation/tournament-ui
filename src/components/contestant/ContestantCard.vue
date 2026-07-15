@@ -30,7 +30,8 @@
                 <ScaleCriterion 
                     @valueChange="handleCriterionValueChange"
                     :milestoneCriterion="criterion[0]" 
-                    :initialResult="resultStore.getResult(roundId, criterion[0].id, contestantId)"/>
+                    :initialResult="resultStore.getResult(roundId, criterion[0].id, contestantId)"
+                    :forceCriteriaDisplayName="forceCriteriaDisplayName"/>
             </div>
             <div v-else-if="!isCollapsed">
                 <div v-for="currentCriterion in criterion" :key="currentCriterion.id">
@@ -81,7 +82,11 @@ export default {
         },
         milestoneRule: {
             type: Object
-        }
+        },
+        forceCriteriaDisplayName: {
+            type: Boolean,
+            default: false,
+        },
     },
 
     data() {
