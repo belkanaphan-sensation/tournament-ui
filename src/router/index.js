@@ -20,12 +20,14 @@ import Test from '../components/test/Test.vue'
 import SnakeGame from '../components/userinfo/SnakeGame.vue'
 import Display from '../components/display/Display.vue'
 
+const DEFAULT_TITLE = 'Sensation'
+
 const routes = [
   {
     path: '/auth/login',
     name: 'LoginPage',
     component: LoginPage,
-    meta: {}
+    meta: { title: 'Вход' }
   }, {
     path: '/',
     // redirect: '/occasions',
@@ -42,91 +44,111 @@ const routes = [
             }
         }
     },
-    meta: {}
+    meta: { title: DEFAULT_TITLE }
   }, {
     path: '/occasions',
     name: 'Occasions',
     // component: Occasions
+    meta: { title: 'Мероприятия' }
   }, {
     path: '/occasions',
     name: 'OccasionsForUser',
     component: Occasions,
+    meta: { title: 'Мероприятия' }
   }, {
     path: '/occasions',
     name: 'OccasionList',
     component: OccasionList,
+    meta: { title: 'Мероприятия' }
   }, {
     path: '/occasionDetail/:occasionId',
     name: 'OccasionDetail',
     component: OccasionDetail,
+    meta: { title: 'Мероприятие' }
   }, {
     path: '/activities/:occasionId',
     name: 'Activities',
     component: Activities,
+    meta: { title: 'Активности' }
   }, {
     path: '/activityResultDetail/:activityId',
     name: 'ActivityResultDetail',
     component: ActivityResultDetail,
+    meta: { title: 'Результаты активности' }
   }, {
     path: '/milestones/:activityId',
     name: 'Milestones',
     component: Milestones,
+    meta: { title: 'Этапы' }
   }, {
     path: '/milestoneDetail/:milestoneId',
     name: 'MilestoneDetail',
     component: MilestoneDetail,
+    meta: { title: 'Этап' }
   },   {
     path: '/milestoneResultDetail/:milestoneId',
     name: 'MilestoneResultDetail',
     component: MilestoneResultDetail,
+    meta: { title: 'Результаты этапа' }
   }, {
     path: '/milestoneRoundConfig/:milestoneId',
     name: 'MilestoneRoundConfig',
     component: MilestoneRoundConfig,
+    meta: { title: 'Конфигурация раундов' }
   }, {
     path: '/activityDetail/:activityId',
     name: 'ActivityDetail',
     component: ActivityDetail,
+    meta: { title: 'Активность' }
   }, {
     path: '/activityRegistrationDetail/:activityId',
     name: 'ActivityRegistrationDetail',
     component: ActivityRegistrationDetail,
+    meta: { title: 'Регистрация' }
   }, {
     path: '/rounds/:milestoneId',
     name: 'Rounds',
     component: Rounds,
+    meta: { title: 'Раунды' }
   }, {
     path: '/roundDetail/:roundId',
     name: 'RoundDetail',
     component: RoundDetail,
+    meta: { title: 'Раунд' }
   }, {
     path: '/userDetails',
     name: 'UserDetails',
-    component: UserDetails
+    component: UserDetails,
+    meta: { title: 'Профиль' }
   }, {
     path: '/contestants/:milestoneId/:roundId',
     name: 'Contestants',
     component: Contestants,
     props: true,
+    meta: { title: 'Оценка' }
   },{
     path: '/contestantsAnnouncer/:milestoneId/:roundId',
     name: 'ContestantsAnnouncer',
     component: ContestantsAnnouncer,
     props: true,
+    meta: { title: 'Объявление' }
   }, {
     path: '/test',
     name: 'Test',
-    component: Test
+    component: Test,
+    meta: { title: 'Тест' }
   },
   {
     path: '/snake-game',
     name: 'SnakeGame',
-    component: SnakeGame
+    component: SnakeGame,
+    meta: { title: 'Snake' }
   },
   {
     path: '/display',
     name: 'Display',
-    component: Display
+    component: Display,
+    meta: { title: 'Табло' }
   }
 ]
 
@@ -139,6 +161,9 @@ const router = createRouter({
   }
 });
 
+router.afterEach((to) => {
+  document.title = to.meta?.title || DEFAULT_TITLE
+})
 
 router.beforeEach((to, from, next) => {
     if (to.name === 'LoginPage') {
