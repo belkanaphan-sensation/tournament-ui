@@ -16,7 +16,7 @@
         <div v-if="isEmptyDisplay" key="empty" class="empty-fullscreen">
           <img
             class="empty-fullscreen-image"
-            :src="emblemSrc"
+            :src="emptyEmblemSrc"
             alt=""
           />
         </div>
@@ -116,6 +116,7 @@ import { tournamentDisplayApi } from '@/services/tournamentDisplayApi.js'
 import { authApi } from '@/services/authApi.js'
 import emblemLight from '@/assets/emblems/emblem-light.png'
 import emblemDark from '@/assets/emblems/emblem-dark.png'
+import emptyEmblem from '@/assets/emblems/image_UFA.png'
 
 const FONT_SIZES = {
   activity: {
@@ -207,6 +208,10 @@ export default {
 
     emblemSrc() {
       return this.config.colorScheme === 'LIGHT' ? emblemLight : emblemDark
+    },
+
+    emptyEmblemSrc() {
+      return emptyEmblem
     },
 
     fontStyleVars() {
