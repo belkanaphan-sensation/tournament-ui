@@ -10,11 +10,12 @@
             </div>
         </div>
         
-        <div v-if="isPlaceMilestoneRule()">
-            <PlaceCriterion 
+        <div v-if="isPlaceMilestoneRule() && placeCriterion">
+            <PlaceCriterion
+                    :key="'place-' + contestantId + '-' + placeCriterion.id"
                     @valueChange="handleCriterionValueChange"
-                    :milestoneCriterion="criterion[0]"
-                    :initialResult="resultStore.getResult(roundId, criterion[0].id, contestantId)"
+                    :milestoneCriterion="placeCriterion"
+                    :initialResult="resultStore.getResult(roundId, placeCriterion.id, contestantId)"
                     :maxPlace="getMaxPlace()"/>
         </div>
 
@@ -87,6 +88,11 @@ export default {
             type: Boolean,
             default: false,
         },
+        /** Для PLACE: явное число мест (обычно = число конкурсантов) */
+        maxPlace: {
+            type: Number,
+            default: undefined,
+        },
     },
 
     data() {
@@ -95,17 +101,19 @@ export default {
         }
     },
 
-    setup(props) {
+    setup() {
         const resultStore = useJudgeResultStore();
         return {
             resultStore
         }
     },
 
-    async mounted() {
-        // this.resultStore = useJudgeResultStore();
-        // this.isCollapsed = this.isMultiCriterion();
-        // this.isCollapsed = false;
+    computed: {
+        placeCriterion() {
+            return Array.isArray(this.criterion) && this.criterion.length > 0
+                ? this.criterion[0]
+                : null;
+        },
     },
 
     methods: {
@@ -128,15 +136,17 @@ export default {
         },
 
         isOneCriterion() {
-            return this.criterion.length === 1;
+            return Array.isArray(this.criterion) && this.criterion.length === 1;
         },
 
         isMultiCriterion() {
-            return this.criterion.length > 1;
+            return Array.isArray(this.criterion) && this.criterion.length > 1;
         },
 
         getMaxPlace() {
-            return this.criterion.length > 0 ? this.criterion[0].scale : 0;
+            return Number(this.maxPlace)
+                || Number(this.placeCriterion?.scale)
+                || 0;
         },
 
         handleCriterionValueChange(data) {

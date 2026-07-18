@@ -4,7 +4,7 @@
         class="buttons-row"
         :style="rowStyle"
     >
-        <button v-for="number in maxPlace" :key="number" :class="['button', 'place-button', { 
+        <button v-for="number in totalPlaces" :key="number" :class="['button', 'place-button', { 
                   'pressed': number === initialResult?.score,
                   'no-pressed': number === initialResult?.score 
                 }]"
@@ -89,8 +89,8 @@ export default {
     },
 
     computed: {
-        maxPlace() {
-            return this.maxPlace || 0
+        totalPlaces() {
+            return Number(this.maxPlace) || Number(this.milestoneCriterion?.scale) || 0
         },
 
         rowStyle() {
@@ -101,12 +101,13 @@ export default {
     },
 
     watch: {
-        maxPlace() {
+        totalPlaces() {
             this.$nextTick(() => this.updateColumns())
         }
     },
 
     mounted() {
+        this.updateColumns = this.updateColumns.bind(this)
         this.$nextTick(() => {
             this.updateColumns()
             requestAnimationFrame(() => this.updateColumns())
@@ -146,7 +147,7 @@ export default {
 
         updateColumns() {
             const row = this.$refs.buttonsRow
-            const total = this.maxPlace
+            const total = this.totalPlaces
             if (!row || total <= 0) {
                 this.columnsCount = 1
                 return

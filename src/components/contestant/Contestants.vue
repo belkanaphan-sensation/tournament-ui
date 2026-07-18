@@ -35,6 +35,7 @@
                                     :criterion="getCriterionForContestant(contestant)"
                                     :roundId="Number(roundId)"
                                     :milestoneRule="milestoneRule"
+                                    :maxPlace="leaderContestants.length"
                                     :forceCriteriaDisplayName="true"
                                 />
                                 <Mask v-if="roundResultStatus === 'READY'" />
@@ -58,6 +59,7 @@
                                     :criterion="getCriterionForContestant(contestant)"
                                     :roundId="Number(roundId)"
                                     :milestoneRule="milestoneRule"
+                                    :maxPlace="followerContestants.length"
                                     :forceCriteriaDisplayName="true"
                                 />
                                 <Mask v-if="roundResultStatus === 'READY'" />
@@ -81,6 +83,7 @@
                             :criterion="getCriterionForContestant(contestant)"
                             :roundId="Number(roundId)"
                             :milestoneRule="milestoneRule"
+                            :maxPlace="contestants.length"
                             :forceCriteriaDisplayName="true"
                         />
                         <Mask v-if="roundResultStatus === 'READY'" />
@@ -206,7 +209,8 @@ export default {
       return this.contestants.filter((contestant) =>
         this.getContestantPartnerSide(contestant) === 'FOLLOWER'
       );
-    }
+    },
+
   },
 
   methods: {
@@ -223,6 +227,10 @@ export default {
 
     /** Критерии, у которых targetPartnerSide совпадает со стороной конкурсанта */
     getCriterionForContestant(contestant) {
+      // PLACE: места ставятся всем видимым конкурсантам — без фильтра по стороне
+      if (this.milestoneRule?.assessmentMode === 'PLACE') {
+        return this.criterion || [];
+      }
       const partnerSide = this.getContestantPartnerSide(contestant);
       if (!partnerSide) {
         return this.criterion || [];
